@@ -3,7 +3,8 @@ from django.views.decorators.csrf import csrf_exempt
 from django.db.models import Q
 
 from api.models import (
-    User
+    User,
+    Video,
 )
 
 import hashlib
@@ -20,6 +21,9 @@ from api.func import (
     send_sms_otp,
     send_mail_otp,
     verify_otp,
+    verify_access_token,
+    upload_video_to_s3,
+    upload_video_to_s3_test,
 )
 
 SECRET_KEY = os.environ.get("SECRET_KEY")
@@ -241,6 +245,65 @@ def reset_password(request):
                 "message": "OTP sent"
             })
         
+    return JsonResponse({
+        "success": False,
+        "message": "Method not allowed"
+    })
+
+
+@csrf_exempt
+def post_video(request):
+    if request.method == "POST":
+        try:
+            token = request.POST["token"]
+            description = request.POST["description"]
+            video = request.FILES["video"]
+        except KeyError:
+            return JsonResponse({
+                "success": False,
+                "message": "Fill all fields"
+            })
+
+        try:
+            uid = verify_access_token(token)
+            user = User.objects.get(pk=uid)
+        except User.DoesNotExist:
+            return JsonResponse({
+                "success": False,
+                "message": "Access token is invalid"
+            })
+        
+        content_type_allow_list = [
+            "video/mp4",
+        ]
+
+        if video.content_type not in content_type_allow_list:
+            return JsonResponse({
+                "success": False,
+                "message": "File type not allowed, just " + ", ".join(content_type_allow_list)
+            })
+
+        try:
+            # link = upload_video_to_s3(video)
+            link = upload_video_to_s3_test(video)
+        except Exception:
+            return JsonResponse({
+                "success": False,
+                "message": "Error uploading video"
+            })
+
+        video = Video.objects.create(
+            owner=user,
+            description=description,
+            link=link,
+        )
+
+        return JsonResponse({
+            "success": True,
+            "message": "Video posted",
+            "video": video.to_json()
+        })
+
     return JsonResponse({
         "success": False,
         "message": "Method not allowed"

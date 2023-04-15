@@ -20,6 +20,7 @@ from api.views import (
     login,
     google_auth,
     reset_password,
+    post_video,
 )
 
 urlpatterns = [
@@ -27,4 +28,6 @@ urlpatterns = [
     path('login/', login),
     path('google-auth/', google_auth),
     path('reset-password/', reset_password),
+
+    path('post-video/', post_video),
 ]

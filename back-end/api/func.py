@@ -118,3 +118,13 @@ def generate_access_token(uid):
         "exp": datetime.datetime.utcnow() + datetime.timedelta(days=30),
         "iat": datetime.datetime.utcnow(),
     }, SECRET_KEY, algorithm="HS256")
+
+
+def verify_access_token(token):
+    SECRET_KEY = os.environ.get("SECRET_KEY")
+    try:
+        data = jwt.decode(token, SECRET_KEY, algorithms=["HS256"])
+        return data["uid"]
+    except:
+        return None
+    

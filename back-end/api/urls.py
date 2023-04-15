@@ -15,5 +15,16 @@ Including another URLconf
 """
 from django.urls import path
 
+from api.views import (
+    register,
+    login,
+    google_auth,
+    reset_password,
+)
+
 urlpatterns = [
+    path('register/', register),
+    path('login/', login),
+    path('google-auth/', google_auth),
+    path('reset-password/', reset_password),
 ]

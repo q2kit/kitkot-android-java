@@ -8,6 +8,8 @@ import random
 import re
 import jwt
 import datetime
+import boto3
+from uuid import uuid4
 
 from api.models import User
 
@@ -128,3 +130,36 @@ def verify_access_token(token):
     except:
         return None
     
+
+def upload_video_to_s3(video):
+    AWS_ACCESS_KEY_ID = os.environ.get("AWS_ACCESS_KEY_ID")
+    AWS_SECRET_ACCESS_KEY = os.environ.get("AWS_SECRET_ACCESS_KEY")
+    AWS_STORAGE_BUCKET_NAME = os.environ.get("AWS_STORAGE_BUCKET_NAME")
+    AWS_FOLDER_VIDEOS = os.environ.get("AWS_FOLDER_VIDEOS")
+    s3 = boto3.client(
+        "s3",
+        aws_access_key_id=AWS_ACCESS_KEY_ID,
+        aws_secret_access_key=AWS_SECRET_ACCESS_KEY,
+    )
+
+    postfix = video.name.split(".")[-1]
+    filename = AWS_FOLDER_VIDEOS + "/" + str(uuid4().hex) + "." + postfix
+    s3.upload_fileobj(
+        video,
+        AWS_STORAGE_BUCKET_NAME,
+        filename,
+        ExtraArgs={
+            "ContentType": video.content_type,
+        }
+    )
+
+    return f"https://{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com/{filename}"
+
+
+def upload_video_to_s3_test(video):
+    url = "http://localhost:8080/api/up/"
+    files = {
+        "file": video,
+    }
+    return requests.post(url, files=files).text
+

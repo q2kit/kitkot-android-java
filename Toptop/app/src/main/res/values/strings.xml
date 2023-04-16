@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">Toptop</string>
     <string name="title_activity_scrolling_comment">ScrollingCommentActivity</string>
+    <string name="web_client_id">464544233115-p33qvvmnp4qitns62ne5q3k57ak9ijjv.apps.googleusercontent.com</string>
     <string name="large_text">
         "Material is the metaphor.\n\n"
 

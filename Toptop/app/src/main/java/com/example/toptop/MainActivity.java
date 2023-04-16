@@ -24,15 +24,28 @@ import com.google.android.gms.auth.api.identity.BeginSignInResult;
 import com.google.android.gms.auth.api.identity.Identity;
 import com.google.android.gms.auth.api.identity.SignInClient;
 import com.google.android.gms.auth.api.identity.SignInCredential;
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 
+import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 
+import java.io.IOException;
+
+import okhttp3.FormBody;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
+
 public class MainActivity extends AppCompatActivity {
+    GoogleSignInOptions gso;
+    GoogleSignInClient gsc;
+
     SignInClient oneTapClient;
     BeginSignInRequest signUpRequest;
     Button btnGG;
@@ -45,6 +58,24 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         btnGG = findViewById(R.id.google_btn);
+        gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN).requestEmail().build();
+        gsc = GoogleSignIn.getClient(this, gso);
+
+        GoogleSignInAccount acct = GoogleSignIn.getLastSignedInAccount(this);
+        if (acct != null) {
+            navigateToHomeActivity();
+        }
+
+        //press signup
+        final TextView txtLogin = findViewById(R.id.textView7);
+        txtLogin.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //TODO()
+                Intent intent = new Intent(MainActivity.this, SignupActivity.class);
+                startActivity(intent);
+            }
+        });
 
         oneTapClient = Identity.getSignInClient(this);
         signUpRequest = BeginSignInRequest.builder()
@@ -65,13 +96,9 @@ public class MainActivity extends AppCompatActivity {
                         SignInCredential credential = oneTapClient.getSignInCredentialFromIntent(result.getData());
                         String idToken = credential.getGoogleIdToken();
                         if (idToken !=  null) {
-                            String email = credential.getId();
-                            // Got an ID token from Google. Use it to authenticate
-                            // with your backend.
-                            Log.d("TAG", "ID token: " + idToken);
-                            Toast.makeText(getApplicationContext(), "Email:" + email, Toast.LENGTH_SHORT).show();
-                            Intent intent = new Intent(MainActivity.this,HomeActivity.class);
-                            startActivity(intent);
+                            if (signInGoogle(idToken)){
+                                Toast.makeText(getApplicationContext(), "OKKKKKKKKKK", Toast.LENGTH_SHORT).show();
+                            }
                         }else {
                             Toast.makeText(getApplicationContext(), "Something Wrong", Toast.LENGTH_SHORT).show();
                         }
@@ -92,6 +119,7 @@ public class MainActivity extends AppCompatActivity {
                                 IntentSenderRequest intentSenderRequest =
                                         new IntentSenderRequest.Builder(result.getPendingIntent().getIntentSender()).build();
                                 activityResultLauncher.launch(intentSenderRequest);
+
                             }
                         })
                         .addOnFailureListener(MainActivity.this, new OnFailureListener() {
@@ -101,10 +129,60 @@ public class MainActivity extends AppCompatActivity {
                                 Log.d(TAG, e.getLocalizedMessage());
                             }
                         });
-
+                signIn();
             }
         });
     }
+    void signIn(){
+        Intent signInIntent = gsc.getSignInIntent();
+        startActivityForResult(signInIntent,1000);
+    }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode,Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(requestCode == 1000){
+            Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
 
+            try {
+                task.getResult(ApiException.class);
+                navigateToHomeActivity();
+            } catch (ApiException e) {
+                Toast.makeText(getApplicationContext(), "Something went wrong", Toast.LENGTH_SHORT).show();
+            }
+        }
+
+    }
+
+    void navigateToHomeActivity(){
+        finish();
+        Intent intent = new Intent(MainActivity.this,HomeActivity.class);
+        startActivity(intent);
+    }
+
+    boolean signInGoogle(String idtoken) {
+        OkHttpClient client = new OkHttpClient();
+
+        String url = "https://soc.q2k.dev/api/google-auth/";
+
+        RequestBody requestBody = new FormBody.Builder()
+                .add("g_token", idtoken)
+                .build();
+
+        Request request = new Request.Builder()
+                .url(url)
+                .post(requestBody)
+                .build();
+
+        try (Response response = client.newCall(request).execute()) {
+            if (!response.isSuccessful()) {
+                throw new IOException("Unexpected code " + response);
+            }
+            System.out.println(response.body().string());
+        }
+        catch (IOException e){
+
+        }
+        return false;
+    }
 }

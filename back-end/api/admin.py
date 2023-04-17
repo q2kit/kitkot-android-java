@@ -5,3 +5,5 @@ from api.models import *
 # Register your models here.
 
 admin.site.register(User)
+admin.site.register(Video)
+admin.site.register(Comment)

@@ -1,10 +1,12 @@
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
-from django.db.models import Q
+from django.db.models import Q, Exists, OuterRef
 
 from api.models import (
     User,
     Video,
+    Comment,
+    Watched,
 )
 
 import hashlib
@@ -255,7 +257,7 @@ def reset_password(request):
 def post_video(request):
     if request.method == "POST":
         try:
-            token = request.POST["token"]
+            token = request.headers.get("Authorization").split("Bearer ")[1]
             description = request.POST["description"]
             video = request.FILES["video"]
         except KeyError:
@@ -308,3 +310,55 @@ def post_video(request):
         "success": False,
         "message": "Method not allowed"
     })
+
+
+def get_videos(request):
+    token = request.headers.get("Authorization").split("Bearer ")[1]
+    
+    try:
+        uid = verify_access_token(token)
+        user = User.objects.get(pk=uid)
+    except User.DoesNotExist:
+        return JsonResponse({
+            "success": False,
+            "message": "Access token is invalid"
+        })
+    
+    watched = Watched.objects.filter(user=user).values_list("video_id", flat=True)
+    videos = Video.objects.exclude(pk__in=watched).order_by("-id").annotate(
+        is_followed=Exists(user.following.filter(pk=OuterRef("owner_id"))),
+    )
+
+    return JsonResponse({
+        "success": True,
+        "videos": [video.to_json() for video in videos]
+    })
+
+
+def get_videos_by_owner(request, owner_id):
+    token = request.headers.get("Authorization").split("Bearer ")[1]
+
+    try:
+        uid = verify_access_token(token)
+        user = User.objects.get(pk=uid)
+    except User.DoesNotExist:
+        return JsonResponse({
+            "success": False,
+            "message": "Access token is invalid"
+        })
+
+    try:
+        owner = User.objects.get(pk=owner_id)
+    except User.DoesNotExist:
+        return JsonResponse({
+            "success": False,
+            "message": "User not found"
+        })
+    
+    videos = owner.videos.all().order_by("-id")
+    return JsonResponse({
+        "success": True,
+        "videos": [video.to_json() for video in videos]
+    })
+
+

@@ -30,4 +30,5 @@ urlpatterns = [
     path('reset-password/', reset_password),
 
     path('post-video/', post_video),
+    
 ]

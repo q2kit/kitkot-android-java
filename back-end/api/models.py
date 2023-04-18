@@ -12,7 +12,7 @@ class User(models.Model):
     email = models.EmailField(max_length=255)
     phone = models.CharField(max_length=255, null=True, blank=True)
     avatar = models.CharField(max_length=255, null=True, blank=True)
-    followers = models.ManyToManyField("self", symmetrical=False, related_name="following", blank=True)
+    following = models.ManyToManyField("self", symmetrical=False, related_name="followers", blank=True)
 
     def __str__(self):
         return self.name
@@ -24,6 +24,6 @@ class User(models.Model):
             "email": self.email,
             "phone": self.phone,
             "avatar": self.avatar if self.avatar else DEFAULT_AVATAR,
-            "followers": list(self.followers.all().values_list("pk", flat=True)),
             "following": list(self.following.all().values_list("pk", flat=True)),
+            "followers": list(self.followers.all().values_list("pk", flat=True)),
         }

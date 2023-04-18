@@ -1,6 +1,9 @@
 from django.core.cache import cache
 
-from mailer import Mailer
+import smtplib
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+from email.utils import formataddr
 
 import requests
 import os
@@ -43,13 +46,6 @@ def validate_name(name):
 
 
 def send_sms_otp(phone_number):
-    success, message = validate_phone_number(phone_number)
-    if not success:
-        return (False, message)
-    
-    if cache.get(phone_number):
-        return (False, "OTP already sent, you can resend in 5 minutes")
-
     otp = str(random.randint(100000, 999999))
     cache.set(phone_number, otp, 600)
 
@@ -59,24 +55,18 @@ def send_sms_otp(phone_number):
     response = requests.get(url).json()
 
     if response["status"] == "success":
-        return (True, "OTP sent")
+        ...
     else:
-        return (False, response["message"])
+        cache.delete(phone_number)
 
 
 def send_mail_otp(email):
-    success, message = validate_email(email)
-    if not success:
-        return (False, message)
-
-    if cache.get(email):
-        return (False, "OTP already sent, you can resend in 5 minutes")
-
     otp = str(random.randint(100000, 999999))
     cache.set(email, otp)
 
-    MAIL_SENDER = os.environ.get("MAIL_SENDER")
-    MAIL_SENDER_PASS = os.environ.get("MAIL_SENDER_PASS")
+    ICLOUD_ACCOUNT = os.environ.get("ICLOUD_ACCOUNT")
+    ICLOUD_PASS = os.environ.get("ICLOUD_PASS")
+    ICLOUD_SENDER = os.environ.get("ICLOUD_SENDER")
     SENDER_NAME = "KitKot Team"
     SUBJECT = "KitKot - OTP"
     MESSAGE = f"""
@@ -91,18 +81,20 @@ def send_mail_otp(email):
         </html>
     """
 
+    msg = MIMEMultipart()
+    msg["From"] = formataddr((SENDER_NAME, ICLOUD_SENDER))
+    msg["To"] = email
+    msg["Subject"] = SUBJECT
+    msg.attach(MIMEText(MESSAGE, "html"))
+
     try:
-        mail = Mailer(email=MAIL_SENDER, password=MAIL_SENDER_PASS)
-        mail.settings(provider=mail.GMAIL)
-        mail.send(
-            sender_name=SENDER_NAME,
-            receiver=email,
-            subject=SUBJECT,
-            message=MESSAGE,
-        )
-        return (True, "OTP sent")
+        with smtplib.SMTP('smtp.mail.me.com', 587) as smtp:
+            smtp.ehlo()
+            smtp.starttls()
+            smtp.login(ICLOUD_ACCOUNT, ICLOUD_PASS)
+            smtp.sendmail(ICLOUD_SENDER, email, msg.as_string())
     except Exception as e:
-        return (False, str(e))
+        cache.delete(email)
 
 
 def verify_otp(email_or_phone, otp):

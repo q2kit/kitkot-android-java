@@ -7,7 +7,7 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('api', '0002_user_followers'),
+        ('api', '0003_remove_user_followers_user_following_and_more'),
     ]
 
     operations = [

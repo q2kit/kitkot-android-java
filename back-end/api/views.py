@@ -1,6 +1,7 @@
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.db.models import Q, Exists, OuterRef
+from django.core.cache import cache
 
 from api.models import (
     User,
@@ -11,6 +12,7 @@ from api.models import (
 
 import hashlib
 import os
+import threading
 from google.oauth2 import id_token
 from google.auth.transport import requests
 
@@ -186,7 +188,10 @@ def google_auth(request):
                 "success": False,
                 "message": "Wrong token"
             })
-
+    return JsonResponse({
+        "success": False,
+        "message": "Method not allowed"
+    })
 
 @csrf_exempt
 def reset_password(request):
@@ -230,21 +235,23 @@ def reset_password(request):
                     "success": False,
                     "message": "User not found with this email or phone"
                 })
-
-            if user.email == email_or_phone:
-                success, message = send_mail_otp(user.email)
-            else:
-                success, message = send_sms_otp(user.phone)
-
-            if not success:
+            
+            if cache.get(email_or_phone):
                 return JsonResponse({
                     "success": False,
-                    "message": message
+                    "message": "OTP already sent. If you don't receive it, try again in 5 minutes."
                 })
+            
+            if user.email == email_or_phone:
+                t = threading.Thread(target=send_mail_otp, args=(user.email,))
+                t.start()
+            else:
+                t = threading.Thread(target=send_sms_otp, args=(user.phone,))
+                t.start()
             
             return JsonResponse({
                 "success": True,
-                "message": "OTP sent"
+                "message": "OTP sent. If you don't receive it, try again in 5 minutes."
             })
         
     return JsonResponse({
@@ -359,6 +366,85 @@ def get_videos_by_owner(request, owner_id):
     return JsonResponse({
         "success": True,
         "videos": [video.to_json() for video in videos]
+    })
+
+
+def like_toggle(request):
+    token = request.headers.get("Authorization").split("Bearer ")[1]
+
+    try:
+        uid = verify_access_token(token)
+        user = User.objects.get(pk=uid)
+    except User.DoesNotExist:
+        return JsonResponse({
+            "success": False,
+            "message": "Access token is invalid"
+        })
+    
+    try:
+        video_id = request.POST["video_id"]
+        video = Video.objects.get(pk=video_id)
+    except Exception:
+        return JsonResponse({
+            "success": False,
+            "message": "Video not found"
+        })
+    
+    if video.owner == user:
+        return JsonResponse({
+            "success": False,
+            "message": "You can't like your own video"
+        })
+    
+    watched = Watched.objects.get_or_create(user=user, video=video)[0] # [0] is the object, [1] is a boolean
+    watched.liked = not watched.liked
+    watched.save()
+
+    return JsonResponse({
+        "success": True,
+        "message": "OK",
+        "liked": watched.liked
+    })
+
+
+def follow_toggle(request):
+    token = request.headers.get("Authorization").split("Bearer ")[1]
+
+    try:
+        uid = verify_access_token(token)
+        user = User.objects.get(pk=uid)
+    except User.DoesNotExist:
+        return JsonResponse({
+            "success": False,
+            "message": "Access token is invalid"
+        })
+    
+    try:
+        other_user_id = request.POST["other_user_id"]
+        other_user = User.objects.get(pk=other_user_id)
+    except Exception:
+        return JsonResponse({
+            "success": False,
+            "message": "User not found"
+        })
+    
+    if other_user == user:
+        return JsonResponse({
+            "success": False,
+            "message": "You can't follow yourself"
+        })
+    
+    if other_user in user.following.all():
+        user.following.remove(other_user)
+        followed = False
+    else:
+        user.following.add(other_user)
+        followed = True
+
+    return JsonResponse({
+        "success": True,
+        "message": "OK",
+        "followed": followed
     })
 
 

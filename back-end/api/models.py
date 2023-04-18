@@ -6,16 +6,16 @@ DEFAULT_AVATAR = os.environ.get("DEFAULT_AVATAR")
 
 
 class User(models.Model):
-    username = models.CharField(max_length=255)
+    username = models.CharField(max_length=255, null=True, blank=True)
     password = models.CharField(max_length=255)
     name = models.CharField(max_length=255)
     email = models.EmailField(max_length=255)
-    phone = models.CharField(max_length=255)
-    avatar = models.CharField(max_length=255)
-    followers = models.ManyToManyField("self", symmetrical=False, related_name="following")
+    phone = models.CharField(max_length=255, null=True, blank=True)
+    avatar = models.CharField(max_length=255, null=True, blank=True)
+    followers = models.ManyToManyField("self", symmetrical=False, related_name="following", blank=True)
 
     def __str__(self):
-        return self.name + "(" + self.pk + ")"
+        return self.name
     
     def to_json(self):
         return {

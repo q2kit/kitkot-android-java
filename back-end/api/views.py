@@ -1,6 +1,7 @@
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.db.models import Q
+from django.core.cache import cache
 
 from api.models import (
     User
@@ -8,6 +9,7 @@ from api.models import (
 
 import hashlib
 import os
+import threading
 from google.oauth2 import id_token
 from google.auth.transport import requests
 
@@ -180,7 +182,10 @@ def google_auth(request):
                 "success": False,
                 "message": "Wrong token"
             })
-
+    return JsonResponse({
+        "success": False,
+        "message": "Method not allowed"
+    })
 
 @csrf_exempt
 def reset_password(request):
@@ -224,21 +229,23 @@ def reset_password(request):
                     "success": False,
                     "message": "User not found with this email or phone"
                 })
-
-            if user.email == email_or_phone:
-                success, message = send_mail_otp(user.email)
-            else:
-                success, message = send_sms_otp(user.phone)
-
-            if not success:
+            
+            if cache.get(email_or_phone):
                 return JsonResponse({
                     "success": False,
-                    "message": message
+                    "message": "OTP already sent. If you don't receive it, try again in 5 minutes."
                 })
+            
+            if user.email == email_or_phone:
+                t = threading.Thread(target=send_mail_otp, args=(user.email,))
+                t.start()
+            else:
+                t = threading.Thread(target=send_sms_otp, args=(user.phone,))
+                t.start()
             
             return JsonResponse({
                 "success": True,
-                "message": "OTP sent"
+                "message": "OTP sent. If you don't receive it, try again in 5 minutes."
             })
         
     return JsonResponse({

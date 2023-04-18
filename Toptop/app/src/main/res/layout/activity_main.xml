@@ -153,4 +153,12 @@
         app:layout_constraintStart_toEndOf="@+id/textView6"
         app:layout_constraintTop_toBottomOf="@+id/google_btn"
         app:layout_constraintVertical_bias="0.181" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/bt_Chat"
+        tools:ignore="MissingConstraints"
+        android:text="Chat"
+        />
 </androidx.constraintlayout.widget.ConstraintLayout>

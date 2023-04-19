@@ -22,7 +22,7 @@
     <style name="Theme.Toptop.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
 
     <style name="Theme.Toptop.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
-
+    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
     <style name="ThemeOverlay.Toptop.FullscreenContainer" parent="">
         <item name="fullscreenBackgroundColor">@color/light_blue_600</item>
         <item name="fullscreenTextColor">@color/light_blue_A200</item>

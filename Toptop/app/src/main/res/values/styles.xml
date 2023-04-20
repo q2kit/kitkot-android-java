@@ -1,5 +1,4 @@
 <resources>
-    <resources>
 
         <!-- Base application theme. -->
         <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
@@ -9,7 +8,6 @@
             <item name="colorAccent">@color/colorAccent</item>
         </style>
 
-    </resources>
 
     <style name="Widget.Theme.Toptop.ButtonBar.Fullscreen" parent="">
         <item name="android:background">@color/black_overlay</item>

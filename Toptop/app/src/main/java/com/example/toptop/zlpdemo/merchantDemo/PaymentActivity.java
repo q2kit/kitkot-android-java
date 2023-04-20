@@ -1,4 +1,4 @@
-package com.example.merchantDemo.zlpdemo.merchantDemo;
+package com.example.toptop.zlpdemo.merchantDemo;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
@@ -20,8 +20,8 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
-import com.example.merchantDemo.R;
-import com.example.merchantDemo.zlpdemo.merchantDemo.models.VipPackage;
+import com.example.toptop.R;
+import com.example.toptop.zlpdemo.merchantDemo.models.VipPackage;
 
 import org.json.JSONObject;
 
@@ -74,32 +74,6 @@ public class PaymentActivity extends AppCompatActivity {
         BindView();
         getData();
 
-        // handle CreateOrder
-//        btnCreateOrder.setOnClickListener(new View.OnClickListener() {
-//            @RequiresApi(api = Build.VERSION_CODES.O)
-//            @SuppressLint("SetTextI18n")
-//            @Override
-//            public void onClick(View v) {
-//                CreateOrder orderApi = new CreateOrder();
-//
-//                try {
-//                    JSONObject data = orderApi.createOrder(txtAmount.getText().toString());
-//                    Log.d("Amount", txtAmount.getText().toString());
-//                    lblZpTransToken.setVisibility(View.VISIBLE);
-//                    String code = data.getString("return_code");
-//                    Toast.makeText(getApplicationContext(), "return_code: " + code, Toast.LENGTH_LONG).show();
-//
-//                    if (code.equals("1")) {
-//                        lblZpTransToken.setText("zptranstoken");
-//                        txtToken.setText(data.getString("zp_trans_token"));
-//                        IsDone();
-//                    }
-//
-//                } catch (Exception e) {
-//                    e.printStackTrace();
-//                }
-//            }
-//        });
 
         btnPay.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -113,7 +87,6 @@ public class PaymentActivity extends AppCompatActivity {
                     // Building a request
                     JsonObjectRequest request = new JsonObjectRequest(
                             Request.Method.POST,
-                            // Using a variable for the domain is great for testing
                             String.format("%s/SuperUser/GetToken/", getString(R.string.nptinh_server_domain)),
                             jsonParams,
                             new Response.Listener<JSONObject>() {

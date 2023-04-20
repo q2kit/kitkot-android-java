@@ -1,4 +1,4 @@
-package com.example.merchantDemo.chat;
+package com.example.toptop.chat;
 
 public class Message {
     private String text;

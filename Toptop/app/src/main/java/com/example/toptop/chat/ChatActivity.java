@@ -1,4 +1,4 @@
-package com.example.merchantDemo.chat;
+package com.example.toptop.chat;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentManager;
@@ -12,8 +12,8 @@ import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.Toast;
 
-import com.example.merchantDemo.R;
-import com.example.merchantDemo.socket.SocketRoot;
+import com.example.toptop.R;
+import com.example.toptop.socket.SocketRoot;
 
 import org.json.JSONException;
 import org.json.JSONObject;

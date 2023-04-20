@@ -1,8 +1,8 @@
-package com.example.merchantDemo.zlpdemo.merchantDemo.Helper;
+package com.example.toptop.zlpdemo.merchantDemo.Helper;
 
 import android.annotation.SuppressLint;
 
-import com.example.merchantDemo.zlpdemo.merchantDemo.Helper.HMac.HMacUtil;
+import com.example.toptop.zlpdemo.merchantDemo.Helper.HMac.HMacUtil;
 
 import org.jetbrains.annotations.NotNull;
 

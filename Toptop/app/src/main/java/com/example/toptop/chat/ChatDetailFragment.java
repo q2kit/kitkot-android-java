@@ -1,4 +1,4 @@
-package com.example.merchantDemo.chat;
+package com.example.toptop.chat;
 
 import android.os.Bundle;
 
@@ -13,7 +13,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 
-import com.example.merchantDemo.R;
+import com.example.toptop.R;
 
 import java.util.ArrayList;
 import java.util.List;

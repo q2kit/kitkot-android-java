@@ -1,4 +1,4 @@
-package com.example.merchantDemo;
+package com.example.toptop;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -6,8 +6,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
-
-import com.example.merchantDemo.R;
 
 public class SignupActivity extends AppCompatActivity {
 

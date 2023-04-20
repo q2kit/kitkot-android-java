@@ -1,4 +1,4 @@
-package com.example.merchantDemo.firebase;
+package com.example.toptop.firebase;
 
 import android.content.Context;
 import android.util.Log;
@@ -7,7 +7,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.example.merchantDemo.model.Notification;
+import com.example.toptop.model.Notification;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.DocumentReference;

@@ -1,4 +1,4 @@
-package com.example.merchantDemo.ui.discover;
+package com.example.toptop.ui.discover;
 
 import android.os.Bundle;
 
@@ -8,7 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.example.merchantDemo.R;
+import com.example.toptop.R;
 
 /**
  * A simple {@link Fragment} subclass.

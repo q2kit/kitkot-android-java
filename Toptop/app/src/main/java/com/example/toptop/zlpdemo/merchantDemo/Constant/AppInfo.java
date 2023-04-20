@@ -1,4 +1,4 @@
-package com.example.merchantDemo.zlpdemo.merchantDemo.Constant;
+package com.example.toptop.zlpdemo.merchantDemo.Constant;
 
 public class AppInfo {
     public static final int APP_ID = 2553;

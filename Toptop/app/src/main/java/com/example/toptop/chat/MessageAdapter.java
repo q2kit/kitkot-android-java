@@ -1,4 +1,4 @@
-package com.example.merchantDemo.chat;
+package com.example.toptop.chat;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,7 +9,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.merchantDemo.R;
+import com.example.toptop.R;
 
 import java.util.List;
 

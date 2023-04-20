@@ -1,4 +1,4 @@
-package com.example.merchantDemo.model;
+package com.example.toptop.model;
 
 public class Notification<T> {
     private String id;

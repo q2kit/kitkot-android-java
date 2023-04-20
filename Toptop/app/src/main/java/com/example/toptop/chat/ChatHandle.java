@@ -52,12 +52,14 @@ public class ChatHandle {
         for(int i = 0 ; i < data.length(); i++){
             try {
                 JSONObject item = (JSONObject) data.get(i);
+                String id = item.getString("_id");
                 String text = item.getString("message");
                 String sendTime = Util.convertIntToTime(Long.parseLong(item.getString("send_time")));
                 int userIdSend = Integer.parseInt(item.getString("user_id_send"));
                 int userIdReceive = Integer.parseInt(item.getString("user_id_receive"));
 
                 Message message = new Message(
+                        id,
                         text,
                         userIdSend,
                         userIdReceive,
@@ -75,26 +77,26 @@ public class ChatHandle {
     }
 
 
-    public Message exactMessage(JSONObject item){
-        try {
-            String text = item.getString("message");
-            String sendTime = Util.convertIntToTime(Long.parseLong(item.getString("send_time")));
-            int userIdSend = Integer.parseInt(item.getString("user_id_send"));
-            int userIdReceive = Integer.parseInt(item.getString("user_id_receive"));
-
-            Message message = new Message(
-                    text,
-                    userIdSend,
-                    userIdReceive,
-                    sendTime
-            );
-
-            Log.e("Message", userIdSend+"");
-            message.setIncoming(userIdSend != 1);
-            return message;
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
+//    public Message exactMessage(JSONObject item){
+//        try {
+//            String text = item.getString("message");
+//            String sendTime = Util.convertIntToTime(Long.parseLong(item.getString("send_time")));
+//            int userIdSend = Integer.parseInt(item.getString("user_id_send"));
+//            int userIdReceive = Integer.parseInt(item.getString("user_id_receive"));
+//
+//            Message message = new Message(
+//                    text,
+//                    userIdSend,
+//                    userIdReceive,
+//                    sendTime
+//            );
+//
+//            Log.e("userIdSend", userIdSend+"");
+//            message.setIncoming(userIdSend != 1);
+//            return message;
+//        } catch (JSONException e) {
+//            e.printStackTrace();
+//        }
+//        return null;
+//    }
 }

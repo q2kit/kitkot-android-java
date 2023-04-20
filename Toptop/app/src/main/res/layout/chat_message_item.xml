@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/teal_200"
+    android:layout_marginBottom="5dp"
+    android:id="@+id/chatItem"
+    >
+
+    <!-- User avatar -->
+    <ImageView
+        android:id="@+id/avatarImageView"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:src="@drawable/avatar_placeholder"
+        android:layout_alignParentStart="true"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+       />
+
+    <!-- Username -->
+    <TextView
+        android:id="@+id/usernameTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/purple_500"
+        android:textSize="16dp"
+        android:textStyle="bold"
+        android:text="Ba Dao"
+        android:layout_toEndOf="@id/avatarImageView"
+        android:layout_alignBaseline="@id/avatarImageView"
+        android:layout_marginStart="8dp"/>
+
+    <!-- Chat message bubble -->
+    <TextView
+        android:id="@+id/chatMessageTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/purple_500"
+        android:background="@drawable/chat_bubble_background"
+        android:padding="8dp"
+        android:maxWidth="240dp"
+        android:text="You: This is message!"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"
+        android:layout_toEndOf="@id/avatarImageView"
+        android:layout_below="@id/usernameTextView"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"/>
+
+
+    <TextView
+        android:id="@+id/sendTimeTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/purple_500"
+        android:background="@drawable/chat_bubble_background"
+        android:maxWidth="240dp"
+        android:text="20:30"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"
+        android:layout_toEndOf="@id/chatMessageTextView"
+        android:layout_below="@id/usernameTextView"
+        android:layout_marginEnd="8dp"
+        />
+
+</RelativeLayout>

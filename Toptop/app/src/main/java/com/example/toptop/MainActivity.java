@@ -19,6 +19,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.example.toptop.chat.ChatActivity;
 import com.google.android.gms.auth.api.identity.BeginSignInRequest;
 import com.google.android.gms.auth.api.identity.BeginSignInResult;
 import com.google.android.gms.auth.api.identity.Identity;
@@ -37,6 +38,7 @@ public class MainActivity extends AppCompatActivity {
     SignInClient oneTapClient;
     BeginSignInRequest signUpRequest;
     Button btnGG;
+    Button bt_Chat;
     private static final int REQ_ONE_TAP = 2;  // Can be any integer unique to the Activity.
 
     @Override
@@ -45,7 +47,14 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         btnGG = findViewById(R.id.google_btn);
-
+        bt_Chat = findViewById(R.id.bt_Chat);
+        bt_Chat.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent switchActivityIntent = new Intent(MainActivity.this, ChatActivity.class);
+                startActivity(switchActivityIntent);
+            }
+        });
         //press signup
         final TextView txtLogin = findViewById(R.id.textView7);
         txtLogin.setOnClickListener(new View.OnClickListener() {

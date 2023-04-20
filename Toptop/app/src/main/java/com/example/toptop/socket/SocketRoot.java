@@ -1,11 +1,10 @@
-package com.example.toptop.socket;
+package com.example.merchantDemo.socket;
 
 import android.util.Log;
 
 import java.net.URISyntaxException;
 import java.util.TreeMap;
 
-import io.socket.client.IO;
 import io.socket.client.IO;
 import io.socket.client.Socket;
 

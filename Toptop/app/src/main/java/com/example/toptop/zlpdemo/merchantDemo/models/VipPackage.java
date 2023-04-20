@@ -1,4 +1,4 @@
-package com.example.toptop.zlpdemo.merchantDemo.models;
+package com.example.merchantDemo.zlpdemo.merchantDemo.models;
 
 public class VipPackage {
     private String vipPackageID;

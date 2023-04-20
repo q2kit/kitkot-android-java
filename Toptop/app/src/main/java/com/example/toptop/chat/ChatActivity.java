@@ -1,4 +1,4 @@
-package com.example.toptop.chat;
+package com.example.merchantDemo.chat;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentManager;
@@ -9,17 +9,11 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.ArrayAdapter;
-import android.widget.Button;
-import android.widget.EditText;
 import android.widget.FrameLayout;
-import android.widget.ListView;
-import android.widget.Switch;
 import android.widget.Toast;
 
-import com.example.toptop.R;
-import com.example.toptop.firebase.Firebase;
-import com.example.toptop.socket.SocketRoot;
+import com.example.merchantDemo.R;
+import com.example.merchantDemo.socket.SocketRoot;
 
 import org.json.JSONException;
 import org.json.JSONObject;

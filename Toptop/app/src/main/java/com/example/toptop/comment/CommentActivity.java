@@ -1,10 +1,10 @@
-package com.example.toptop.comment;
+package com.example.merchantDemo.comment;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
 
-import com.example.toptop.R;
+import com.example.merchantDemo.R;
 
 public class CommentActivity extends AppCompatActivity {
 

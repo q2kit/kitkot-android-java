@@ -1,4 +1,4 @@
-package com.example.toptop.chat;
+package com.example.merchantDemo.chat;
 
 public class ChatMessage {
     private int userId;

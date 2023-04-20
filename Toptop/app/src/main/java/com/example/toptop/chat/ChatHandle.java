@@ -1,8 +1,8 @@
-package com.example.toptop.chat;
+package com.example.merchantDemo.chat;
 
 import android.util.Log;
 
-import com.example.toptop.util.Util;
+import com.example.merchantDemo.util.Util;
 
 import org.json.JSONArray;
 import org.json.JSONException;

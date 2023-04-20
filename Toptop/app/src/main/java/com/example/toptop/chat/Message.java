@@ -1,6 +1,7 @@
 package com.example.toptop.chat;
 
 public class Message {
+    private String id;
     private String text;
     private boolean incoming;
     private boolean isLastMessage;
@@ -13,7 +14,8 @@ public class Message {
 //    }
 
 
-    public Message(String text, int userIdSend, int userIdReceive, String sendTime) {
+    public Message(String id, String text, int userIdSend, int userIdReceive, String sendTime) {
+        this.id = id;
         this.text = text;
         this.userIdSend = userIdSend;
         this.userIdReceive = userIdReceive;
@@ -60,10 +62,19 @@ public class Message {
         this.userIdReceive = userIdReceive;
     }
 
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
     @Override
     public String toString() {
         return "Message{" +
-                "text='" + text + '\'' +
+                "id='" + id + '\'' +
+                ", text='" + text + '\'' +
                 ", incoming=" + incoming +
                 ", isLastMessage=" + isLastMessage +
                 ", userIdSend=" + userIdSend +

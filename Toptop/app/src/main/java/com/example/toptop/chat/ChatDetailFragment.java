@@ -2,6 +2,7 @@ package com.example.toptop.chat;
 
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -14,9 +15,15 @@ import android.widget.Button;
 import android.widget.EditText;
 
 import com.example.toptop.R;
+import com.example.toptop.socket.SocketRoot;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import io.socket.client.Socket;
 
 public class ChatDetailFragment extends Fragment {
     private EditText messageInput;
@@ -24,9 +31,12 @@ public class ChatDetailFragment extends Fragment {
     private RecyclerView messageList;
     private List<Message> messages;
     private MessageAdapter messageAdapter;
+    private ChatMessage chatMessage;
+    private Socket socket;
 
-    public ChatDetailFragment() {
-        // Required empty public constructor
+    public ChatDetailFragment(ChatMessage chatMessage) {
+       this.chatMessage = chatMessage;
+       this.socket = SocketRoot.getInstance();
     }
 
     @Override
@@ -38,14 +48,29 @@ public class ChatDetailFragment extends Fragment {
     public void setMessages(List<Message> messages) {
         this.messages = messages;
         messageAdapter.setMessages(messages);
-//        messageAdapter.notifyDataSetChanged();
-//        messageList.smoothScrollToPosition(this.messages.size() - 1);
+        messageAdapter.notifyItemInserted(this.messages.size() - 1);
+        messageList.smoothScrollToPosition(this.messages.size() - 1);
     }
 
 
-    public void addMessage(Message message) {
-        this.messages.add(message);
-        messageAdapter.notifyItemInserted(messages.size() - 1);
+    public void addMessage(List<Message> messages, boolean isMore ) {
+
+        if(!isMore){
+            for(Message message: messages){
+                this.messages.add(message);
+            }
+            messageAdapter.notifyItemInserted(this.messages.size() - 1);
+            messageList.smoothScrollToPosition(this.messages.size() - 1);
+        }else{
+            if(messages.size() > 0){
+                for(Message message: messages){
+                    Log.e("Add", message.toString());
+                    this.messages.add(0, message);
+                }
+                Log.e("Length message",this.messages.size()+"");
+                messageAdapter.notifyItemInserted(this.messages.size() - 1);
+            }
+        }
 //        messageAdapter.notifyDataSetChanged();
 //        messageList.smoothScrollToPosition(this.messages.size() - 1);
     }
@@ -69,16 +94,41 @@ public class ChatDetailFragment extends Fragment {
                 if (view == sendButton) {
                     String text = messageInput.getText().toString();
                     if (!text.isEmpty()) {
-                        Log.e("Random message", Math.floor(Math.random() *2)+ "");
-                        messages.add(new Message(text, 1,2, "10/04/2022"));
-                        messageAdapter.notifyItemInserted(messages.size() - 1);
-                        messageList.smoothScrollToPosition(messages.size() - 1);
-
                         messageInput.setText("");
+                        try {
+                            JSONObject data = new JSONObject();
+                            data.put("user_id_receive", chatMessage.getUserId());
+                            data.put("content", text);
+                            socket.emit("chat", data);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+
                     }
                 }
             }
         });
+
+        messageList.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+                Log.e("Scroll", dx + "//"+dy);
+                if (dy !=0 && !recyclerView.canScrollVertically(-1) && messages.size() > 0) {
+                    JSONObject data = new JSONObject();
+                    try {
+                        Log.e("Top here", "ABC");
+                        data.put("user_id", chatMessage.getUserId());
+                        data.put("message_id", messages.get(0).getId() );
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+
+                    socket.emit("select-chat",data);
+                }
+            }
+        });
+
 
         return view;
     }

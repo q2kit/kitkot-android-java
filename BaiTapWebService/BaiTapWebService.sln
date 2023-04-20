@@ -1,0 +1,92 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.2.32616.157
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Src", "Src", "{9E72BCA1-4FCE-4E25-BB74-5B44170FD56C}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Host", "Host", "{888A9BD0-55DD-45C6-A65E-12819A5D818D}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Application", "Application", "{B523414A-4082-43C8-9F94-86EA3A376E3A}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Domain", "Domain", "{4178C74E-615D-4C1B-B133-AA53510A57F0}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BapTapWebService.Domain.Mssql", "BapTapWebService.Domain.Mssql\BapTapWebService.Domain.Mssql.csproj", "{ACAE09CD-AFBF-4E5D-A691-576010E7872A}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Config", "Config", "{87BF94DE-FF5D-4353-8B20-99A0068ABF8F}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BaiTapWebService.Application.Contracts", "BaiTapWebService.Application.Contracts\BaiTapWebService.Application.Contracts.csproj", "{ABCBBCBD-15DF-4BB0-A98A-8CD3377B653B}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BaiTapWebService.Domain", "BaiTapWebService.Domain\BaiTapWebService.Domain.csproj", "{541A835C-D508-4A34-A4FE-F0A4FE647988}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BaiTapWebService.BusinessApi", "BaiTapWebService.Host.BusinessAPI\BaiTapWebService.BusinessApi.csproj", "{C50CE551-451E-46DD-93C1-63C284FC1F1E}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Library", "Library", "{B4EB88BB-67E8-4000-A5FE-B8F31E06B0C3}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BaiTapWebService.HostBase", "BaiTapWebService.HostBase\BaiTapWebService.HostBase.csproj", "{DF0DCE21-4A80-4B2D-BD80-523ADB165F23}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BaiTapWebService.Application", "BaiTapWebService.Application\BaiTapWebService.Application.csproj", "{A0121160-49B2-4FD4-B871-92B587C3030A}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BaiTapWebService.Domain.Shared", "BaiTapWebService.Domain.Shared\BaiTapWebService.Domain.Shared.csproj", "{8D0DE81A-97C2-4DF4-9718-999C690E1421}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BaiTapWebService.Domain.Mysql", "BaiTapWebService.Domain.Mysql\BaiTapWebService.Domain.Mysql.csproj", "{913F60EC-944D-494D-B2F7-0C20D68EF15F}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{ACAE09CD-AFBF-4E5D-A691-576010E7872A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ACAE09CD-AFBF-4E5D-A691-576010E7872A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ACAE09CD-AFBF-4E5D-A691-576010E7872A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ACAE09CD-AFBF-4E5D-A691-576010E7872A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{ABCBBCBD-15DF-4BB0-A98A-8CD3377B653B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ABCBBCBD-15DF-4BB0-A98A-8CD3377B653B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ABCBBCBD-15DF-4BB0-A98A-8CD3377B653B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ABCBBCBD-15DF-4BB0-A98A-8CD3377B653B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{541A835C-D508-4A34-A4FE-F0A4FE647988}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{541A835C-D508-4A34-A4FE-F0A4FE647988}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{541A835C-D508-4A34-A4FE-F0A4FE647988}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{541A835C-D508-4A34-A4FE-F0A4FE647988}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C50CE551-451E-46DD-93C1-63C284FC1F1E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C50CE551-451E-46DD-93C1-63C284FC1F1E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C50CE551-451E-46DD-93C1-63C284FC1F1E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C50CE551-451E-46DD-93C1-63C284FC1F1E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DF0DCE21-4A80-4B2D-BD80-523ADB165F23}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DF0DCE21-4A80-4B2D-BD80-523ADB165F23}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DF0DCE21-4A80-4B2D-BD80-523ADB165F23}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DF0DCE21-4A80-4B2D-BD80-523ADB165F23}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A0121160-49B2-4FD4-B871-92B587C3030A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A0121160-49B2-4FD4-B871-92B587C3030A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A0121160-49B2-4FD4-B871-92B587C3030A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A0121160-49B2-4FD4-B871-92B587C3030A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8D0DE81A-97C2-4DF4-9718-999C690E1421}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8D0DE81A-97C2-4DF4-9718-999C690E1421}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8D0DE81A-97C2-4DF4-9718-999C690E1421}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8D0DE81A-97C2-4DF4-9718-999C690E1421}.Release|Any CPU.Build.0 = Release|Any CPU
+		{913F60EC-944D-494D-B2F7-0C20D68EF15F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{913F60EC-944D-494D-B2F7-0C20D68EF15F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{913F60EC-944D-494D-B2F7-0C20D68EF15F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{913F60EC-944D-494D-B2F7-0C20D68EF15F}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{B523414A-4082-43C8-9F94-86EA3A376E3A} = {9E72BCA1-4FCE-4E25-BB74-5B44170FD56C}
+		{4178C74E-615D-4C1B-B133-AA53510A57F0} = {9E72BCA1-4FCE-4E25-BB74-5B44170FD56C}
+		{ACAE09CD-AFBF-4E5D-A691-576010E7872A} = {4178C74E-615D-4C1B-B133-AA53510A57F0}
+		{ABCBBCBD-15DF-4BB0-A98A-8CD3377B653B} = {B523414A-4082-43C8-9F94-86EA3A376E3A}
+		{541A835C-D508-4A34-A4FE-F0A4FE647988} = {4178C74E-615D-4C1B-B133-AA53510A57F0}
+		{C50CE551-451E-46DD-93C1-63C284FC1F1E} = {888A9BD0-55DD-45C6-A65E-12819A5D818D}
+		{B4EB88BB-67E8-4000-A5FE-B8F31E06B0C3} = {9E72BCA1-4FCE-4E25-BB74-5B44170FD56C}
+		{DF0DCE21-4A80-4B2D-BD80-523ADB165F23} = {B4EB88BB-67E8-4000-A5FE-B8F31E06B0C3}
+		{A0121160-49B2-4FD4-B871-92B587C3030A} = {B523414A-4082-43C8-9F94-86EA3A376E3A}
+		{8D0DE81A-97C2-4DF4-9718-999C690E1421} = {4178C74E-615D-4C1B-B133-AA53510A57F0}
+		{913F60EC-944D-494D-B2F7-0C20D68EF15F} = {4178C74E-615D-4C1B-B133-AA53510A57F0}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {B8AEE6D9-A0D5-4DE7-870F-93078996DB8B}
+	EndGlobalSection
+EndGlobal

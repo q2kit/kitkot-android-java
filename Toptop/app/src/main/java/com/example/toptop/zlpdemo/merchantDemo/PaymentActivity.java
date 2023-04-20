@@ -17,10 +17,26 @@ import android.widget.Toast;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.android.volley.AuthFailureError;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
+import com.example.toptop.MainActivity;
 import com.example.toptop.R;
 import com.example.toptop.zlpdemo.merchantDemo.Api.CreateOrder;
+import com.example.toptop.zlpdemo.merchantDemo.models.VipPackage;
+import com.google.android.gms.auth.api.identity.SignInCredential;
+import com.google.android.gms.common.api.ApiException;
 
 import org.json.JSONObject;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 import vn.zalopay.sdk.Environment;
 import vn.zalopay.sdk.ZaloPayError;
@@ -30,14 +46,13 @@ import vn.zalopay.sdk.listeners.PayOrderListener;
 public class PaymentActivity extends AppCompatActivity {
     TextView lblZpTransToken, txtToken;
     Button btnCreateOrder, btnPay;
-    EditText txtAmount,txtTokenFake;
+    EditText txtAmount;
+    ArrayList<VipPackage> vipPackages;
 
     private void BindView() {
         txtToken = findViewById(R.id.txtToken);
         lblZpTransToken = findViewById(R.id.lblZpTransToken);
         btnCreateOrder = findViewById(R.id.btnCreateOrder);
-        txtAmount = findViewById(R.id.txtAmount);
-        txtTokenFake = findViewById(R.id.txtTokenFake);
         btnPay = findViewById(R.id.btnPay);
         IsLoading();
     }
@@ -45,13 +60,13 @@ public class PaymentActivity extends AppCompatActivity {
     private void IsLoading() {
         lblZpTransToken.setVisibility(View.INVISIBLE);
         txtToken.setVisibility(View.INVISIBLE);
-        btnPay.setVisibility(View.INVISIBLE);
+//        btnPay.setVisibility(View.INVISIBLE);
     }
 
     private void IsDone() {
-        lblZpTransToken.setVisibility(View.VISIBLE);
-        txtToken.setVisibility(View.VISIBLE);
-        btnPay.setVisibility(View.VISIBLE);
+//        lblZpTransToken.setVisibility(View.VISIBLE);
+//        txtToken.setVisibility(View.VISIBLE);
+//        btnPay.setVisibility(View.VISIBLE);
     }
 
 
@@ -61,93 +76,170 @@ public class PaymentActivity extends AppCompatActivity {
         setContentView(R.layout.payment);
 
         StrictMode.ThreadPolicy policy = new
-        StrictMode.ThreadPolicy.Builder().permitAll().build();
+                StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
 
         // ZaloPay SDK Init
         ZaloPaySDK.init(2553, Environment.SANDBOX);
         // bind components with ids
         BindView();
+        getData();
+
         // handle CreateOrder
-        btnCreateOrder.setOnClickListener(new View.OnClickListener() {
-            @RequiresApi(api = Build.VERSION_CODES.O)
-            @SuppressLint("SetTextI18n")
-            @Override
-            public void onClick(View v) {
-                CreateOrder orderApi = new CreateOrder();
-
-                try {
-                    JSONObject data = orderApi.createOrder(txtAmount.getText().toString());
-                    Log.d("Amount", txtAmount.getText().toString());
-                    lblZpTransToken.setVisibility(View.VISIBLE);
-                    String code = data.getString("return_code");
-                    Toast.makeText(getApplicationContext(), "return_code: " + code, Toast.LENGTH_LONG).show();
-
-                    if (code.equals("1")) {
-                        lblZpTransToken.setText("zptranstoken");
-                        txtToken.setText(data.getString("zp_trans_token"));
-                        IsDone();
-                    }
-
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        });
+//        btnCreateOrder.setOnClickListener(new View.OnClickListener() {
+//            @RequiresApi(api = Build.VERSION_CODES.O)
+//            @SuppressLint("SetTextI18n")
+//            @Override
+//            public void onClick(View v) {
+//                CreateOrder orderApi = new CreateOrder();
+//
+//                try {
+//                    JSONObject data = orderApi.createOrder(txtAmount.getText().toString());
+//                    Log.d("Amount", txtAmount.getText().toString());
+//                    lblZpTransToken.setVisibility(View.VISIBLE);
+//                    String code = data.getString("return_code");
+//                    Toast.makeText(getApplicationContext(), "return_code: " + code, Toast.LENGTH_LONG).show();
+//
+//                    if (code.equals("1")) {
+//                        lblZpTransToken.setText("zptranstoken");
+//                        txtToken.setText(data.getString("zp_trans_token"));
+//                        IsDone();
+//                    }
+//
+//                } catch (Exception e) {
+//                    e.printStackTrace();
+//                }
+//            }
+//        });
 
         btnPay.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String token = txtToken.getText().toString();
-                ZaloPaySDK.getInstance().payOrder(PaymentActivity.this, token, "demozpdk://app", new PayOrderListener() {
-                    @Override
-                    public void onPaymentSucceeded(final String transactionId, final String transToken, final String appTransID) {
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                new AlertDialog.Builder(PaymentActivity.this)
-                                        .setTitle("Payment Success")
-                                        .setMessage(String.format("TransactionId: %s - TransToken: %s", transactionId, transToken))
-                                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                                            @Override
-                                            public void onClick(DialogInterface dialog, int which) {
-                                            }
-                                        })
-                                        .setNegativeButton("Cancel", null).show();
-                            }
+                try {
 
-                        });
-                        IsLoading();
-                    }
+                    JSONObject jsonParams = new JSONObject();
+                    jsonParams.put("vipPackageID", "51f390d2-fb2c-4460-aa0a-081651526015");
 
-                    @Override
-                    public void onPaymentCanceled(String zpTransToken, String appTransID) {
-                        new AlertDialog.Builder(PaymentActivity.this)
-                                .setTitle("User Cancel Payment")
-                                .setMessage(String.format("zpTransToken: %s \n", zpTransToken))
-                                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface dialog, int which) {
-                                    }
-                                })
-                                .setNegativeButton("Cancel", null).show();
-                    }
 
-                    @Override
-                    public void onPaymentError(ZaloPayError zaloPayError, String zpTransToken, String appTransID) {
-                        new AlertDialog.Builder(PaymentActivity.this)
-                                .setTitle("Payment Fail")
-                                .setMessage(String.format("ZaloPayErrorCode: %s \nTransToken: %s", zaloPayError.toString(), zpTransToken))
-                                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface dialog, int which) {
-                                    }
-                                })
-                                .setNegativeButton("Cancel", null).show();
-                    }
-                });
+                    // Building a request
+                    JsonObjectRequest request = new JsonObjectRequest(
+                            Request.Method.POST,
+                            // Using a variable for the domain is great for testing
+                            String.format("%s/SuperUser/GetToken/", getString(R.string.nptinh_server_domain)),
+                            jsonParams,
+                            new Response.Listener<JSONObject>() {
+                                @Override
+                                public void onResponse(JSONObject response) {
+                                   try {
+                                       System.out.println(response);
+                                       pay(response.get("token").toString());
+                                   }catch (Exception e){
+                                       System.out.println(e);
+                                   }
+                                }
+                            },
+
+                            new Response.ErrorListener() {
+                                @Override
+                                public void onErrorResponse(VolleyError error) {
+                                    System.out.println(error);
+                                    // Handle the error
+
+                                }
+                            });
+
+
+                    Volley.newRequestQueue(getApplicationContext()).
+                            add(request);
+
+                } catch (Exception e) {
+                    System.out.println(e);
+                }
+
+
             }
         });
+    }
+
+    private void pay(String token) {
+        ZaloPaySDK.getInstance().payOrder(PaymentActivity.this, token, "demozpdk://app", new PayOrderListener() {
+            @Override
+            public void onPaymentSucceeded(final String transactionId, final String transToken, final String appTransID) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        new AlertDialog.Builder(PaymentActivity.this)
+                                .setTitle("Payment Success")
+                                .setMessage(String.format("TransactionId: %s - TransToken: %s", transactionId, transToken))
+                                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                    }
+                                })
+                                .setNegativeButton("Cancel", null).show();
+                    }
+
+                });
+                IsLoading();
+            }
+
+            @Override
+            public void onPaymentCanceled(String zpTransToken, String appTransID) {
+                new AlertDialog.Builder(PaymentActivity.this)
+                        .setTitle("User Cancel Payment")
+                        .setMessage(String.format("zpTransToken: %s \n", zpTransToken))
+                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                            }
+                        })
+                        .setNegativeButton("Cancel", null).show();
+            }
+
+            @Override
+            public void onPaymentError(ZaloPayError zaloPayError, String zpTransToken, String appTransID) {
+                new AlertDialog.Builder(PaymentActivity.this)
+                        .setTitle("Payment Fail")
+                        .setMessage(String.format("ZaloPayErrorCode: %s \nTransToken: %s", zaloPayError.toString(), zpTransToken))
+                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                            }
+                        })
+                        .setNegativeButton("Cancel", null).show();
+            }
+        });
+
+    }
+
+    private void getData() {
+        getVipPackages();
+    }
+
+    private void getVipPackages() {
+        RequestQueue mRequestQueue;
+        StringRequest mStringRequest;
+
+
+        String url = String.format("%s/VipPackage/", getString(R.string.nptinh_server_domain));
+        // RequestQueue initialized
+        mRequestQueue = Volley.newRequestQueue(this);
+
+        // String Request initialized
+        mStringRequest = new StringRequest(Request.Method.GET, url, new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+
+                Toast.makeText(getApplicationContext(), "Response :" + response.toString(), Toast.LENGTH_LONG).show();//display the response on screen
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                System.out.println(error);
+            }
+        });
+
+        mRequestQueue.add(mStringRequest);
     }
 
     @Override

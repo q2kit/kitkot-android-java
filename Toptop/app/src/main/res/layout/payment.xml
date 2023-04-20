@@ -23,37 +23,27 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <EditText
-        android:id="@+id/txtAmount"
-        android:layout_width="260dp"
-        android:layout_height="45dp"
-        android:layout_marginStart="20dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginEnd="30dp"
-        android:autofillHints=""
-        android:ems="10"
-        android:hint="@string/txt_amount_hint"
-        android:inputType="number"
-        android:labelFor="@id/lblSoTien"
-        android:text="@string/txt_amount_init"
-        android:textAlignment="center"
-        android:textColor="#FF5722"
-        android:textSize="20sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toEndOf="@+id/lblSoTien"
-        app:layout_constraintTop_toBottomOf="@+id/txtTitle" />
-
-    <TextView
-        android:id="@+id/lblSoTien"
-        android:layout_width="wrap_content"
+    <RadioGroup
+        android:id="@+id/rdgTypePackage"
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="30dp"
-        android:layout_marginTop="16dp"
-        android:text="@string/lbl_sotien"
-        android:textSize="20sp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/txtTitle" />
+        app:layout_constraintTop_toBottomOf="@id/txtTitle"
+        app:layout_constraintLeft_toLeftOf="parent"
+        android:orientation="vertical">
+        <RadioButton android:id="@+id/radio_pirates"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="1 tháng"
+            android:onClick="onRadioButtonClicked"/>
+        <RadioButton android:id="@+id/radio_ninjas"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="6 tháng"
+            android:onClick="onRadioButtonClicked"/>
+    </RadioGroup>
+
+
 
     <Button
         android:id="@+id/btnCreateOrder"
@@ -69,7 +59,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/txtAmount" />
+        app:layout_constraintTop_toBottomOf="@+id/rdgTypePackage" />
 
     <TextView
         android:id="@+id/lblZpTransToken"
@@ -98,25 +88,7 @@
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/lblZpTransToken" />
-    <EditText
-        android:id="@+id/txtTokenFake"
-        android:layout_width="260dp"
-        android:layout_height="45dp"
-        android:layout_marginStart="20dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginEnd="30dp"
-        android:autofillHints=""
-        android:ems="10"
-        android:hint="@string/txt_amount_hint"
-        android:labelFor="@id/lblSoTien"
-        android:text="@string/txt_amount_init"
-        android:textAlignment="center"
-        android:textColor="#FF5722"
-        android:textSize="20sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toEndOf="@+id/lblSoTien"
-        app:layout_constraintTop_toBottomOf="@+id/btnPay" />
+
 
     <TextView
         android:id="@+id/txtToken"

@@ -1,13 +1,7 @@
 package com.example.toptop;
 
-import static androidx.constraintlayout.helper.widget.MotionEffect.TAG;
-
-import androidx.activity.result.ActivityResult;
-import androidx.activity.result.ActivityResultCallback;
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.IntentSenderRequest;
-import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
@@ -17,27 +11,33 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toast;
 
+import com.android.volley.AuthFailureError;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
 import com.google.android.gms.auth.api.identity.BeginSignInRequest;
 import com.google.android.gms.auth.api.identity.BeginSignInResult;
 import com.google.android.gms.auth.api.identity.Identity;
 import com.google.android.gms.auth.api.identity.SignInClient;
 import com.google.android.gms.auth.api.identity.SignInCredential;
-import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
-
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
+
+import java.util.HashMap;
+import java.util.Map;
+
 
 public class MainActivity extends AppCompatActivity {
+
     SignInClient oneTapClient;
     BeginSignInRequest signUpRequest;
     Button btnGG;
     private static final int REQ_ONE_TAP = 2;  // Can be any integer unique to the Activity.
-    private boolean showOneTapUI = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,41 +46,25 @@ public class MainActivity extends AppCompatActivity {
 
         btnGG = findViewById(R.id.google_btn);
 
+        //press signup
+        final TextView txtLogin = findViewById(R.id.textView7);
+        txtLogin.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //TODO()
+                Intent intent = new Intent(MainActivity.this, SignupActivity.class);
+                startActivity(intent);
+            }
+        });
+
         oneTapClient = Identity.getSignInClient(this);
         signUpRequest = BeginSignInRequest.builder()
                 .setGoogleIdTokenRequestOptions(BeginSignInRequest.GoogleIdTokenRequestOptions.builder()
                         .setSupported(true)
-                        // Your server's client ID, not your Android client ID.
                         .setServerClientId(getString(R.string.web_client_id))
-                        // Show all accounts on the device.
                         .setFilterByAuthorizedAccounts(false)
                         .build())
                 .build();
-
-        ActivityResultLauncher<IntentSenderRequest> activityResultLauncher = registerForActivityResult(new ActivityResultContracts.StartIntentSenderForResult(), new ActivityResultCallback<ActivityResult>() {
-            @Override
-            public void onActivityResult(ActivityResult result) {
-                if (result.getResultCode() == RESULT_OK){
-                    try {
-                        SignInCredential credential = oneTapClient.getSignInCredentialFromIntent(result.getData());
-                        String idToken = credential.getGoogleIdToken();
-                        if (idToken !=  null) {
-                            String email = credential.getId();
-                            // Got an ID token from Google. Use it to authenticate
-                            // with your backend.
-                            Log.d("TAG", "ID token: " + idToken);
-                            Toast.makeText(getApplicationContext(), "Email:" + email, Toast.LENGTH_SHORT).show();
-                            Intent intent = new Intent(MainActivity.this,HomeActivity.class);
-                            startActivity(intent);
-                        }else {
-                            Toast.makeText(getApplicationContext(), "Something Wrong", Toast.LENGTH_SHORT).show();
-                        }
-                    } catch (ApiException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-        });
 
         btnGG.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -89,22 +73,67 @@ public class MainActivity extends AppCompatActivity {
                         .addOnSuccessListener(MainActivity.this, new OnSuccessListener<BeginSignInResult>() {
                             @Override
                             public void onSuccess(BeginSignInResult result) {
-                                IntentSenderRequest intentSenderRequest =
-                                        new IntentSenderRequest.Builder(result.getPendingIntent().getIntentSender()).build();
-                                activityResultLauncher.launch(intentSenderRequest);
+                                try {
+                                    startIntentSenderForResult(
+                                            result.getPendingIntent().getIntentSender(), REQ_ONE_TAP,
+                                            null, 0, 0, 0);
+                                } catch (IntentSender.SendIntentException e) {
+                                    Log.e("TAG", "Couldn't start One Tap UI: " + e.getLocalizedMessage());
+                                }
                             }
                         })
                         .addOnFailureListener(MainActivity.this, new OnFailureListener() {
                             @Override
                             public void onFailure(@NonNull Exception e) {
                                 // No Google Accounts found. Just continue presenting the signed-out UI.
-                                Log.d(TAG, e.getLocalizedMessage());
+                                Log.d("TAG", e.getLocalizedMessage());
                             }
                         });
-
             }
         });
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
 
+        switch (requestCode) {
+            case REQ_ONE_TAP:
+                try {
+                    SignInCredential credential = oneTapClient.getSignInCredentialFromIntent(data);
+                    String idToken = credential.getGoogleIdToken();
+                    if (idToken !=  null) {
+                        Log.d("TAG", "ID token: " + idToken);
+
+                        String url = "https://soc.q2k.dev/api/google-auth/";
+                        StringRequest request = new StringRequest(Request.Method.POST, url,
+                                new Response.Listener<String>() {
+                                    @Override
+                                    public void onResponse(String response) {
+                                        // Xử lý phản hồi từ API ở đây
+                                        Log.d("ACCESS_TOKEN", response);
+                                    }
+                                }, new Response.ErrorListener() {
+                            @Override
+                            public void onErrorResponse(VolleyError error) {
+                                // Xử lý lỗi kết nối hoặc lỗi phản hồi từ API ở đây
+                            }
+                        }) {
+                            @Override
+                            protected Map<String, String> getParams() throws AuthFailureError {
+                                Map<String, String> params = new HashMap<>();
+                                params.put("g_token", idToken);
+                                return params;
+                            }
+                        };
+                        // Thêm request vào hàng đợi của Volley
+                        RequestQueue queue = Volley.newRequestQueue(MainActivity.this);
+                        queue.add(request);
+
+                    }
+                } catch (ApiException e) {
+                }
+                break;
+        }
+    }
 }

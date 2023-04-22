@@ -1,6 +1,6 @@
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
-from django.db.models import Q, Exists, OuterRef
+from django.db.models import Q, Exists, OuterRef, Count
 from django.core.cache import cache
 
 from api.models import (
@@ -31,6 +31,7 @@ from api.func import (
 )
 
 SECRET_KEY = os.environ.get("SECRET_KEY")
+DEFAULT_AVATAR = os.environ.get("DEFAULT_AVATAR")
 
 
 @csrf_exempt
@@ -91,7 +92,6 @@ def register(request):
             "success": True,
             "message": "User created",
             "token": generate_access_token(user.pk),
-            "user": user.to_json()
         })
 
     return JsonResponse({
@@ -121,12 +121,25 @@ def login(request):
                 "message": "User not found"
             })
 
+        userJSON = {
+            "uid": user.pk,
+            "username": user.username,
+            "email": user.email,
+            "phone": user.phone,
+            "name": user.name,
+            "avatar": user.avatar or DEFAULT_AVATAR,
+            "followers": user.followers.count(),
+            "following": user.following.count(),
+            # "messages": user.messages.count(),
+            "likes": Watched.objects.filter(video__owner=user, liked=True).count(),
+        }
+
         if user.password == hashlib.sha512((password + SECRET_KEY).encode("utf-8")).hexdigest():
             return JsonResponse({
                 "success": True,
                 "message": "User logged in",
                 "token": generate_access_token(user.pk),
-                "user": user.to_json()
+                "user": userJSON
             })
         else:
             return JsonResponse({
@@ -157,16 +170,29 @@ def google_auth(request):
             email = idinfo["email"]
             try: # login
                 user = User.objects.get(email=email)
+                userJSON = {
+                    "uid": user.pk,
+                    "username": user.username,
+                    "email": user.email,
+                    "phone": user.phone,
+                    "name": user.name,
+                    "avatar": user.avatar or DEFAULT_AVATAR,
+                    "followers": user.followers.count(),
+                    "following": user.following.count(),
+                    # "messages": user.messages.count(),
+                    "likes": Watched.objects.filter(video__owner=user, liked=True).count(),
+                }
                 return JsonResponse({
                     "success": True,
                     "message": "User logged in",
                     "token": generate_access_token(user.pk),
-                    "user": user.to_json()
+                    "user": userJSON
                 })
             
             except User.DoesNotExist: # register
                 username = email.split("@")[0]
-                name = idinfo["name"]
+                # name = idinfo["name"]
+                name = idinfo.get("family_name", "") + " " + idinfo.get("given_name", "")
                 avatar = idinfo["picture"]
                 
                 user = User.objects.create(
@@ -175,11 +201,19 @@ def google_auth(request):
                     name=name,
                     avatar=avatar,
                 )
+                userJSON = {
+                    "uid": user.pk,
+                    "username": user.username,
+                    "email": user.email,
+                    "phone": user.phone,
+                    "name": user.name,
+                    "avatar": user.avatar or DEFAULT_AVATAR,
+                }
                 return JsonResponse({
                     "success": True,
                     "message": "User created",
                     "token": generate_access_token(user.pk),
-                    "user": user.to_json()
+                    "user": userJSON
                 })
         except Exception as e:
             print("Error:")
@@ -192,6 +226,7 @@ def google_auth(request):
         "success": False,
         "message": "Method not allowed"
     })
+
 
 @csrf_exempt
 def reset_password(request):
@@ -265,15 +300,6 @@ def post_video(request):
     if request.method == "POST":
         try:
             token = request.headers.get("Authorization").split("Bearer ")[1]
-            description = request.POST["description"]
-            video = request.FILES["video"]
-        except KeyError:
-            return JsonResponse({
-                "success": False,
-                "message": "Fill all fields"
-            })
-
-        try:
             uid = verify_access_token(token)
             user = User.objects.get(pk=uid)
         except User.DoesNotExist:
@@ -282,6 +308,15 @@ def post_video(request):
                 "message": "Access token is invalid"
             })
         
+        try:
+            description = request.POST["description"]
+            video = request.FILES["video"]
+        except KeyError:
+            return JsonResponse({
+                "success": False,
+                "message": "Fill all fields"
+            })
+
         content_type_allow_list = [
             "video/mp4",
         ]
@@ -310,7 +345,6 @@ def post_video(request):
         return JsonResponse({
             "success": True,
             "message": "Video posted",
-            "video": video.to_json()
         })
 
     return JsonResponse({
@@ -320,35 +354,48 @@ def post_video(request):
 
 
 def get_videos(request):
-    token = request.headers.get("Authorization").split("Bearer ")[1]
-    
     try:
+        token = request.headers.get("Authorization").split("Bearer ")[1]
         uid = verify_access_token(token)
         user = User.objects.get(pk=uid)
-    except User.DoesNotExist:
+    except Exception:
         return JsonResponse({
             "success": False,
             "message": "Access token is invalid"
         })
-    
+
     watched = Watched.objects.filter(user=user).values_list("video_id", flat=True)
     videos = Video.objects.exclude(pk__in=watched).order_by("-id").annotate(
         is_followed=Exists(user.following.filter(pk=OuterRef("owner_id"))),
+        is_liked=Exists(Watched.objects.filter(user=user, video=OuterRef("pk"), liked=True)),
+        likes=Count(Watched.objects.filter(video=OuterRef("pk"), liked=True)),
+        watched_count=Count(Watched.objects.filter(video=OuterRef("pk"))),
+    ).values(
+        "id",
+        "description",
+        "link",
+        "owner_id",
+        "owner__name",
+        "owner__avatar",
+        "is_followed",
+        "is_liked",
+        "likes",
     )
+    print("#" * 100)
+    print(videos.query)
 
     return JsonResponse({
         "success": True,
-        "videos": [video.to_json() for video in videos]
+        "videos": list(videos),
     })
 
 
 def get_videos_by_owner(request, owner_id):
-    token = request.headers.get("Authorization").split("Bearer ")[1]
-
     try:
+        token = request.headers.get("Authorization").split("Bearer ")[1]
         uid = verify_access_token(token)
         user = User.objects.get(pk=uid)
-    except User.DoesNotExist:
+    except Exception:
         return JsonResponse({
             "success": False,
             "message": "Access token is invalid"
@@ -362,17 +409,23 @@ def get_videos_by_owner(request, owner_id):
             "message": "User not found"
         })
     
-    videos = owner.videos.all().order_by("-id")
+    videos = owner.videos.all().order_by("-id").annotate(
+        is_liked=Exists(Watched.objects.filter(user=user, video=OuterRef("pk"), is_liked=True)),
+    ).values(
+        "id",
+        "description",
+        "link",
+        "is_liked",
+    )
     return JsonResponse({
         "success": True,
-        "videos": [video.to_json() for video in videos]
+        "videos": list(videos)
     })
 
 
 def like_toggle(request):
-    token = request.headers.get("Authorization").split("Bearer ")[1]
-
     try:
+        token = request.headers.get("Authorization").split("Bearer ")[1]
         uid = verify_access_token(token)
         user = User.objects.get(pk=uid)
     except User.DoesNotExist:
@@ -408,9 +461,8 @@ def like_toggle(request):
 
 
 def follow_toggle(request):
-    token = request.headers.get("Authorization").split("Bearer ")[1]
-
     try:
+        token = request.headers.get("Authorization").split("Bearer ")[1]
         uid = verify_access_token(token)
         user = User.objects.get(pk=uid)
     except User.DoesNotExist:

@@ -2,8 +2,6 @@ from django.db import models
 
 import os
 
-DEFAULT_AVATAR = os.environ.get("DEFAULT_AVATAR")
-
 
 class User(models.Model):
     username = models.CharField(max_length=255, null=True, blank=True)
@@ -17,37 +15,16 @@ class User(models.Model):
     def __str__(self):
         return self.name
     
-    def to_json(self):
-        return {
-            "uid": self.pk,
-            "name": self.name,
-            "email": self.email,
-            "phone": self.phone,
-            "avatar": self.avatar if self.avatar else DEFAULT_AVATAR,
-            "following": list(self.following.all().values_list("pk", flat=True)),
-            "followers": list(self.followers.all().values_list("pk", flat=True)),
-        }
-    
 
 class Video(models.Model):
     owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name="videos")
     description = models.CharField(max_length=1000)
     link = models.CharField(max_length=255)
+    created_at = models.DateTimeField(auto_now_add=True)
+    thumbnail = models.CharField(max_length=255, null=True, blank=True)
     
     def __str__(self):
-        return self.id + " - " + self.owner.name
-    
-    def to_json(self):
-        return {
-            "id": self.id,
-            "owner": {
-                "uid": self.owner.pk,
-                "name": self.owner.name,
-                "avatar": self.owner.avatar if self.owner.avatar else DEFAULT_AVATAR,
-            },
-            "description": self.description,
-            "link": self.link
-        }
+        return str(self.id) + " - " + self.owner.name
     
 
 class Comment(models.Model):
@@ -58,18 +35,6 @@ class Comment(models.Model):
     def __str__(self):
         return self.id + " - " + self.owner.name
     
-    def to_json(self):
-        return {
-            "id": self.id,
-            "owner": {
-                "uid": self.owner.pk,
-                "name": self.owner.name,
-                "avatar": self.owner.avatar if self.owner.avatar else DEFAULT_AVATAR,
-            },
-            "video": self.video.id,
-            "content": self.content
-        }
-    
 
 class Watched(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -78,12 +43,13 @@ class Watched(models.Model):
 
     def __str__(self):
         return self.user.name + " - " + self.video.id
-    
-    def to_json(self):
-        return {
-            "id": self.id,
-            "user": self.user.pk,
-            "video": self.video.id,
-            "liked": self.liked
-        }
-    
+
+
+class Message(models.Model):
+    sender = models.ForeignKey(User, on_delete=models.CASCADE, related_name="sent_messages")
+    receiver = models.ForeignKey(User, on_delete=models.CASCADE, related_name="received_messages")
+    content = models.CharField(max_length=1000)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.sender.name + " - " + self.receiver.name

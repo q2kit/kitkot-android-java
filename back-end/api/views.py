@@ -1,6 +1,6 @@
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
-from django.db.models import Q, Exists, OuterRef, Count
+from django.db.models import Q, Exists, OuterRef, Count, F
 from django.core.cache import cache
 
 from api.models import (
@@ -368,6 +368,8 @@ def get_videos(request):
 
     watched = Watched.objects.filter(user=user).values_list("video_id", flat=True)
     videos = Video.objects.exclude(pk__in=watched).order_by("-id").annotate(
+        owner_name=F("owner__name"),
+        owner_avatar=F("owner__avatar"),
         is_followed=Exists(user.following.filter(pk=OuterRef("owner_id"))),
         is_liked=Exists(Watched.objects.filter(user=user, video=OuterRef("pk"), liked=True)),
         liked=Count('watched', filter=Q(watched__liked=True)),

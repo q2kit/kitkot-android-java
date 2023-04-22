@@ -27,7 +27,7 @@ from api.func import (
     verify_otp,
     verify_access_token,
     upload_video_to_s3,
-    upload_video_to_s3_test,
+    upload_file_to_cloud,
 )
 
 SECRET_KEY = os.environ.get("SECRET_KEY")
@@ -298,13 +298,110 @@ def reset_password(request):
 
 
 @csrf_exempt
+def edit_profile(request):
+    try:
+        token = request.headers.get("Authorization").split("Bearer ")[1]
+        uid = verify_access_token(token)
+        user = User.objects.get(pk=uid)
+    except Exception:
+        return JsonResponse({
+            "success": False,
+            "message": "Access token is invalid"
+        })
+    
+    if request.method == "POST":
+        
+        try:
+            password = request.POST["password"]
+            name = request.POST.get("name", "").strip()
+            username = request.POST.get("username", "").strip()
+            email = request.POST.get("email", "").strip()
+            phone = request.POST.get("phone", "").strip()
+            avatar = request.FILES.get("avatar", None)
+            new_password = request.POST.get("new_password", "").strip()
+        except KeyError:
+            return JsonResponse({
+                "success": False,
+                "message": "Enter your password"
+            })      
+        
+
+        validator = [
+            validate_username(username) if username else (True, ""),
+            validate_email(email) if email else (True, ""),
+            validate_phone_number(phone) if phone else (True, ""),
+            validate_name(name) if name else (True, ""),
+        ]
+
+        for success, message in validator:
+            if not success:
+                return JsonResponse({
+                    "success": False,
+                    "message": message
+                })
+
+        check_exists = [
+            (User.objects.filter(username=username).exclude(pk=user.pk).exists(),
+             "User with this username already exists"),
+            (User.objects.filter(email=email).exclude(pk=user.pk).exists(),
+             "User with this email already exists"),
+            (User.objects.filter(phone=phone).exclude(pk=user.pk).exists(),
+             "User with this phone already exists")
+        ]
+
+        for exists, message in check_exists:
+            if exists:
+                return JsonResponse({
+                    "success": False,
+                    "message": message
+                })
+
+        
+        if hashlib.sha512((password + SECRET_KEY).encode("utf-8")).hexdigest() != user.password:
+            return JsonResponse({
+                "success": False,
+                "message": "Wrong password"
+            })
+        
+        if new_password:
+            user.password = hashlib.sha512((new_password + SECRET_KEY).encode("utf-8")).hexdigest()
+
+        if name:
+            user.name = name
+        if username:
+            user.username = username
+        if email:
+            user.email = email
+        if phone:
+            user.phone = phone
+        if avatar:
+            user.avatar = upload_file_to_cloud(avatar)
+        user.save()
+        return JsonResponse({
+            "success": True,
+            "message": "User info updated"
+        })
+    else:
+        return JsonResponse({
+            "success": True,
+            "user": {
+                "name": user.name,
+                "username": user.username,
+                "email": user.email,
+                "phone": user.phone,
+                "avatar": user.avatar
+            }
+        })
+
+
+@csrf_exempt
 def post_video(request):
     if request.method == "POST":
         try:
             token = request.headers.get("Authorization").split("Bearer ")[1]
             uid = verify_access_token(token)
             user = User.objects.get(pk=uid)
-        except User.DoesNotExist:
+        except Exception:
             return JsonResponse({
                 "success": False,
                 "message": "Access token is invalid"
@@ -331,7 +428,7 @@ def post_video(request):
 
         try:
             # link = upload_video_to_s3(video)
-            link = upload_video_to_s3_test(video)
+            link = upload_file_to_cloud(video)
         except Exception:
             return JsonResponse({
                 "success": False,

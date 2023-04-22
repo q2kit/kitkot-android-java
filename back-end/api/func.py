@@ -148,10 +148,10 @@ def upload_video_to_s3(video):
     return f"https://{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com/{filename}"
 
 
-def upload_video_to_s3_test(video):
+def upload_file_to_cloud(file):
     url = "http://localhost:8080/api/up/"
     files = {
-        "file": video,
+        "file": file,
     }
     return requests.post(url, files=files).text
 

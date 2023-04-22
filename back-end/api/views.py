@@ -113,7 +113,9 @@ def login(request):
             })
 
         try:
-            user = User.objects.get(Q(username=account) | Q(
+            user = User.objects.annotate(
+                liked=Count("watched", filter=Q(watched__liked=True))
+            ).get(Q(username=account) | Q(
                 email=account) | Q(phone=account))
         except User.DoesNotExist:
             return JsonResponse({
@@ -130,8 +132,7 @@ def login(request):
             "avatar": user.avatar or DEFAULT_AVATAR,
             "followers": user.followers.count(),
             "following": user.following.count(),
-            # "messages": user.messages.count(),
-            "likes": Watched.objects.filter(video__owner=user, liked=True).count(),
+            "liked": user.liked,
         }
 
         if user.password == hashlib.sha512((password + SECRET_KEY).encode("utf-8")).hexdigest():
@@ -169,7 +170,9 @@ def google_auth(request):
             idinfo = id_token.verify_oauth2_token(g_token, requests.Request(), G_CLIENT_ID)
             email = idinfo["email"]
             try: # login
-                user = User.objects.get(email=email)
+                user = User.objects.annotate(
+                    liked=Count("watched", filter=Q(watched__liked=True))
+                ).get(email=email)
                 userJSON = {
                     "uid": user.pk,
                     "username": user.username,
@@ -179,8 +182,7 @@ def google_auth(request):
                     "avatar": user.avatar or DEFAULT_AVATAR,
                     "followers": user.followers.count(),
                     "following": user.following.count(),
-                    # "messages": user.messages.count(),
-                    "likes": Watched.objects.filter(video__owner=user, liked=True).count(),
+                    "liked": user.liked,
                 }
                 return JsonResponse({
                     "success": True,
@@ -368,21 +370,19 @@ def get_videos(request):
     videos = Video.objects.exclude(pk__in=watched).order_by("-id").annotate(
         is_followed=Exists(user.following.filter(pk=OuterRef("owner_id"))),
         is_liked=Exists(Watched.objects.filter(user=user, video=OuterRef("pk"), liked=True)),
-        likes=Count(Watched.objects.filter(video=OuterRef("pk"), liked=True)),
-        watched_count=Count(Watched.objects.filter(video=OuterRef("pk"))),
+        liked=Count('watched', filter=Q(watched__liked=True)),
     ).values(
         "id",
         "description",
         "link",
         "owner_id",
-        "owner__name",
-        "owner__avatar",
+        "owner_name",
+        "owner_avatar",
         "is_followed",
         "is_liked",
-        "likes",
+        "liked",
+        "watched",
     )
-    print("#" * 100)
-    print(videos.query)
 
     return JsonResponse({
         "success": True,
@@ -410,12 +410,15 @@ def get_videos_by_owner(request, owner_id):
         })
     
     videos = owner.videos.all().order_by("-id").annotate(
-        is_liked=Exists(Watched.objects.filter(user=user, video=OuterRef("pk"), is_liked=True)),
+        is_liked=Exists(Watched.objects.filter(user=user, video=OuterRef("pk"), liked=True)),
+        liked=Count('watched', filter=Q(watched__liked=True)),
     ).values(
         "id",
         "description",
         "link",
         "is_liked",
+        "liked",
+        "watched",
     )
     return JsonResponse({
         "success": True,

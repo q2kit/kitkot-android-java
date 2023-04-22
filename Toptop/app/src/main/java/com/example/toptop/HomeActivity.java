@@ -22,10 +22,6 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 public class HomeActivity extends AppCompatActivity {
 
-//    GoogleSignInOptions gso;
-//    GoogleSignInClient gsc;
-//    Button signOutBtn;
-
     private BottomNavigationView bottomNavigationView;
     private ViewPager viewPager;
 
@@ -87,29 +83,6 @@ public class HomeActivity extends AppCompatActivity {
             }
         });
 
-//        signOutBtn = findViewById(R.id.btn_logout);
-//
-//        gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN).requestEmail().build();
-//        gsc = GoogleSignIn.getClient(this,gso);
-//
-//        GoogleSignInAccount acct = GoogleSignIn.getLastSignedInAccount(this);
-//
-//        signOutBtn.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                signOut();
-//            }
-//        });
     }
-
-//    void signOut(){
-//        gsc.signOut().addOnCompleteListener(new OnCompleteListener<Void>() {
-//            @Override
-//            public void onComplete(Task<Void> task) {
-//                finish();
-//                startActivity(new Intent(HomeActivity.this,MainActivity.class));
-//            }
-//        });
-//    }
 
 }

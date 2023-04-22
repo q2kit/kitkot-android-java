@@ -28,8 +28,5 @@
         <item name="fullscreenTextColor">@color/light_blue_A200</item>
     </style>
 
-    <style name="Theme.AppStarting" parent="Theme.AppCompat.Light.NoActionBar">
-        <item name="android:windowBackground">@drawable/splash_icon</item>
-        <item name="android:statusBarColor">@color/white</item>
-    </style>
+
 </resources>

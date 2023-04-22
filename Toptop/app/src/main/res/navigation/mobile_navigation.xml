@@ -15,7 +15,7 @@
         android:id="@+id/navigation_discover"
         android:name="com.example.toptop.ui.discover.DiscoverFragment"
         android:label=""
-        tools:layout="@layout/fragment_dashboard" />
+        tools:layout="@layout/fragment_discovery" />
 
     <fragment
         android:id="@+id/navigation_post"

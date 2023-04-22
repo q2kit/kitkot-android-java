@@ -31,7 +31,7 @@ class Comment(models.Model):
     content = models.CharField(max_length=1000)
 
     def __str__(self):
-        return self.id + " - " + self.owner.name
+        return str(self.id) + " - " + self.owner.name
     
 
 class Watched(models.Model):
@@ -40,7 +40,7 @@ class Watched(models.Model):
     liked = models.BooleanField(default=False)
 
     def __str__(self):
-        return self.user.name + " - " + self.video.id
+        return self.user.name + " - " + str(self.video.id)
 
 
 class Message(models.Model):

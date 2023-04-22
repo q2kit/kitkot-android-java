@@ -7,3 +7,5 @@ from api.models import *
 admin.site.register(User)
 admin.site.register(Video)
 admin.site.register(Comment)
+admin.site.register(Message)
+admin.site.register(Watched)

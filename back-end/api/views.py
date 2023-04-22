@@ -602,3 +602,78 @@ def follow_toggle(request):
     })
 
 
+@csrf_exempt
+def post_comment(request):
+    if request.method == "POST":
+        try:
+            token = request.headers.get("Authorization").split("Bearer ")[1]
+            uid = verify_access_token(token)
+            user = User.objects.get(pk=uid)
+        except Exception:
+            return JsonResponse({
+                "success": False,
+                "message": "Access token is invalid"
+            })
+        
+        try:
+            video_id = request.POST["video_id"]
+            video = Video.objects.get(pk=video_id)
+            content = request.POST["content"]
+        except Exception:
+            return JsonResponse({
+                "success": False,
+                "message": "Invalid video or content"
+            })
+        
+        Comment.objects.create(
+            owner=user,
+            video=video,
+            content=content,
+        )
+
+        return JsonResponse({
+            "success": True,
+            "message": "Comment posted",
+        })
+    
+    return JsonResponse({
+        "success": False,
+        "message": "Method not allowed"
+    })
+
+
+def get_comments(request, video_id):
+    try:
+        token = request.headers.get("Authorization").split("Bearer ")[1]
+        uid = verify_access_token(token)
+        user = User.objects.get(pk=uid)
+    except Exception:
+        return JsonResponse({
+            "success": False,
+            "message": "Access token is invalid"
+        })
+    
+    try:
+        video = Video.objects.get(pk=video_id)
+    except Video.DoesNotExist:
+        return JsonResponse({
+            "success": False,
+            "message": "Video not found"
+        })
+    
+    comments = video.comments.all().order_by("-id").annotate(
+        owner_name=F("owner__name"),
+        owner_avatar=F("owner__avatar"),
+    ).values(
+        "id",
+        "content",
+        "owner_id",
+        "owner_name",
+        "owner_avatar",
+    )
+
+    return JsonResponse({
+        "success": True,
+        "comments": list(comments)
+    })
+

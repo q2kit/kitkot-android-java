@@ -27,7 +27,7 @@ class Video(models.Model):
 
 class Comment(models.Model):
     owner = models.ForeignKey(User, on_delete=models.CASCADE)
-    video = models.ForeignKey(Video, on_delete=models.CASCADE)
+    video = models.ForeignKey(Video, on_delete=models.CASCADE, related_name="comments")
     content = models.CharField(max_length=1000)
 
     def __str__(self):

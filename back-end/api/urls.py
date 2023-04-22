@@ -24,6 +24,8 @@ from api.views import (
     post_video,
     get_videos,
     get_videos_by_owner,
+    post_comment,
+    get_comments,
 )
 
 urlpatterns = [
@@ -36,4 +38,6 @@ urlpatterns = [
     path('post-video/', post_video),
     path('videos/', get_videos),
     path('<int:owner_id>/videos/', get_videos_by_owner),
+    path('post-comment/', post_comment),
+    path('<int:video_id>/comments/', get_comments),
 ]

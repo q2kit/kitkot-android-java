@@ -30,6 +30,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
     final int T_CHAT_ID = 1;
     final int T_CHAT_INIT = 2;
     final int T_CHAT_LIST= 6;
+    final int T_CHAT_MORE= 7;
 
     private List<ChatMessage> chatMessages;
     private ChatAdapter adapter;
@@ -61,9 +62,16 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
                                     break;
                                 case T_CHAT_ID:
                                     if(chatDetailFragment != null){
-                                        chatDetailFragment.addMessage(handle.exactMessage(data.getJSONObject("data")));
+                                        chatDetailFragment.addMessage(handle.exactListMessage(data.getJSONArray("data")), false);
                                     }
+                                    socket.emit("list-chat");
                                     break;
+                                case T_CHAT_MORE:
+                                    if(chatDetailFragment != null){
+                                        List<Message> messages = handle.exactListMessage(data.getJSONArray("data"));
+
+                                        chatDetailFragment.addMessage(messages, true);
+                                    }
                             }
 
                         } catch (JSONException  e) {
@@ -113,6 +121,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
     public void onBackPressed() {
         super.onBackPressed();
         Log.e("BackPress", "OK");
+        socket.emit("list-chat");
         frameLayout.setVisibility(View.INVISIBLE);
         if(fragmentManager.getBackStackEntryCount() > 0){
             fragmentManager.popBackStack();
@@ -127,7 +136,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
             Log.e("Position ", position+"");
             Toast.makeText(ChatActivity.this,"Click "+position,Toast.LENGTH_SHORT ).show();
             FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-            chatDetailFragment = new ChatDetailFragment();
+            chatDetailFragment = new ChatDetailFragment(chatMessage);
             frameLayout.setVisibility(View.VISIBLE);
             fragmentTransaction.add(R.id.chatDetailFrame, chatDetailFragment);
             fragmentTransaction.addToBackStack(chatMessage.getUserId()+"");

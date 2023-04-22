@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.content.IntentSender;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -32,6 +33,8 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.json.JSONException;
+import org.json.JSONObject;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -43,6 +46,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        SplashScreen splashScreen = SplashScreen.installSplashScreen(this);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
@@ -120,7 +124,41 @@ public class MainActivity extends AppCompatActivity {
                                     @Override
                                     public void onResponse(String response) {
                                         // Xử lý phản hồi từ API ở đây
-                                        Log.d("ACCESS_TOKEN", response);
+                                        try {
+                                            JSONObject res = new JSONObject(response);
+                                            if (res.getBoolean("success")) {
+                                                String token = res.getString("token");
+                                                JSONObject user = res.getJSONObject("user");
+                                                int uid = user.getInt("uid");
+                                                String username = user.getString("username");
+                                                String email = user.getString("email");
+                                                String phone = user.getString("phone");
+                                                String avatar = user.getString("avatar");
+                                                int followers = user.getInt("followers");
+                                                int following = user.getInt("following");
+                                                int likes = user.getInt("likes");
+
+                                                // Lưu token vào SharedPreferences
+                                                SharedPreferences sharedPreferences = getSharedPreferences("dataUser", MODE_PRIVATE);
+                                                SharedPreferences.Editor editor = sharedPreferences.edit();
+                                                editor.putString("token", token);
+                                                editor.putInt("uid", uid);
+                                                editor.putString("username", username);
+                                                editor.putString("email", email);
+                                                editor.putString("phone", phone);
+                                                editor.putString("avatar", avatar);
+                                                editor.putInt("followers", followers);
+                                                editor.putInt("following", following);
+                                                editor.putInt("likes", likes);
+                                            } else {
+                                                throw new RuntimeException(res.getString("message"));
+                                            }
+                                        } catch (Exception e) {
+                                            throw new RuntimeException(e);
+                                        }
+
+                                        Intent homeIntent = new Intent(MainActivity.this, HomeActivity.class);
+                                        startActivity(homeIntent);
                                     }
                                 }, new Response.ErrorListener() {
                             @Override

@@ -14,8 +14,6 @@ import datetime
 import boto3
 from uuid import uuid4
 
-from api.models import User
-
 
 def validate_phone_number(phone_number):
     if re.match(r"^0\d{9}$", phone_number):

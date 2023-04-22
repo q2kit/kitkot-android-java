@@ -10,6 +10,8 @@ from api.models import (
     Watched,
 )
 
+from api.decorator import auth_pass
+
 import hashlib
 import os
 import threading
@@ -25,7 +27,6 @@ from api.func import (
     send_sms_otp,
     send_mail_otp,
     verify_otp,
-    verify_access_token,
     upload_video_to_s3,
     upload_file_to_cloud,
 )
@@ -298,19 +299,9 @@ def reset_password(request):
 
 
 @csrf_exempt
+@auth_pass(["POST", "GET"])
 def edit_profile(request):
-    try:
-        token = request.headers.get("Authorization").split("Bearer ")[1]
-        uid = verify_access_token(token)
-        user = User.objects.get(pk=uid)
-    except Exception:
-        return JsonResponse({
-            "success": False,
-            "message": "Access token is invalid"
-        })
-    
     if request.method == "POST":
-        
         try:
             password = request.POST["password"]
             name = request.POST.get("name", "").strip()
@@ -324,7 +315,6 @@ def edit_profile(request):
                 "success": False,
                 "message": "Enter your password"
             })      
-        
 
         validator = [
             validate_username(username) if username else (True, ""),
@@ -341,11 +331,11 @@ def edit_profile(request):
                 })
 
         check_exists = [
-            (User.objects.filter(username=username).exclude(pk=user.pk).exists(),
+            (User.objects.filter(username=username).exclude(pk=request.user.pk).exists(),
              "User with this username already exists"),
-            (User.objects.filter(email=email).exclude(pk=user.pk).exists(),
+            (User.objects.filter(email=email).exclude(pk=request.user.pk).exists(),
              "User with this email already exists"),
-            (User.objects.filter(phone=phone).exclude(pk=user.pk).exists(),
+            (User.objects.filter(phone=phone).exclude(pk=request.user.pk).exists(),
              "User with this phone already exists")
         ]
 
@@ -357,118 +347,94 @@ def edit_profile(request):
                 })
 
         
-        if hashlib.sha512((password + SECRET_KEY).encode("utf-8")).hexdigest() != user.password:
+        if hashlib.sha512((password + SECRET_KEY).encode("utf-8")).hexdigest() != request.user.password:
             return JsonResponse({
                 "success": False,
                 "message": "Wrong password"
             })
         
         if new_password:
-            user.password = hashlib.sha512((new_password + SECRET_KEY).encode("utf-8")).hexdigest()
+            request.user.password = hashlib.sha512((new_password + SECRET_KEY).encode("utf-8")).hexdigest()
 
         if name:
-            user.name = name
+            request.user.name = name
         if username:
-            user.username = username
+            request.user.username = username
         if email:
-            user.email = email
+            request.user.email = email
         if phone:
-            user.phone = phone
+            request.user.phone = phone
         if avatar:
-            user.avatar = upload_file_to_cloud(avatar)
-        user.save()
+            request.user.avatar = upload_file_to_cloud(avatar)
+        request.user.save()
         return JsonResponse({
             "success": True,
             "message": "User info updated"
         })
-    else:
+    elif request.method == "GET":
         return JsonResponse({
             "success": True,
             "user": {
-                "name": user.name,
-                "username": user.username,
-                "email": user.email,
-                "phone": user.phone,
-                "avatar": user.avatar
+                "name": request.user.name,
+                "username": request.user.username,
+                "email": request.user.email,
+                "phone": request.user.phone,
+                "avatar": request.user.avatar
             }
         })
 
 
 @csrf_exempt
+@auth_pass(["POST"])
 def post_video(request):
-    if request.method == "POST":
-        try:
-            token = request.headers.get("Authorization").split("Bearer ")[1]
-            uid = verify_access_token(token)
-            user = User.objects.get(pk=uid)
-        except Exception:
-            return JsonResponse({
-                "success": False,
-                "message": "Access token is invalid"
-            })
-        
-        try:
-            description = request.POST["description"]
-            video = request.FILES["video"]
-        except KeyError:
-            return JsonResponse({
-                "success": False,
-                "message": "Fill all fields"
-            })
-
-        content_type_allow_list = [
-            "video/mp4",
-        ]
-
-        if video.content_type not in content_type_allow_list:
-            return JsonResponse({
-                "success": False,
-                "message": "File type not allowed, just " + ", ".join(content_type_allow_list)
-            })
-
-        try:
-            # link = upload_video_to_s3(video)
-            link = upload_file_to_cloud(video)
-        except Exception:
-            return JsonResponse({
-                "success": False,
-                "message": "Error uploading video"
-            })
-
-        video = Video.objects.create(
-            owner=user,
-            description=description,
-            link=link,
-        )
-
+    try:
+        description = request.POST["description"]
+        video = request.FILES["video"]
+    except KeyError:
         return JsonResponse({
-            "success": True,
-            "message": "Video posted",
+            "success": False,
+            "message": "Fill all fields"
         })
 
-    return JsonResponse({
-        "success": False,
-        "message": "Method not allowed"
-    })
+    content_type_allow_list = [
+        "video/mp4",
+    ]
 
+    if video.content_type not in content_type_allow_list:
+        return JsonResponse({
+            "success": False,
+            "message": "File type not allowed, just " + ", ".join(content_type_allow_list)
+        })
 
-def get_videos(request):
     try:
-        token = request.headers.get("Authorization").split("Bearer ")[1]
-        uid = verify_access_token(token)
-        user = User.objects.get(pk=uid)
+        # link = upload_video_to_s3(video)
+        link = upload_file_to_cloud(video)
     except Exception:
         return JsonResponse({
             "success": False,
-            "message": "Access token is invalid"
+            "message": "Error uploading video"
         })
 
-    watched = Watched.objects.filter(user=user).values_list("video_id", flat=True)
+    video = Video.objects.create(
+        owner=request.user,
+        description=description,
+        link=link,
+    )
+
+    return JsonResponse({
+        "success": True,
+        "message": "Video posted",
+    })
+
+
+@auth_pass(["GET"])
+def get_videos(request):
+    watched = Watched.objects.filter(user=request.user).values_list("video_id", flat=True)
     videos = Video.objects.exclude(pk__in=watched).order_by("-id").annotate(
         owner_name=F("owner__name"),
         owner_avatar=F("owner__avatar"),
-        is_followed=Exists(user.following.filter(pk=OuterRef("owner_id"))),
-        is_liked=Exists(Watched.objects.filter(user=user, video=OuterRef("pk"), liked=True)),
+        is_followed=Exists(request.user.following.filter(pk=OuterRef("owner_id"))),
+        is_liked=Exists(Watched.objects.filter(user=request.user, video=OuterRef("pk"), liked=True)),
         liked=Count('watched', filter=Q(watched__liked=True)),
     ).values(
         "id",
@@ -489,17 +455,8 @@ def get_videos(request):
     })
 
 
+@auth_pass(["GET"])
 def get_videos_by_owner(request, owner_id):
-    try:
-        token = request.headers.get("Authorization").split("Bearer ")[1]
-        uid = verify_access_token(token)
-        user = User.objects.get(pk=uid)
-    except Exception:
-        return JsonResponse({
-            "success": False,
-            "message": "Access token is invalid"
-        })
-
     try:
         owner = User.objects.get(pk=owner_id)
     except User.DoesNotExist:
@@ -509,7 +466,7 @@ def get_videos_by_owner(request, owner_id):
         })
     
     videos = owner.videos.all().order_by("-id").annotate(
-        is_liked=Exists(Watched.objects.filter(user=user, video=OuterRef("pk"), liked=True)),
+        is_liked=Exists(Watched.objects.filter(user=request.user, video=OuterRef("pk"), liked=True)),
         liked=Count('watched', filter=Q(watched__liked=True)),
     ).values(
         "id",
@@ -525,17 +482,9 @@ def get_videos_by_owner(request, owner_id):
     })
 
 
+@csrf_exempt
+@auth_pass(["POST"])
 def like_toggle(request):
-    try:
-        token = request.headers.get("Authorization").split("Bearer ")[1]
-        uid = verify_access_token(token)
-        user = User.objects.get(pk=uid)
-    except User.DoesNotExist:
-        return JsonResponse({
-            "success": False,
-            "message": "Access token is invalid"
-        })
-    
     try:
         video_id = request.POST["video_id"]
         video = Video.objects.get(pk=video_id)
@@ -545,13 +494,13 @@ def like_toggle(request):
             "message": "Video not found"
         })
     
-    if video.owner == user:
+    if video.owner == request.user:
         return JsonResponse({
             "success": False,
             "message": "You can't like your own video"
         })
     
-    watched = Watched.objects.get_or_create(user=user, video=video)[0] # [0] is the object, [1] is a boolean
+    watched = Watched.objects.get_or_create(user=request.user, video=video)[0] # [0] is the object, [1] is a boolean
     watched.liked = not watched.liked
     watched.save()
 
@@ -562,17 +511,9 @@ def like_toggle(request):
     })
 
 
-def follow_toggle(request):
-    try:
-        token = request.headers.get("Authorization").split("Bearer ")[1]
-        uid = verify_access_token(token)
-        user = User.objects.get(pk=uid)
-    except User.DoesNotExist:
-        return JsonResponse({
-            "success": False,
-            "message": "Access token is invalid"
-        })
-    
+@csrf_exempt
+@auth_pass(["POST"])
+def follow_toggle(request):    
     try:
         other_user_id = request.POST["other_user_id"]
         other_user = User.objects.get(pk=other_user_id)
@@ -582,17 +523,17 @@ def follow_toggle(request):
             "message": "User not found"
         })
     
-    if other_user == user:
+    if other_user == request.user:
         return JsonResponse({
             "success": False,
             "message": "You can't follow yourself"
         })
     
-    if other_user in user.following.all():
-        user.following.remove(other_user)
+    if other_user in request.user.following.all():
+        request.user.following.remove(other_user)
         followed = False
     else:
-        user.following.add(other_user)
+        request.user.following.add(other_user)
         followed = True
 
     return JsonResponse({
@@ -603,56 +544,32 @@ def follow_toggle(request):
 
 
 @csrf_exempt
-def post_comment(request):
-    if request.method == "POST":
-        try:
-            token = request.headers.get("Authorization").split("Bearer ")[1]
-            uid = verify_access_token(token)
-            user = User.objects.get(pk=uid)
-        except Exception:
-            return JsonResponse({
-                "success": False,
-                "message": "Access token is invalid"
-            })
-        
-        try:
-            video_id = request.POST["video_id"]
-            video = Video.objects.get(pk=video_id)
-            content = request.POST["content"]
-        except Exception:
-            return JsonResponse({
-                "success": False,
-                "message": "Invalid video or content"
-            })
-        
-        Comment.objects.create(
-            owner=user,
-            video=video,
-            content=content,
-        )
-
-        return JsonResponse({
-            "success": True,
-            "message": "Comment posted",
-        })
-    
-    return JsonResponse({
-        "success": False,
-        "message": "Method not allowed"
-    })
-
-
-def get_comments(request, video_id):
+@auth_pass(["POST"])
+def post_comment(request):        
     try:
-        token = request.headers.get("Authorization").split("Bearer ")[1]
-        uid = verify_access_token(token)
-        user = User.objects.get(pk=uid)
+        video_id = request.POST["video_id"]
+        video = Video.objects.get(pk=video_id)
+        content = request.POST["content"]
     except Exception:
         return JsonResponse({
             "success": False,
-            "message": "Access token is invalid"
+            "message": "Invalid video or content"
         })
     
+    Comment.objects.create(
+        owner=request.user,
+        video=video,
+        content=content,
+    )
+
+    return JsonResponse({
+        "success": True,
+        "message": "Comment posted",
+    })
+
+
+@auth_pass(["GET"])
+def get_comments(request, video_id):
     try:
         video = Video.objects.get(pk=video_id)
     except Video.DoesNotExist:

@@ -1,10 +1,13 @@
-package com.example.toptop.zlpdemo.merchantDemo.models;
+package com.example.toptop.payment.models;
 
 public class VipPackage {
     private String vipPackageID;
     private  String vipPackageName;
     private int monthDuration;
     private int price;
+
+    public VipPackage() {
+    }
 
     public VipPackage(String vipPackageID, String vipPackageName, int monthDuration, int price) {
         this.vipPackageID = vipPackageID;

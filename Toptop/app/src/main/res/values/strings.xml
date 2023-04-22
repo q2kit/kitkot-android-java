@@ -86,7 +86,7 @@
     <string name="btn_pay">Thanh Toán</string>
     <string name="lbl_zptranstoken">zptranstoken</string>
     <string name="to_webview">To WebView</string>
-    <string name="nptinh_server_domain">http://192.168.41.105:8080</string>
+    <string name="nptinh_server_domain">http://192.168.1.4:8080</string>
 
     <string name="dummy_button">Dummy Button</string>
     <string name="dummy_content">DUMMY\nCONTENT</string>

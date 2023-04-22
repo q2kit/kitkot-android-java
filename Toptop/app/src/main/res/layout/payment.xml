@@ -24,58 +24,19 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <RadioGroup
-        android:id="@+id/rdgTypePackage"
-        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/rdgVipPackage"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@id/txtTitle"
-        app:layout_constraintLeft_toLeftOf="parent"
-        android:orientation="vertical">
-        <RadioButton android:id="@+id/radio_pirates"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="1 tháng"
-            android:onClick="onRadioButtonClicked"/>
-        <RadioButton android:id="@+id/radio_ninjas"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="6 tháng"
-            android:onClick="onRadioButtonClicked"/>
-    </RadioGroup>
+        android:orientation="vertical"
+        app:layout_constraintTop_toBottomOf="@id/txtTitle"/>
 
 
 
-    <Button
-        android:id="@+id/btnCreateOrder"
-        android:layout_width="347dp"
-        android:layout_height="40dp"
-        android:layout_marginStart="30dp"
-        android:layout_marginTop="24dp"
-        android:layout_marginEnd="30dp"
-        android:background="#2196F3"
-        android:text="@string/btn_create_order"
-        android:textColor="#FFFFFF"
-        android:textSize="20sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/rdgTypePackage" />
-
-    <TextView
-        android:id="@+id/lblZpTransToken"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="30dp"
-        android:layout_marginTop="30dp"
-        android:text="@string/lbl_zptranstoken"
-        android:textSize="14sp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/btnCreateOrder" />
 
     <Button
         android:id="@+id/btnPay"
         android:layout_width="340dp"
-        android:layout_height="40dp"
+        android:layout_height="50dp"
         android:layout_marginStart="30dp"
         android:layout_marginTop="20dp"
         android:layout_marginEnd="30dp"
@@ -87,46 +48,9 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/lblZpTransToken" />
+        app:layout_constraintTop_toBottomOf="@+id/rdgVipPackage" />
 
 
-    <TextView
-        android:id="@+id/txtToken"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="20dp"
-        android:layout_marginTop="30dp"
-        android:layout_marginEnd="30dp"
-        android:textColor="#4CAF50"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.453"
-        app:layout_constraintStart_toEndOf="@+id/lblZpTransToken"
-        app:layout_constraintTop_toBottomOf="@+id/btnCreateOrder" />
 
-    <TextView
-        android:id="@+id/txtResult"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:gravity="center"
-        android:textSize="14sp"
-        android:visibility="invisible"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.526"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/btnPay" />
-
-    <TextView
-        android:id="@+id/txtDebug"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="20dp"
-        android:layout_marginEnd="8dp"
-        android:textSize="18sp"
-        android:visibility="invisible"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/txtResult" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

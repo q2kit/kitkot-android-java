@@ -17,13 +17,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Toptop"
         tools:targetApi="31">
-        <activity
-            android:name=".ChatDetailActivity"
-            android:exported="false">
-            <meta-data
-                android:name="android.app.lib_name"
-                android:value="" />
-        </activity>
+
         <activity
             android:name=".chat.ChatActivity"
             android:exported="false">
@@ -38,13 +32,24 @@
                 android:name="android.app.lib_name"
                 android:value="" />
         </activity>
+
         <activity
-            android:name=".HomeActivity"
-            android:exported="false">
+            android:name=".payment.PaymentActivity"
+            android:exported="true"
+            android:launchMode="singleTask"
+            >
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="demozpdk"
+                    android:host="app" />
+            </intent-filter>
         </activity>
+
         <activity
             android:name=".SignupActivity"
             android:exported="false">
@@ -53,20 +58,13 @@
                 android:value="" />
         </activity>
         <activity
-            android:launchMode="singleTask"
-            android:name=".zlpdemo.merchantDemo.PaymentActivity"
+
+            android:name=".HomeActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-            <intent-filter>
-                <action android:name="android.intent.action.VIEW" />
-                <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.BROWSABLE" />
-                <data android:scheme="demozpdk"
-                    android:host="app" />
             </intent-filter>
             <meta-data
                 android:name="android.app.lib_name"

@@ -12,6 +12,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
@@ -45,6 +46,7 @@ public class MainActivity extends AppCompatActivity {
     Button btnGG;
     Button login;
     Button bt_Chat;
+    TextView resetPW;
     private static final int REQ_ONE_TAP = 2;  // Can be any integer unique to the Activity.
 
     @Override
@@ -56,7 +58,7 @@ public class MainActivity extends AppCompatActivity {
         btnGG = findViewById(R.id.google_btn);
         bt_Chat = findViewById(R.id.bt_Chat);
         login = findViewById(R.id.button);
-
+        resetPW = findViewById(R.id.resetPW);
         bt_Chat.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -78,7 +80,7 @@ public class MainActivity extends AppCompatActivity {
         login.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String account = ((TextView) findViewById(R.id.edit_phoneEmail)).getText().toString();
+                String account = ((TextView) findViewById(R.id.edit_account)).getText().toString();
                 String password = ((TextView) findViewById(R.id.edit_password)).getText().toString();
                 Log.d("ACCOUNT", account);
                 Log.d("PASSWORD", password);
@@ -119,6 +121,14 @@ public class MainActivity extends AppCompatActivity {
                         .setFilterByAuthorizedAccounts(false)
                         .build())
                 .build();
+
+        resetPW.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent switchActivityIntent = new Intent(MainActivity.this, ResetPWActivity.class);
+                startActivity(switchActivityIntent);
+            }
+        });
 
         btnGG.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -216,14 +226,15 @@ public class MainActivity extends AppCompatActivity {
                 editor.putInt("followers", followers);
                 editor.putInt("following", following);
                 editor.putInt("liked", liked);
+
+                Intent homeIntent = new Intent(MainActivity.this, HomeActivity.class);
+                startActivity(homeIntent);
             } else {
-                throw new RuntimeException(res.getString("message"));
+                String message = res.getString("message");
+                Toast.makeText(MainActivity.this, message, Toast.LENGTH_SHORT).show();
             }
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-
-        Intent homeIntent = new Intent(MainActivity.this, HomeActivity.class);
-        startActivity(homeIntent);
     }
 }

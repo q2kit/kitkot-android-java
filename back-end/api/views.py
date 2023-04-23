@@ -88,11 +88,24 @@ def register(request):
             phone=phone,
             name=name,
         )
+        
+        userJSON = {
+            "uid": user.pk,
+            "username": user.username,
+            "email": user.email,
+            "phone": user.phone,
+            "name": user.name,
+            "avatar": user.avatar or DEFAULT_AVATAR,
+            "followers": 0,
+            "following": 0,
+            "liked": 0,
+        }
 
         return JsonResponse({
             "success": True,
             "message": "User created",
             "token": generate_access_token(user.pk),
+            "user": userJSON
         })
 
     return JsonResponse({

@@ -43,6 +43,7 @@ public class MainActivity extends AppCompatActivity {
     SignInClient oneTapClient;
     BeginSignInRequest signUpRequest;
     Button btnGG;
+    Button login;
     Button bt_Chat;
     private static final int REQ_ONE_TAP = 2;  // Can be any integer unique to the Activity.
 
@@ -54,6 +55,8 @@ public class MainActivity extends AppCompatActivity {
 
         btnGG = findViewById(R.id.google_btn);
         bt_Chat = findViewById(R.id.bt_Chat);
+        login = findViewById(R.id.button);
+
         bt_Chat.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -69,6 +72,42 @@ public class MainActivity extends AppCompatActivity {
                 //TODO()
                 Intent intent = new Intent(MainActivity.this, SignupActivity.class);
                 startActivity(intent);
+            }
+        });
+
+        login.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String account = ((TextView) findViewById(R.id.edit_phoneEmail)).getText().toString();
+                String password = ((TextView) findViewById(R.id.edit_password)).getText().toString();
+                Log.d("ACCOUNT", account);
+                Log.d("PASSWORD", password);
+                String url = "https://soc.q2k.dev/api/login/";
+                StringRequest request = new StringRequest(Request.Method.POST, url,
+                        new Response.Listener<String>() {
+                            @Override
+                            public void onResponse(String response) {
+                                response_processing(response);
+                            }
+                        },
+                        new Response.ErrorListener() {
+                            @Override
+                            public void onErrorResponse(VolleyError error) {
+                                // Xử lý lỗi ở đây
+                                Log.d("TAG", error.toString());
+                            }
+                        }) {
+                    @Override
+                    protected Map<String, String> getParams() throws AuthFailureError {
+                        Map<String, String> params = new HashMap<>();
+                        params.put("account", account);
+                        params.put("password", password);
+                        return params;
+                    }
+                };
+                RequestQueue requestQueue = Volley.newRequestQueue(MainActivity.this);
+                requestQueue.add(request);
+
             }
         });
 
@@ -125,42 +164,7 @@ public class MainActivity extends AppCompatActivity {
                                 new Response.Listener<String>() {
                                     @Override
                                     public void onResponse(String response) {
-                                        // Xử lý phản hồi từ API ở đây
-                                        try {
-                                            JSONObject res = new JSONObject(response);
-                                            if (res.getBoolean("success")) {
-                                                String token = res.getString("token");
-                                                JSONObject user = res.getJSONObject("user");
-                                                int uid = user.getInt("uid");
-                                                String username = user.getString("username");
-                                                String email = user.getString("email");
-                                                String phone = user.getString("phone");
-                                                String avatar = user.getString("avatar");
-                                                int followers = user.getInt("followers");
-                                                int following = user.getInt("following");
-                                                int likes = user.getInt("likes");
-
-                                                // Lưu token vào SharedPreferences
-                                                SharedPreferences sharedPreferences = getSharedPreferences("dataUser", MODE_PRIVATE);
-                                                SharedPreferences.Editor editor = sharedPreferences.edit();
-                                                editor.putString("token", token);
-                                                editor.putInt("uid", uid);
-                                                editor.putString("username", username);
-                                                editor.putString("email", email);
-                                                editor.putString("phone", phone);
-                                                editor.putString("avatar", avatar);
-                                                editor.putInt("followers", followers);
-                                                editor.putInt("following", following);
-                                                editor.putInt("likes", likes);
-                                            } else {
-                                                throw new RuntimeException(res.getString("message"));
-                                            }
-                                        } catch (Exception e) {
-                                            throw new RuntimeException(e);
-                                        }
-
-                                        Intent homeIntent = new Intent(MainActivity.this, HomeActivity.class);
-                                        startActivity(homeIntent);
+                                        response_processing(response);
                                     }
                                 }, new Response.ErrorListener() {
                             @Override
@@ -184,5 +188,42 @@ public class MainActivity extends AppCompatActivity {
                 }
                 break;
         }
+    }
+    protected void response_processing(String response) {
+        try {
+            JSONObject res = new JSONObject(response);
+            if (res.getBoolean("success")) {
+                String token = res.getString("token");
+                JSONObject user = res.getJSONObject("user");
+                int uid = user.getInt("uid");
+                String username = user.getString("username");
+                String email = user.getString("email");
+                String phone = user.getString("phone");
+                String avatar = user.getString("avatar");
+                int followers = user.getInt("followers");
+                int following = user.getInt("following");
+                int liked = user.getInt("liked");
+
+                // Lưu token vào SharedPreferences
+                SharedPreferences sharedPreferences = getSharedPreferences("dataUser", MODE_PRIVATE);
+                SharedPreferences.Editor editor = sharedPreferences.edit();
+                editor.putString("token", token);
+                editor.putInt("uid", uid);
+                editor.putString("username", username);
+                editor.putString("email", email);
+                editor.putString("phone", phone);
+                editor.putString("avatar", avatar);
+                editor.putInt("followers", followers);
+                editor.putInt("following", following);
+                editor.putInt("liked", liked);
+            } else {
+                throw new RuntimeException(res.getString("message"));
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
+        Intent homeIntent = new Intent(MainActivity.this, HomeActivity.class);
+        startActivity(homeIntent);
     }
 }

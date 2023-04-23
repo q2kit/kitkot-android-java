@@ -38,15 +38,16 @@
                     android:layout_height="wrap_content"
                     android:layout_marginRight="16dp"
                     android:text="Following"
-                    android:textColor="#ccc"
+                    android:textColor="@color/light_gray"
                     android:textSize="15sp"
                     android:textStyle="bold" />
 
                 <View
                     android:layout_width="30dp"
-                    android:layout_height="3dp"
+                    android:layout_height="2dp"
                     android:layout_gravity="center"
-                    android:layout_marginTop="5dp" />
+                    android:layout_marginTop="5dp"
+                    android:background="@android:color/white"/>
 
             </LinearLayout>
 
@@ -59,16 +60,16 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="For You"
-                    android:textColor="@android:color/white"
+                    android:textColor="@color/gray"
                     android:textSize="15sp"
                     android:textStyle="bold" />
 
                 <View
                     android:layout_width="30dp"
-                    android:layout_height="3dp"
-                    android:background="@android:color/white"
+                    android:layout_height="2dp"
                     android:layout_gravity="center"
-                    android:layout_marginTop="5dp" />
+                    android:layout_marginTop="5dp"
+                    android:background="@color/light_gray"/>
 
             </LinearLayout>
 

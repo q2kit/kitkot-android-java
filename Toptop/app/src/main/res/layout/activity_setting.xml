@@ -65,17 +65,17 @@
         android:layout_margin="5dp"/>
 
     <ImageView
-        android:id="@+id/logout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:src="@drawable/logout"
-        android:layout_margin="5dp"/>
-
-    <ImageView
         android:id="@+id/help"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:src="@drawable/help"
+        android:layout_margin="5dp"/>
+
+    <ImageView
+        android:id="@+id/logout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:src="@drawable/logout"
         android:layout_margin="5dp"/>
 
 </LinearLayout>

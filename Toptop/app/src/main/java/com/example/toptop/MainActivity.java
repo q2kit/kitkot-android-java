@@ -22,6 +22,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.toptop.chat.ChatActivity;
+import com.example.toptop.firebase.Firebase;
 import com.google.android.gms.auth.api.identity.BeginSignInRequest;
 import com.google.android.gms.auth.api.identity.BeginSignInResult;
 import com.google.android.gms.auth.api.identity.Identity;
@@ -59,6 +60,8 @@ public class MainActivity extends AppCompatActivity {
         bt_Chat = findViewById(R.id.bt_Chat);
         login = findViewById(R.id.button);
         resetPW = findViewById(R.id.resetPW);
+        Firebase firebase = new Firebase();
+        firebase.getNumberNotification(bt_Chat);
         bt_Chat.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

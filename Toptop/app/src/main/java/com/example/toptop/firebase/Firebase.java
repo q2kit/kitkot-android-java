@@ -2,6 +2,7 @@ package com.example.toptop.firebase;
 
 import android.content.Context;
 import android.util.Log;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -11,6 +12,7 @@ import com.example.toptop.model.Notification;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -23,6 +25,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class Firebase {
     private FirebaseFirestore firestore;
@@ -43,6 +46,29 @@ public class Firebase {
                 Toast.makeText(cx, "Fail Add User"+ e.toString(), Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+    public int getNumberNotification(TextView tvNotification){
+        AtomicInteger notiNum = new AtomicInteger();
+        firestore = FirebaseFirestore.getInstance();
+                CollectionReference notificationQuery = firestore.collection("notifications")
+                .document("1")
+                .collection("data");
+        Query query = notificationQuery.orderBy("id", Query.Direction.DESCENDING).limit(10);
+        query.addSnapshotListener(new EventListener<QuerySnapshot>() {
+            @Override
+            public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
+                value.getDocumentChanges().forEach(documentChange -> {
+                    Log.e("Noti change", documentChange.getType()+"");
+                    if(documentChange.getType().equals(DocumentChange.Type.ADDED)){
+                        notiNum.addAndGet(1);
+                        tvNotification.setText(notiNum.get()+"");
+                        Log.e("Notify change", notiNum.get()+"");
+                    }
+                });
+            }
+        });
+        return notiNum.get();
     }
 
     public List<Notification> getNotifications(){

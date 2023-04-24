@@ -21,6 +21,7 @@ from api.views import (
     google_auth,
     reset_password,
     edit_profile,
+    get_user_info,
     post_video,
     get_videos,
     get_videos_by_owner,
@@ -34,6 +35,7 @@ urlpatterns = [
     path('google-auth/', google_auth),
     path('reset-password/', reset_password),
     path('edit-profile/', edit_profile),
+    path('<int:uid>/info/', get_user_info),
 
     path('post-video/', post_video),
     path('videos/', get_videos),

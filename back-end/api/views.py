@@ -400,6 +400,28 @@ def edit_profile(request):
         })
 
 
+@auth_pass(["GET"])
+def get_user_info(request, uid):
+    try:
+        user = User.objects.get(pk=uid)
+    except User.DoesNotExist:
+        return JsonResponse({
+            "success": False,
+            "message": "User not found"
+        })
+    return JsonResponse({
+        "success": True,
+        "user": {
+            "name": user.name,
+            "username": user.username,
+            "email": user.email,
+            "phone": user.phone,
+            "avatar": user.avatar,
+            "is_premium": user.is_premium,
+        }
+    })
+
+
 @csrf_exempt
 @auth_pass(["POST"])
 def post_video(request):

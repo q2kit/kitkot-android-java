@@ -476,6 +476,7 @@ def get_videos(request):
         is_followed=Exists(request.user.following.filter(pk=OuterRef("owner_id"))),
         is_liked=Exists(Watched.objects.filter(user=request.user, video=OuterRef("pk"), liked=True)),
         liked=Count('watched', filter=Q(watched__liked=True)),
+        comment=Count('comments'),
     ).values(
         "id",
         "description",
@@ -488,6 +489,7 @@ def get_videos(request):
         "is_premium",
         "liked",
         "watched",
+        "comment"
     )
     if not request.user.is_premium:
         videos = videos.filter(is_premium=False)

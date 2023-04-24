@@ -99,6 +99,7 @@ def register(request):
             "followers": 0,
             "following": 0,
             "liked": 0,
+            "is_premium": user.is_premium,
         }
 
         return JsonResponse({
@@ -147,6 +148,7 @@ def login(request):
             "followers": user.followers.count(),
             "following": user.following.count(),
             "liked": user.liked,
+            "is_premium": user.is_premium,
         }
 
         if user.password == hashlib.sha512((password + SECRET_KEY).encode("utf-8")).hexdigest():
@@ -197,6 +199,7 @@ def google_auth(request):
                     "followers": user.followers.count(),
                     "following": user.following.count(),
                     "liked": user.liked,
+                    "is_premium": user.is_premium,
                 }
                 return JsonResponse({
                     "success": True,
@@ -402,6 +405,7 @@ def edit_profile(request):
 def post_video(request):
     try:
         description = request.POST["description"]
+        is_premium = request.POST.get("is_premium", False)
         video = request.FILES["video"]
     except KeyError:
         return JsonResponse({
@@ -432,6 +436,7 @@ def post_video(request):
         owner=request.user,
         description=description,
         link=link,
+        is_premium=is_premium,
     )
 
     return JsonResponse({
@@ -458,9 +463,12 @@ def get_videos(request):
         "owner_avatar",
         "is_followed",
         "is_liked",
+        "is_premium",
         "liked",
         "watched",
     )
+    if not request.user.is_premium:
+        videos = videos.filter(is_premium=False)
 
     return JsonResponse({
         "success": True,
@@ -488,7 +496,11 @@ def get_videos_by_owner(request, owner_id):
         "is_liked",
         "liked",
         "watched",
+        "is_premium",
     )
+    if not request.user.is_premium:
+        videos = videos.filter(is_premium=False)
+
     return JsonResponse({
         "success": True,
         "videos": list(videos)
@@ -569,6 +581,12 @@ def post_comment(request):
             "message": "Invalid video or content"
         })
     
+    if not Watched.objects.filter(user=request.user, video=video).exists():
+        return JsonResponse({
+            "success": False,
+            "message": "You must watch the video before commenting"
+        })
+
     Comment.objects.create(
         owner=request.user,
         video=video,
@@ -589,6 +607,12 @@ def get_comments(request, video_id):
         return JsonResponse({
             "success": False,
             "message": "Video not found"
+        })
+    
+    if not Watched.objects.filter(user=request.user, video=video).exists():
+        return JsonResponse({
+            "success": False,
+            "message": "You must watch the video before commenting"
         })
     
     comments = video.comments.all().order_by("-id").annotate(

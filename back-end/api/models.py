@@ -9,6 +9,7 @@ class User(models.Model):
     phone = models.CharField(max_length=255, null=True, blank=True)
     avatar = models.CharField(max_length=255, null=True, blank=True)
     following = models.ManyToManyField("self", symmetrical=False, related_name="followers", blank=True)
+    is_premium = models.BooleanField(default=False)
 
     def __str__(self):
         return self.name
@@ -20,6 +21,7 @@ class Video(models.Model):
     link = models.CharField(max_length=255)
     created_at = models.DateTimeField(auto_now_add=True)
     thumbnail = models.CharField(max_length=255, null=True, blank=True)
+    is_premium = models.BooleanField(default=False)
     
     def __str__(self):
         return str(self.id) + " - " + self.owner.name

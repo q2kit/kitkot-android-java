@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentPagerAdapter;
+import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager.widget.ViewPager;
 import androidx.viewpager2.widget.ViewPager2;
 
@@ -36,7 +37,7 @@ import java.util.Map;
 
 public class VideoListFragment extends Fragment {
 
-    private ViewPager2 viewPager;
+    private RecyclerView videoRecyclerView;
     private VideoAdapter mAdapter;
     private ArrayList<Video> videos = new ArrayList<>();
 
@@ -52,8 +53,7 @@ public class VideoListFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_home, container, false);
-        viewPager = view.findViewById(R.id.videos_view_pager);
-        viewPager.setAdapter(mAdapter);
+
 //        viewPager.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
 //            @Override
 //            public void onPageSelected(int position) {

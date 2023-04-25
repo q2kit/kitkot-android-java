@@ -1,4 +1,4 @@
-package com.example.toptop.ui.home;
+package com.example.toptop;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
@@ -6,6 +6,7 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentStatePagerAdapter;
 
 import com.example.toptop.ui.discover.DiscoverFragment;
+import com.example.toptop.ui.home.VideoListFragment;
 import com.example.toptop.ui.inbox.InboxFragment;
 import com.example.toptop.ui.me.MeFragment;
 import com.example.toptop.ui.post.PostFragment;

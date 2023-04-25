@@ -1,6 +1,7 @@
 package com.example.toptop.ui.home;
 
 
+import android.content.Context;
 import android.support.annotation.NonNull;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -22,9 +23,12 @@ import de.hdodenhof.circleimageview.CircleImageView;
 public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.MyViewHolder> {
 
     private List<Video> videos;
+    Context context;
+    private RecyclerView recyclerView;
 
     public VideoAdapter(List<Video> videos) {
         this.videos = videos;
+        this.context = context;
         Log.d("KITKOT", "Loaded " + videos.size() + " videos to adapter");
     }
 

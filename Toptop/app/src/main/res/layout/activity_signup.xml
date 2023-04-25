@@ -24,7 +24,8 @@
             android:layout_width="match_parent"
             android:layout_height="45dp"
             android:layout_marginTop="36dp"
-            android:background="@drawable/cover_text"
+            android:background="@drawable/follow_gradient"
+            android:textColor="@color/black"
             android:hint="Phone number"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/textView2"
@@ -36,7 +37,8 @@
             android:layout_width="match_parent"
             android:layout_height="45dp"
             android:layout_marginTop="20dp"
-            android:background="@drawable/cover_text"
+            android:background="@drawable/follow_gradient"
+            android:textColor="@color/black"
             android:hint="Email"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/edit_phone"
@@ -50,10 +52,11 @@
             android:layout_marginTop="20dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/edit_email"
+            android:textColor="@color/black"
             android:hint="Display name"
             android:layout_marginLeft="30dp"
             android:layout_marginRight="30dp"
-            android:background="@drawable/cover_text"/>
+            android:background="@drawable/follow_gradient"/>
 
         <EditText
             android:id="@+id/edit_username"
@@ -62,10 +65,11 @@
             android:layout_marginTop="20dp"
             android:hint="Username"
             app:layout_constraintTop_toBottomOf="@+id/edit_name"
+            android:textColor="@color/black"
             android:layout_marginLeft="30dp"
             android:layout_marginRight="30dp"
             tools:layout_editor_absoluteX="-16dp"
-            android:background="@drawable/cover_text"/>
+            android:background="@drawable/follow_gradient"/>
 
         <EditText
             android:id="@+id/edit_password"
@@ -74,10 +78,11 @@
             android:layout_marginTop="20dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/edit_username"
+            android:textColor="@color/black"
             android:hint="Password"
             android:layout_marginLeft="30dp"
             android:layout_marginRight="30dp"
-            android:background="@drawable/cover_text"/>
+            android:background="@drawable/follow_gradient"/>
 
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/button"
@@ -125,6 +130,7 @@
             android:layout_marginTop="8dp"
             android:text="or"
             android:textSize="24dp"
+            android:textColor="@color/black"
             android:textStyle="bold"
             app:layout_constraintEnd_toStartOf="@+id/view"
             app:layout_constraintHorizontal_bias="0.482"
@@ -152,6 +158,7 @@
             android:layout_marginStart="60dp"
             android:text="Already have an account?"
             android:textSize="19dp"
+            android:textColor="@color/black"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/google_btn"
@@ -165,6 +172,7 @@
             android:text="Sign in"
             android:textSize="21dp"
             android:textStyle="bold"
+            android:textColor="@color/black"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.116"

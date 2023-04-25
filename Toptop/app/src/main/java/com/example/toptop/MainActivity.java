@@ -65,6 +65,11 @@ public class MainActivity extends AppCompatActivity {
         bt_Chat.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                SharedPreferences sharedPreferences = getSharedPreferences("dataUser", MODE_PRIVATE);
+                String token="";
+                sharedPreferences.getString("token",token);
+                Log.e("token", token);
+
                 Intent switchActivityIntent = new Intent(MainActivity.this, ChatActivity.class);
                 startActivity(switchActivityIntent);
             }
@@ -207,6 +212,7 @@ public class MainActivity extends AppCompatActivity {
             JSONObject res = new JSONObject(response);
             if (res.getBoolean("success")) {
                 String token = res.getString("token");
+                Log.e("TOken login", token);
                 JSONObject user = res.getJSONObject("user");
                 int uid = user.getInt("uid");
                 String username = user.getString("username");

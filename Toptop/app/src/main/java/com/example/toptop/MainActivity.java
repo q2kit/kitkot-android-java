@@ -4,13 +4,18 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
+import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -48,6 +53,7 @@ public class MainActivity extends AppCompatActivity {
     Button login;
     Button bt_Chat;
     TextView resetPW;
+    EditText edit_account, edit_password;
     private static final int REQ_ONE_TAP = 2;  // Can be any integer unique to the Activity.
 
     @Override
@@ -60,6 +66,8 @@ public class MainActivity extends AppCompatActivity {
         bt_Chat = findViewById(R.id.bt_Chat);
         login = findViewById(R.id.button);
         resetPW = findViewById(R.id.resetPW);
+        edit_account = findViewById(R.id.edit_account);
+        edit_password = findViewById(R.id.edit_password);
         Firebase firebase = new Firebase();
         firebase.getNumberNotification(bt_Chat);
         bt_Chat.setOnClickListener(new View.OnClickListener() {
@@ -83,24 +91,23 @@ public class MainActivity extends AppCompatActivity {
         login.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String account = ((TextView) findViewById(R.id.edit_account)).getText().toString();
-                String password = ((TextView) findViewById(R.id.edit_password)).getText().toString();
-                Log.d("ACCOUNT", account);
-                Log.d("PASSWORD", password);
+                String account = edit_account.getText().toString();
+                String password = edit_password.getText().toString();
                 String url = "https://soc.q2k.dev/api/login/";
+
                 StringRequest request = new StringRequest(Request.Method.POST, url,
-                        new Response.Listener<String>() {
-                            @Override
-                            public void onResponse(String response) {
-                                response_processing(response);
-                            }
-                        },
-                        new Response.ErrorListener() {
-                            @Override
-                            public void onErrorResponse(VolleyError error) {
-                                // Xử lý lỗi ở đây
-                                Log.d("TAG", error.toString());
-                            }
+                    new Response.Listener<String>() {
+                        @Override
+                        public void onResponse(String response) {
+                            response_processing(response);
+                        }
+                    },
+                    new Response.ErrorListener() {
+                        @Override
+                        public void onErrorResponse(VolleyError error) {
+                            // Xử lý lỗi ở đây
+                            Log.d("TAG", error.toString());
+                        }
                         }) {
                     @Override
                     protected Map<String, String> getParams() throws AuthFailureError {
@@ -112,7 +119,6 @@ public class MainActivity extends AppCompatActivity {
                 };
                 RequestQueue requestQueue = Volley.newRequestQueue(MainActivity.this);
                 requestQueue.add(request);
-
             }
         });
 
@@ -170,8 +176,6 @@ public class MainActivity extends AppCompatActivity {
                     SignInCredential credential = oneTapClient.getSignInCredentialFromIntent(data);
                     String idToken = credential.getGoogleIdToken();
                     if (idToken !=  null) {
-                        Log.d("TAG", "ID token: " + idToken);
-
                         String url = "https://soc.q2k.dev/api/google-auth/";
                         StringRequest request = new StringRequest(Request.Method.POST, url,
                                 new Response.Listener<String>() {
@@ -180,11 +184,11 @@ public class MainActivity extends AppCompatActivity {
                                         response_processing(response);
                                     }
                                 }, new Response.ErrorListener() {
-                            @Override
-                            public void onErrorResponse(VolleyError error) {
-                                // Xử lý lỗi kết nối hoặc lỗi phản hồi từ API ở đây
-                            }
-                        }) {
+                                    @Override
+                                    public void onErrorResponse(VolleyError error) {
+                                        // Xử lý lỗi kết nối hoặc lỗi phản hồi từ API ở đây
+                                    }
+                                }) {
                             @Override
                             protected Map<String, String> getParams() throws AuthFailureError {
                                 Map<String, String> params = new HashMap<>();
@@ -192,10 +196,8 @@ public class MainActivity extends AppCompatActivity {
                                 return params;
                             }
                         };
-                        // Thêm request vào hàng đợi của Volley
                         RequestQueue queue = Volley.newRequestQueue(MainActivity.this);
                         queue.add(request);
-
                     }
                 } catch (ApiException e) {
                 }

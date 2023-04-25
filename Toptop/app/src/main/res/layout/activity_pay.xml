@@ -4,73 +4,65 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:contentDescription="@string/lbl_sotien"
-    tools:context=".MainActivity">
+    tools:context=".zlpay.PayActivity">
 
 
     <TextView
         android:id="@+id/txtTitle"
-        android:layout_width="345dp"
+        android:layout_width="match_parent"
         android:layout_height="54dp"
-        android:layout_marginLeft="30dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginRight="30dp"
         android:gravity="center"
-        android:text="@string/lbl_donhang"
+        android:text="KitKot Premium"
+        android:textColor="@color/black"
+        android:background="@color/light_gray"
         android:textSize="24sp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintHorizontal_bias="0.242"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <TextView
+        android:id="@+id/description"
+        android:layout_width="match_parent"
+        android:layout_height="54dp"
+        android:gravity="center"
+        android:layout_marginTop="20dp"
+        android:layout_marginLeft="40dp"
+        android:layout_marginRight="40dp"
+        android:text="Để có thể tạo các video dành riêng cho Premium hoặc xem các video dành riêng cho Premium, trước hết, bạn phải là Premium."
+        android:textColor="@color/black"
+        android:textSize="14sp"
+        app:layout_constraintTop_toBottomOf="@+id/txtTitle"/>
+
     <RadioGroup
         android:id="@+id/rdgTypePackage"
-        xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@id/txtTitle"
+        android:layout_marginTop="20dp"
+        app:layout_constraintTop_toBottomOf="@id/description"
         app:layout_constraintLeft_toLeftOf="parent"
         android:orientation="vertical">
-        <RadioButton android:id="@+id/radio_pirates"
+        <RadioButton android:id="@+id/btn_1m"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="1 tháng"
-            android:onClick="onRadioButtonClicked"/>
-        <RadioButton android:id="@+id/radio_ninjas"
+            android:text="1 Tháng"
+            android:onClick="btn_1m_clicked"/>
+        <RadioButton android:id="@+id/btn_3m"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="6 tháng"
-            android:onClick="onRadioButtonClicked"/>
+            android:text="3 Tháng"
+            android:onClick="btn_3m_clicked"/>
+        <RadioButton android:id="@+id/btn_6m"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="6 Tháng"
+            android:onClick="btn_6m_clicked"/>
+        <RadioButton android:id="@+id/btn_12m"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="12 Tháng"
+            android:onClick="btn_12m_clicked"/>
     </RadioGroup>
-
-
-
-    <Button
-        android:id="@+id/btnCreateOrder"
-        android:layout_width="347dp"
-        android:layout_height="40dp"
-        android:layout_marginStart="30dp"
-        android:layout_marginTop="24dp"
-        android:layout_marginEnd="30dp"
-        android:background="#2196F3"
-        android:text="@string/btn_create_order"
-        android:textColor="#FFFFFF"
-        android:textSize="20sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/rdgTypePackage" />
-
-    <TextView
-        android:id="@+id/lblZpTransToken"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="30dp"
-        android:layout_marginTop="30dp"
-        android:text="@string/lbl_zptranstoken"
-        android:textSize="14sp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/btnCreateOrder" />
 
     <Button
         android:id="@+id/btnPay"
@@ -87,21 +79,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/lblZpTransToken" />
-
-
-    <TextView
-        android:id="@+id/txtToken"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="20dp"
-        android:layout_marginTop="30dp"
-        android:layout_marginEnd="30dp"
-        android:textColor="#4CAF50"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.453"
-        app:layout_constraintStart_toEndOf="@+id/lblZpTransToken"
-        app:layout_constraintTop_toBottomOf="@+id/btnCreateOrder" />
+        app:layout_constraintTop_toBottomOf="@+id/rdgTypePackage" />
 
     <TextView
         android:id="@+id/txtResult"
@@ -128,5 +106,14 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/txtResult" />
+
+    <Button
+        android:id="@+id/btn_cancel"
+        android:layout_width="100dp"
+        android:layout_height="50dp"
+        android:text="Hủy"
+        android:layout_marginStart="152dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/txtDebug" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

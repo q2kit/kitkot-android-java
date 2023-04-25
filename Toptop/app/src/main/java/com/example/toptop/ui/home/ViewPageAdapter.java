@@ -10,21 +10,47 @@ import com.example.toptop.ui.inbox.InboxFragment;
 import com.example.toptop.ui.me.MeFragment;
 import com.example.toptop.ui.post.PostFragment;
 
+import java.util.ArrayList;
+
 public class ViewPageAdapter extends FragmentStatePagerAdapter {
 
+    private ArrayList<Fragment> fragments;
     public ViewPageAdapter(@NonNull FragmentManager fm, int behavior) {
         super(fm, behavior);
+        fragments = new ArrayList<>();
+        fragments.add(new VideoListFragment());
+        fragments.add(null);
+        fragments.add(null);
+        fragments.add(null);
+        fragments.add(null);
     }
 
     @NonNull
     @Override
     public Fragment getItem(int position) {
         switch (position){
-            case 0:return new HomeFragment();
-            case 1:return new DiscoverFragment();
-            case 2:return new PostFragment();
-            case 3:return new InboxFragment();
-            case 4:return new MeFragment();
+            case 0:
+                return fragments.get(0);
+            case 1:
+                if(fragments.get(1) == null){
+                    fragments.set(1, new DiscoverFragment());
+                }
+                return fragments.get(1);
+            case 2:
+                if(fragments.get(2) == null){
+                    fragments.set(2, new PostFragment());
+                }
+                return fragments.get(2);
+            case 3:
+                if(fragments.get(3) == null){
+                    fragments.set(3, new InboxFragment());
+                }
+                return fragments.get(3);
+            case 4:
+                if(fragments.get(4) == null){
+                    fragments.set(4, new MeFragment());
+                }
+                return fragments.get(4);
         }
         return null;
     }

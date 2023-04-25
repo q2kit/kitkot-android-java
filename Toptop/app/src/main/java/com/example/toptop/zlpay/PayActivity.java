@@ -5,26 +5,16 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.StrictMode;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.StringRequest;
-import com.android.volley.toolbox.Volley;
 import com.example.toptop.R;
 
 import org.json.JSONObject;
-
-import java.util.ArrayList;
 
 import vn.zalopay.sdk.Environment;
 import vn.zalopay.sdk.ZaloPayError;
@@ -32,25 +22,13 @@ import vn.zalopay.sdk.ZaloPaySDK;
 import vn.zalopay.sdk.listeners.PayOrderListener;
 
 public class PayActivity extends AppCompatActivity {
-    TextView lblZpTransToken, txtToken;
-    Button btnCreateOrder, btnPay;
+    Button btnPay, btn_cancel;
+    int level = 1;
 
     private void BindView() {
-        txtToken = findViewById(R.id.txtToken);
-        lblZpTransToken = findViewById(R.id.lblZpTransToken);
-        btnCreateOrder = findViewById(R.id.btnCreateOrder);
-        btnPay = findViewById(R.id.btnPay);
-        IsLoading();
-    }
-
-    private void IsLoading() {
-        lblZpTransToken.setVisibility(View.INVISIBLE);
-        txtToken.setVisibility(View.INVISIBLE);
     }
 
     private void IsDone() {
-        lblZpTransToken.setVisibility(View.VISIBLE);
-        txtToken.setVisibility(View.VISIBLE);
         btnPay.setVisibility(View.VISIBLE);
     }
 
@@ -59,6 +37,9 @@ public class PayActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_pay);
+
+        btnPay = findViewById(R.id.btnPay);
+        btn_cancel = findViewById(R.id.btn_cancel);
 
         StrictMode.ThreadPolicy policy = new
                 StrictMode.ThreadPolicy.Builder().permitAll().build();
@@ -76,8 +57,15 @@ public class PayActivity extends AppCompatActivity {
                     jsonParams.put("vipPackageID", "51f390d2-fb2c-4460-aa0a-081651526015");
                     pay("123");
                 } catch (Exception e) {
-                    System.out.println(e);
+                    Log.e("Error !!!", e.getMessage());
                 }
+            }
+        });
+
+        btn_cancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
             }
         });
     }
@@ -101,7 +89,6 @@ public class PayActivity extends AppCompatActivity {
                     }
 
                 });
-                IsLoading();
             }
 
             @Override
@@ -136,5 +123,18 @@ public class PayActivity extends AppCompatActivity {
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
         ZaloPaySDK.getInstance().onResult(intent);
+    }
+
+    public void btn_1m_clicked(View v) {
+        level = 1;
+    }
+    public void btn_3m_clicked(View v) {
+        level = 2;
+    }
+    public void btn_6m_clicked(View v) {
+        level = 3;
+    }
+    public void btn_12m_clicked(View v) {
+        level = 4;
     }
 }

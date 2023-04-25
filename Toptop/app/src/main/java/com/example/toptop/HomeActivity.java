@@ -8,7 +8,8 @@ import androidx.viewpager.widget.ViewPager;
 import android.os.Bundle;
 import android.view.MenuItem;
 
-import com.example.toptop.model.Video;
+import com.example.toptop.ui.home.Video;
+import com.example.toptop.ui.home.VideoAdapter;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.util.ArrayList;

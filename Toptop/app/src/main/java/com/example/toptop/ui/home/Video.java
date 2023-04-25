@@ -1,4 +1,4 @@
-package com.example.toptop.model;
+package com.example.toptop.ui.home;
 
 public class Video {
     private int id;

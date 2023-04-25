@@ -5,14 +5,20 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.splashscreen.SplashScreen;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
+import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
@@ -22,6 +28,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.toptop.chat.ChatActivity;
+import com.example.toptop.firebase.Firebase;
 import com.google.android.gms.auth.api.identity.BeginSignInRequest;
 import com.google.android.gms.auth.api.identity.BeginSignInResult;
 import com.google.android.gms.auth.api.identity.Identity;
@@ -30,6 +37,8 @@ import com.google.android.gms.auth.api.identity.SignInCredential;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+
+
 
 import java.util.HashMap;
 import java.util.Map;
@@ -42,17 +51,26 @@ public class MainActivity extends AppCompatActivity {
     SignInClient oneTapClient;
     BeginSignInRequest signUpRequest;
     Button btnGG;
+    Button login;
     Button bt_Chat;
+    TextView resetPW;
+    EditText edit_account, edit_password;
     private static final int REQ_ONE_TAP = 2;  // Can be any integer unique to the Activity.
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        SplashScreen splashScreen = SplashScreen.installSplashScreen(this);
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
         btnGG = findViewById(R.id.google_btn);
         bt_Chat = findViewById(R.id.bt_Chat);
+        login = findViewById(R.id.button);
+        resetPW = findViewById(R.id.resetPW);
+        edit_account = findViewById(R.id.edit_account);
+        edit_password = findViewById(R.id.edit_password);
+        Firebase firebase = new Firebase();
+        firebase.getNumberNotification(bt_Chat);
         bt_Chat.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -71,6 +89,40 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        login.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String account = edit_account.getText().toString();
+                String password = edit_password.getText().toString();
+                String url = "https://soc.q2k.dev/api/login/";
+
+                StringRequest request = new StringRequest(Request.Method.POST, url,
+                    new Response.Listener<String>() {
+                        @Override
+                        public void onResponse(String response) {
+                            response_processing(response);
+                        }
+                    },
+                    new Response.ErrorListener() {
+                        @Override
+                        public void onErrorResponse(VolleyError error) {
+                            // Xử lý lỗi ở đây
+                            Log.d("TAG", error.toString());
+                        }
+                        }) {
+                    @Override
+                    protected Map<String, String> getParams() throws AuthFailureError {
+                        Map<String, String> params = new HashMap<>();
+                        params.put("account", account);
+                        params.put("password", password);
+                        return params;
+                    }
+                };
+                RequestQueue requestQueue = Volley.newRequestQueue(MainActivity.this);
+                requestQueue.add(request);
+            }
+        });
+
         oneTapClient = Identity.getSignInClient(this);
         signUpRequest = BeginSignInRequest.builder()
                 .setGoogleIdTokenRequestOptions(BeginSignInRequest.GoogleIdTokenRequestOptions.builder()
@@ -79,6 +131,14 @@ public class MainActivity extends AppCompatActivity {
                         .setFilterByAuthorizedAccounts(false)
                         .build())
                 .build();
+
+        resetPW.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent switchActivityIntent = new Intent(MainActivity.this, ResetPWActivity.class);
+                startActivity(switchActivityIntent);
+            }
+        });
 
         btnGG.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -117,56 +177,19 @@ public class MainActivity extends AppCompatActivity {
                     SignInCredential credential = oneTapClient.getSignInCredentialFromIntent(data);
                     String idToken = credential.getGoogleIdToken();
                     if (idToken !=  null) {
-                        Log.d("TAG", "ID token: " + idToken);
-
                         String url = "https://soc.q2k.dev/api/google-auth/";
                         StringRequest request = new StringRequest(Request.Method.POST, url,
                                 new Response.Listener<String>() {
                                     @Override
                                     public void onResponse(String response) {
-                                        // Xử lý phản hồi từ API ở đây
-                                        try {
-                                            JSONObject res = new JSONObject(response);
-                                            if (res.getBoolean("success")) {
-                                                String token = res.getString("token");
-                                                JSONObject user = res.getJSONObject("user");
-                                                int uid = user.getInt("uid");
-                                                String username = user.getString("username");
-                                                String email = user.getString("email");
-                                                String phone = user.getString("phone");
-                                                String avatar = user.getString("avatar");
-                                                int followers = user.getInt("followers");
-                                                int following = user.getInt("following");
-                                                int likes = user.getInt("likes");
-
-                                                // Lưu token vào SharedPreferences
-                                                SharedPreferences sharedPreferences = getSharedPreferences("dataUser", MODE_PRIVATE);
-                                                SharedPreferences.Editor editor = sharedPreferences.edit();
-                                                editor.putString("token", token);
-                                                editor.putInt("uid", uid);
-                                                editor.putString("username", username);
-                                                editor.putString("email", email);
-                                                editor.putString("phone", phone);
-                                                editor.putString("avatar", avatar);
-                                                editor.putInt("followers", followers);
-                                                editor.putInt("following", following);
-                                                editor.putInt("likes", likes);
-                                            } else {
-                                                throw new RuntimeException(res.getString("message"));
-                                            }
-                                        } catch (Exception e) {
-                                            throw new RuntimeException(e);
-                                        }
-
-                                        Intent homeIntent = new Intent(MainActivity.this, HomeActivity.class);
-                                        startActivity(homeIntent);
+                                        response_processing(response);
                                     }
                                 }, new Response.ErrorListener() {
-                            @Override
-                            public void onErrorResponse(VolleyError error) {
-                                // Xử lý lỗi kết nối hoặc lỗi phản hồi từ API ở đây
-                            }
-                        }) {
+                                    @Override
+                                    public void onErrorResponse(VolleyError error) {
+                                        // Xử lý lỗi kết nối hoặc lỗi phản hồi từ API ở đây
+                                    }
+                                }) {
                             @Override
                             protected Map<String, String> getParams() throws AuthFailureError {
                                 Map<String, String> params = new HashMap<>();
@@ -174,14 +197,50 @@ public class MainActivity extends AppCompatActivity {
                                 return params;
                             }
                         };
-                        // Thêm request vào hàng đợi của Volley
                         RequestQueue queue = Volley.newRequestQueue(MainActivity.this);
                         queue.add(request);
-
                     }
                 } catch (ApiException e) {
                 }
                 break;
+        }
+    }
+    protected void response_processing(String response) {
+        try {
+            JSONObject res = new JSONObject(response);
+            if (res.getBoolean("success")) {
+                String token = res.getString("token");
+                JSONObject user = res.getJSONObject("user");
+                int uid = user.getInt("uid");
+                String username = user.getString("username");
+                String email = user.getString("email");
+                String phone = user.getString("phone");
+                String avatar = user.getString("avatar");
+                int followers = user.getInt("followers");
+                int following = user.getInt("following");
+                int liked = user.getInt("liked");
+
+                // Lưu token vào SharedPreferences
+                SharedPreferences sharedPreferences = getSharedPreferences("dataUser", MODE_PRIVATE);
+                SharedPreferences.Editor editor = sharedPreferences.edit();
+                editor.putString("token", token);
+                editor.putInt("uid", uid);
+                editor.putString("username", username);
+                editor.putString("email", email);
+                editor.putString("phone", phone);
+                editor.putString("avatar", avatar);
+                editor.putInt("followers", followers);
+                editor.putInt("following", following);
+                editor.putInt("liked", liked);
+
+                Intent homeIntent = new Intent(MainActivity.this, HomeActivity.class);
+                startActivity(homeIntent);
+            } else {
+                String message = res.getString("message");
+                Toast.makeText(MainActivity.this, message, Toast.LENGTH_SHORT).show();
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
     }
 }

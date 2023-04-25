@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
-
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.INTERNET" />
 
     <application
@@ -10,14 +11,27 @@
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
         android:usesCleartextTraffic="true"
-        android:icon="@mipmap/ic_launcher"
+        android:icon="@drawable/ic_tiktok_logo"
         android:label="@string/app_name"
         android:networkSecurityConfig="@xml/config_network"
-        android:roundIcon="@mipmap/ic_launcher_round"
+        android:roundIcon="@drawable/ic_tiktok_logo"
         android:supportsRtl="true"
         android:theme="@style/Theme.Toptop"
         tools:targetApi="31">
-
+        <activity
+            android:name=".SettingActivity"
+            android:exported="false">
+            <meta-data
+                android:name="android.app.lib_name"
+                android:value="" />
+        </activity>
+        <activity
+            android:name=".MainActivity"
+            android:exported="false">
+            <meta-data
+                android:name="android.app.lib_name"
+                android:value="" />
+        </activity>
         <activity
             android:name=".chat.ChatActivity"
             android:exported="false">
@@ -31,8 +45,23 @@
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />
-        </activity>  <activity
-            android:name=".phantich.PhanTichActivity"
+        </activity>
+        <activity
+            android:name=".ResetPWActivity"
+            android:exported="false">
+            <meta-data
+                android:name="android.app.lib_name"
+                android:value="" />
+        </activity>
+        <activity
+            android:name=".zlpay.PayActivity"
+            android:exported="false">
+            <meta-data
+                android:name="android.app.lib_name"
+                android:value="" />
+        </activity>
+        <activity
+            android:name=".HomeActivity"
             android:exported="false">
             <meta-data
                 android:name="android.app.lib_name"
@@ -43,7 +72,7 @@
             android:name=".payment.PaymentActivity"
             android:exported="true"
             android:launchMode="singleTask"
-            >
+        >
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />
@@ -64,8 +93,7 @@
                 android:value="" />
         </activity>
         <activity
-
-            android:name=".HomeActivity"
+            android:name=".SplashActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    android:orientation="vertical"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        app:title="Privacy and settings"
+        app:titleTextColor="@color/black"
+        android:layout_marginLeft="90dp"
+        app:layout_constraintTop_toTopOf="parent">
+
+    </androidx.appcompat.widget.Toolbar>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/gray"/>
+
+    <ImageView
+        android:id="@+id/manager_acc"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:src="@drawable/manager_acc"
+        android:layout_margin="5dp"/>
+
+    <ImageView
+        android:id="@+id/premium"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:src="@drawable/premium"
+        android:layout_margin="5dp"/>
+
+    <ImageView
+        android:id="@+id/share_profile"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:src="@drawable/share_profile"
+        android:layout_margin="5dp"/>
+
+    <ImageView
+        android:id="@+id/kitkot_code"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:src="@drawable/kitkot_code"
+        android:layout_margin="5dp"/>
+
+    <ImageView
+        android:id="@+id/push_noti"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:src="@drawable/push_noti"
+        android:layout_margin="5dp"/>
+
+    <ImageView
+        android:id="@+id/languages"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:src="@drawable/language"
+        android:layout_margin="5dp"/>
+
+    <ImageView
+        android:id="@+id/help"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:src="@drawable/help"
+        android:layout_margin="5dp"/>
+
+    <ImageView
+        android:id="@+id/logout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:src="@drawable/logout"
+        android:layout_margin="5dp"/>
+
+</LinearLayout>

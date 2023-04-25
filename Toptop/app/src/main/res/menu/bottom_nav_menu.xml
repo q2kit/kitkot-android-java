@@ -1,18 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
-    <item
-        android:icon="@drawable/home"
+    <item android:title="Home"
+        android:icon="@drawable/ic_baseline_home_24"
         android:id="@+id/mHome"/>
-    <item
-        android:icon="@drawable/discover"
+    <item android:title="Discovery"
+        android:icon="@drawable/ic_baseline_search_24"
         android:id="@+id/mDiscover"/>
     <item
-        android:icon="@drawable/button_shape"
-        android:id="@+id/mAdd"/>
-    <item
+        android:icon="@drawable/ic_baseline_add_box_24"
+        android:id="@+id/mPost"
+        android:title="Up Video" />
+    <item android:title="Inbox"
         android:icon="@drawable/inbox"
         android:id="@+id/mInbox"/>
-    <item
+    <item android:title="Me"
         android:icon="@drawable/me"
         android:id="@+id/mMe"/>
 </menu>

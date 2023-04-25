@@ -6,8 +6,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 
-import com.example.toptop.ui.home.HomeFragment;
-
 public class SplashActivity extends AppCompatActivity {
 
     @Override
@@ -19,7 +17,7 @@ public class SplashActivity extends AppCompatActivity {
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
-                startActivity(new Intent(SplashActivity.this, MainActivity.class));
+                startActivity(new Intent(SplashActivity.this, HomeActivity.class));
             }
         }, 3000);
 

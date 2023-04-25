@@ -7,7 +7,8 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageView;
 
-import com.example.toptop.zlpay.PayActivity;
+import com.example.toptop.payment.PaymentActivity;
+
 
 public class SettingActivity extends AppCompatActivity {
 
@@ -31,7 +32,7 @@ public class SettingActivity extends AppCompatActivity {
         premium.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(SettingActivity.this, PayActivity.class));
+                startActivity(new Intent(SettingActivity.this, PaymentActivity.class));
             }
         });
     }

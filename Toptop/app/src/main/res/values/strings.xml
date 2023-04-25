@@ -75,15 +75,8 @@
         <item>false</item>
     </string-array>
     <string name="action_settings">Settings</string>
-    <string name="lbl_sotien">Số Tiền</string>
-    <string name="lbl_donhang">Đăng ký thành viên VIP</string>
-    <string name="btn_create_order">Tạo Đơn Hàng</string>
-    <string name="txt_amount_init">1000</string>
-    <string name="txt_amount_hint">1000</string>
-    <string name="btn_pay">Thanh Toán</string>
-    <string name="lbl_zptranstoken">zptranstoken</string>
-    <string name="to_webview">To WebView</string>
-    <string name="nptinh_server_domain">http://192.168.41.102:8080</string>
+
+    <string name="nptinh_server_domain">http://192.168.41.105:8080</string>
 
     <string name="dummy_button">Dummy Button</string>
     <string name="dummy_content">DUMMY\nCONTENT</string>

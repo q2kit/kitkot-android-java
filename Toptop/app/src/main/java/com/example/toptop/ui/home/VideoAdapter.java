@@ -74,17 +74,6 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.VideoViewHol
                 public void onPrepared(MediaPlayer mp) {
                     videoProgressBar.setVisibility(View.GONE);
                     mp.start();
-
-                    float videoRatio = mp.getVideoWidth() / mp.getVideoHeight();
-                    float screenRadio = videoView.getWidth() /mp.getVideoHeight();
-
-                    float scale = videoRatio/screenRadio;
-
-                    if(scale >= 1f){
-                        videoView.setScaleX(scale);
-                    }else{
-                        videoView.setScaleY(1f/scale);
-                    }
                 }
             });
 

@@ -23,6 +23,7 @@ import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.toptop.chat.ChatActivity;
 import com.example.toptop.firebase.Firebase;
+import com.example.toptop.socket.SocketRoot;
 import com.google.android.gms.auth.api.identity.BeginSignInRequest;
 import com.google.android.gms.auth.api.identity.BeginSignInResult;
 import com.google.android.gms.auth.api.identity.Identity;
@@ -62,18 +63,6 @@ public class MainActivity extends AppCompatActivity {
         resetPW = findViewById(R.id.resetPW);
         Firebase firebase = new Firebase();
         firebase.getNumberNotification(bt_Chat);
-        bt_Chat.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                SharedPreferences sharedPreferences = getSharedPreferences("dataUser", MODE_PRIVATE);
-                String token="";
-                sharedPreferences.getString("token",token);
-                Log.e("token", token);
-
-                Intent switchActivityIntent = new Intent(MainActivity.this, ChatActivity.class);
-                startActivity(switchActivityIntent);
-            }
-        });
         //press signup
         final TextView txtLogin = findViewById(R.id.textView7);
         txtLogin.setOnClickListener(new View.OnClickListener() {
@@ -212,7 +201,8 @@ public class MainActivity extends AppCompatActivity {
             JSONObject res = new JSONObject(response);
             if (res.getBoolean("success")) {
                 String token = res.getString("token");
-                Log.e("TOken login", token);
+                Log.e("Token login", token);
+
                 JSONObject user = res.getJSONObject("user");
                 int uid = user.getInt("uid");
                 String username = user.getString("username");
@@ -235,7 +225,7 @@ public class MainActivity extends AppCompatActivity {
                 editor.putInt("followers", followers);
                 editor.putInt("following", following);
                 editor.putInt("liked", liked);
-
+                editor.apply();
                 Intent homeIntent = new Intent(MainActivity.this, HomeActivity.class);
                 startActivity(homeIntent);
             } else {

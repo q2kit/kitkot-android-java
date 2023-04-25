@@ -2,15 +2,32 @@ package com.example.toptop;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentStatePagerAdapter;
+import androidx.fragment.app.FragmentTransaction;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager.widget.ViewPager;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.FrameLayout;
+import android.widget.LinearLayout;
+import android.widget.Toast;
 
+import com.example.toptop.chat.ChatActivity;
+import com.example.toptop.chat.ChatAdapter;
+import com.example.toptop.chat.ChatDetailFragment;
+import com.example.toptop.chat.ChatHandle;
+import com.example.toptop.chat.ChatMessage;
+import com.example.toptop.chat.Message;
+import com.example.toptop.notification.NotificationFragment;
+import com.example.toptop.socket.SocketRoot;
 import com.example.toptop.ui.home.ViewPageAdapter;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
@@ -20,22 +37,112 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import io.socket.client.Socket;
+import io.socket.emitter.Emitter;
+
 public class HomeActivity extends AppCompatActivity {
 
     private BottomNavigationView bottomNavigationView;
     private ViewPager viewPager;
 
+    // for chat
+    final int T_CHAT_ID = 1;
+    final int T_CHAT_INIT = 2;
+    final int T_CHAT_LIST= 6;
+    final int T_CHAT_MORE= 7;
+
+    private List<ChatMessage> chatMessages;
+    private ChatAdapter chatAdapter;
+    private FragmentManager fragmentManager;
+    private ChatDetailFragment chatDetailFragment;
+    private Socket socket;
+    private FrameLayout frameLayout;
+    private LinearLayout btNotification;
+    private int userId;
+    private Emitter.Listener onNewMessage = new Emitter.Listener() {
+        @Override
+        public void call(final Object... args) {
+            try {
+                HomeActivity.this.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        JSONObject data = (JSONObject) args[0];
+                        try {
+                            int type = Integer.parseInt(data.getString("type"));
+                            ChatHandle handle = new ChatHandle();
+                            Log.e("Socket type", type+"");
+
+                            switch(type){
+                                case T_CHAT_LIST:
+                                    chatMessages = handle.exactListChatSection(data.getJSONArray("data"), userId);
+                                    chatAdapter.setMessages(chatMessages);
+                                    break;
+                                case T_CHAT_INIT:
+                                    JSONArray arr = data.getJSONArray("data");
+                                    if(arr != null && chatDetailFragment != null){
+                                        chatDetailFragment.setMessages(handle.exactListMessage(arr, userId));
+                                    }
+                                    break;
+                                case T_CHAT_ID:
+                                    if(chatDetailFragment != null){
+                                        chatDetailFragment.addMessage(handle.exactListMessage(data.getJSONArray("data"), userId), false);
+                                    }
+                                    socket.emit("list-chat");
+                                    break;
+                                case T_CHAT_MORE:
+                                    if(chatDetailFragment != null){
+                                        List<Message> messages = handle.exactListMessage(data.getJSONArray("data"), userId);
+
+                                        chatDetailFragment.addMessage(messages, true);
+                                    }
+                            }
+
+                        } catch (JSONException e) {
+                            Log.e("Socket run error", e.toString());
+                            return;
+                        }
+
+                    }
+                });
+            }catch (Exception e){
+                Log.e("Socket call error", e.toString());
+            }
+        }
+    };
+    //
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
+        SharedPreferences sharedPreferences = getSharedPreferences("dataUser", MODE_PRIVATE);;
+        Log.e("TOKEN", sharedPreferences.getString("token",""));
+
+
+        // for chat
+
+
+        userId = sharedPreferences.getInt("uid", 0);
+        SocketRoot.token = sharedPreferences.getString("token","");
+        socket = SocketRoot.getInstance();
+        socket.on("data",onNewMessage);
+        socket.connect();
+        //
 
         bottomNavigationView = findViewById(R.id.nav_view);
         viewPager = findViewById(R.id.viewPager);
 
+
         ViewPageAdapter adapter=new ViewPageAdapter(getSupportFragmentManager(),
                 FragmentStatePagerAdapter.BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT);
         viewPager.setAdapter(adapter);
+
         viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
@@ -52,6 +159,25 @@ public class HomeActivity extends AppCompatActivity {
                     case 2:bottomNavigationView.getMenu().findItem(R.id.mPost).setChecked(true);
                         break;
                     case 3:bottomNavigationView.getMenu().findItem(R.id.mInbox).setChecked(true);
+                        fragmentManager = getSupportFragmentManager();
+                        btNotification = findViewById(R.id.btNotification);
+                        btNotification.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                frameLayout.setVisibility(View.VISIBLE);
+                                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                                fragmentTransaction.add(R.id.chatDetailFrame, new NotificationFragment());
+                                fragmentTransaction.addToBackStack("notification");
+                                fragmentTransaction.commit();
+                            }
+                        });
+                        chatMessages = new ArrayList<>();
+                        chatAdapter = new ChatAdapter(new ChatSelection());
+                        frameLayout = findViewById(R.id.chatDetailFrame);
+                        RecyclerView chatRecyclerView = findViewById(R.id.chatRecyclerView);
+                        chatRecyclerView.setLayoutManager(new LinearLayoutManager(HomeActivity.this));
+                        chatRecyclerView.setAdapter(chatAdapter);
+                        socket.emit("list-chat");
                         break;
                     case 4:bottomNavigationView.getMenu().findItem(R.id.mMe).setChecked(true);
                         break;
@@ -83,6 +209,40 @@ public class HomeActivity extends AppCompatActivity {
             }
         });
 
+    }
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        Log.e("BackPress", "OK");
+        socket.emit("list-chat");
+        frameLayout.setVisibility(View.INVISIBLE);
+        if(fragmentManager.getBackStackEntryCount() > 0){
+            fragmentManager.popBackStack();
+        }
+    }
+
+    class ChatSelection implements ChatAdapter.IChat{
+
+        @Override
+        public void onChatClicked(View v, int position) {
+            ChatMessage chatMessage =  chatMessages.get(position);
+            Log.e("Position ", position+"");
+            Toast.makeText(HomeActivity.this,"Click "+position,Toast.LENGTH_SHORT ).show();
+            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+            chatDetailFragment = new ChatDetailFragment(chatMessage);
+            frameLayout.setVisibility(View.VISIBLE);
+            fragmentTransaction.add(R.id.chatDetailFrame, chatDetailFragment);
+            fragmentTransaction.addToBackStack(chatMessage.getUserId()+"");
+            fragmentTransaction.commit();
+
+            JSONObject data = new JSONObject();
+            try {
+                data.put("user_id", chatMessage.getUserId());
+                socket.emit("select-chat", data);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
 }

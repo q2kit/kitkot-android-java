@@ -6,6 +6,7 @@ import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -21,6 +22,7 @@ import com.example.toptop.R;
 import com.example.toptop.firebase.Firebase;
 import com.example.toptop.socket.SocketRoot;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -44,7 +46,7 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
     private ChatDetailFragment chatDetailFragment;
     private Socket socket;
     private FrameLayout frameLayout;
-
+    private int userId;
     private Emitter.Listener onNewMessage = new Emitter.Listener() {
         @Override
         public void call(final Object... args) {
@@ -60,21 +62,24 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
 
                             switch(type){
                                 case T_CHAT_LIST:
-                                    chatMessages = handle.exactListChatSection(data.getJSONArray("data"));
+                                    chatMessages = handle.exactListChatSection(data.getJSONArray("data"), userId);
                                     adapter.setMessages(chatMessages);
                                     break;
                                 case T_CHAT_INIT:
-                                    chatDetailFragment.setMessages(handle.exactListMessage(data.getJSONArray("data")));
+                                    JSONArray arr = data.getJSONArray("data");
+                                    if(arr != null && chatDetailFragment != null){
+                                        chatDetailFragment.setMessages(handle.exactListMessage(arr, userId));
+                                    }
                                     break;
                                 case T_CHAT_ID:
                                     if(chatDetailFragment != null){
-                                        chatDetailFragment.addMessage(handle.exactListMessage(data.getJSONArray("data")), false);
+                                        chatDetailFragment.addMessage(handle.exactListMessage(data.getJSONArray("data"), userId), false);
                                     }
                                     socket.emit("list-chat");
                                     break;
                                 case T_CHAT_MORE:
                                     if(chatDetailFragment != null){
-                                        List<Message> messages = handle.exactListMessage(data.getJSONArray("data"));
+                                        List<Message> messages = handle.exactListMessage(data.getJSONArray("data"), userId);
 
                                         chatDetailFragment.addMessage(messages, true);
                                     }
@@ -98,10 +103,6 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat);
 
-//
-//
-//        Firebase f = new Firebase();
-//        f.getNotifications();
         fragmentManager = getSupportFragmentManager();
         chatMessages = new ArrayList<>();
         adapter = new ChatAdapter(new ChatSelection());
@@ -110,6 +111,10 @@ public class ChatActivity extends AppCompatActivity implements View.OnClickListe
         chatRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         chatRecyclerView.setAdapter(adapter);
 
+        SharedPreferences sharedPreferences = getSharedPreferences("dataUser", MODE_PRIVATE);;
+        userId = sharedPreferences.getInt("uid", 0);
+        Log.e("userId", userId+"");
+        SocketRoot.token = sharedPreferences.getString("token","");
         socket = SocketRoot.getInstance();
         socket.on("data",onNewMessage);
         socket.connect();

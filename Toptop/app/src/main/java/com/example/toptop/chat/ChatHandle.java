@@ -1,5 +1,6 @@
 package com.example.toptop.chat;
 
+import android.content.SharedPreferences;
 import android.util.Log;
 
 import com.example.toptop.util.Util;
@@ -12,7 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ChatHandle {
-    public List<ChatMessage> exactListChatSection(JSONArray data){
+    public List<ChatMessage> exactListChatSection(JSONArray data, int userId){
         List<ChatMessage> items = new ArrayList<>();
 
         // fetch to get avatar, username
@@ -24,14 +25,16 @@ public class ChatHandle {
                 String lastMessage = item.getString("last_message");
                 String sendTime = Util.convertIntToTime(Long.parseLong(item.getString("send_time")));
                 int userIdSend = Integer.parseInt(item.getString("user_id_send"));
+                String name =item.getString("name");
+                String avatar =item.getString("avatar");
 
                 ChatMessage  section = new ChatMessage(
                         id,
                         lastMessage,
-                        "User "+ id,
-                        "https://znews-photo.zingcdn.me/w660/Uploaded/ofh_btgazspf/2019_10_20/1_1.jpg",
+                        name,
+                        avatar,
                         sendTime,
-                        userIdSend == 1
+                        userIdSend == userId
                 );
 
                 Log.e("Data", item.getString("_id"));
@@ -44,7 +47,7 @@ public class ChatHandle {
     }
 
 
-    public List<Message> exactListMessage(JSONArray data){
+    public List<Message> exactListMessage(JSONArray data, int userId){
         List<Message> items = new ArrayList<>();
 
         // fetch to get avatar, username
@@ -67,7 +70,7 @@ public class ChatHandle {
                 );
 
                 Log.e("Message", message.toString());
-                message.setIncoming(userIdSend != 1);
+                message.setIncoming(userIdSend != userId);
                 items.add(message);
             } catch (JSONException e) {
                 e.printStackTrace();

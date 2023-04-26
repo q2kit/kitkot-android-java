@@ -19,7 +19,7 @@ public class SocketRoot {
                 options.auth = new TreeMap<>();
                 options.auth.put("token", token);
                 options.path = "/message";
-                mSocket = IO.socket("http://192.168.1.8:3005", options);
+                mSocket = IO.socket("http://beta.api.nexta.vn", options);
             } catch (URISyntaxException e) {
                 Log.e("Socket connect error",e.toString());
             }

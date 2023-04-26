@@ -14,7 +14,7 @@ public class Video {
     public void setOwner_avatar(String owner_avatar) {
         this.owner_avatar = owner_avatar;
     }
-
+    public  boolean is_played =false;
     private String owner_avatar;
     private boolean is_premium;
     private int watched;
@@ -109,6 +109,14 @@ public class Video {
 
     public void setIs_followed(boolean is_followed) {
         this.is_followed = is_followed;
+    }
+
+    public boolean isIs_played() {
+        return is_played;
+    }
+
+    public void setIs_played(boolean is_played) {
+        this.is_played = is_played;
     }
 
     public Video(int id, String description, String link, int owner_id, String owner_name, String owner_avatar, boolean is_premium, int watched, int liked, int comment, boolean is_liked, boolean is_followed) {

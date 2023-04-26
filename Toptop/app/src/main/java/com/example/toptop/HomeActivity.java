@@ -142,7 +142,9 @@ public class HomeActivity extends AppCompatActivity {
         super.onBackPressed();
         Log.e("BackPress", "OK");
         socket.emit("list-chat");
-        frameLayout.setVisibility(View.INVISIBLE);
+        if(frameLayout!= null){
+            frameLayout.setVisibility(View.INVISIBLE);
+        }
         if(fragmentManager.getBackStackEntryCount() > 0){
             fragmentManager.popBackStack();
         }

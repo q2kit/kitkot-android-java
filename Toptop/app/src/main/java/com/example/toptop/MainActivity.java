@@ -207,6 +207,7 @@ public class MainActivity extends AppCompatActivity {
                 // Lưu token vào SharedPreferences
                 SharedPreferences sharedPreferences = getSharedPreferences("dataUser", MODE_PRIVATE);
                 SharedPreferences.Editor editor = sharedPreferences.edit();
+                Log.e("Login", "Success");
                 editor.putString("token", token);
                 editor.putInt("uid", uid);
                 editor.putString("username", username);
@@ -216,7 +217,7 @@ public class MainActivity extends AppCompatActivity {
                 editor.putInt("followers", followers);
                 editor.putInt("following", following);
                 editor.putInt("liked", liked);
-
+                editor.apply();
                 Intent homeIntent = new Intent(MainActivity.this, HomeActivity.class);
                 startActivity(homeIntent);
             } else {

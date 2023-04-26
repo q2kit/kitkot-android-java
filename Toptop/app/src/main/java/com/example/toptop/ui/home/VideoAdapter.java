@@ -2,6 +2,7 @@ package com.example.toptop.ui.home;
 
 
 import android.media.MediaPlayer;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -81,7 +82,6 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.VideoViewHol
         }
 
         void setVideoData(Video videoItem){
-            videoView.setVideoPath(videoItem.getLink());
             Glide.with(itemView.getContext())
                     .load(videoItem.getOwner_avatar())
                     .into(profileImage);
@@ -89,20 +89,34 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.VideoViewHol
             commentCount.setText(String.valueOf(videoItem.getComment()));
             username.setText(videoItem.getOwner_name());
             description.setText(videoItem.getDescription());
-            videoView.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-                @Override
-                public void onPrepared(MediaPlayer mp) {
-                    progressBar.setVisibility(View.GONE);
-                    mp.start();
-                }
-            });
+            Log.e("Play", "change");
+            if(!videoItem.isIs_played()){
+                Log.e("Play", "here");
+                videoView.setVideoPath(videoItem.getLink());
+                videoItem.setIs_played(true);
+                videoView.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                    @Override
+                    public void onPrepared(MediaPlayer mp) {
+                        progressBar.setVisibility(View.GONE);
+                        Log.e("PlayerCCC", "Ok");
+                        mp.start();
+                    }
+                });
 
-            videoView.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                @Override
-                public void onCompletion(MediaPlayer mediaPlayer) {
-                    mediaPlayer.start();
-                }
-            });
+                videoView.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                    @Override
+                    public void onCompletion(MediaPlayer mediaPlayer) {
+                        Log.e("PlayerCCC", "Done");
+                        mediaPlayer.start();
+                    }
+                });
+            }
+
+            if(videoItem.isIs_liked()){
+                imHeart.setImageResource(R.drawable.heart_active);
+            }else{
+                imHeart.setImageResource(R.drawable.heart);
+            }
 
             imHeart.setOnClickListener(new View.OnClickListener() {
                 @Override

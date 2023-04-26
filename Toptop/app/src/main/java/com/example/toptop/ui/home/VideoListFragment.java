@@ -6,6 +6,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.android.volley.AuthFailureError;
@@ -42,7 +43,7 @@ public class VideoListFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_home, container, false);
         getVideos();
         viewPager2 = view.findViewById(R.id.videos_view_pager);
-        videoAdapter = new VideoAdapter(videoItems);
+        videoAdapter = new VideoAdapter(videoItems, getChildFragmentManager());
         viewPager2.setAdapter(videoAdapter);
         return view;
     }

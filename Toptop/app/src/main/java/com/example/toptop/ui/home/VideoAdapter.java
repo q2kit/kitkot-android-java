@@ -30,9 +30,12 @@ import io.socket.client.Socket;
 public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.VideoViewHolder>{
 
     List<Video> videoItems;
+    static FragmentManager fragmentManager;
 
-    public VideoAdapter(List<Video> videoItems){
+    // Add this constructor:
+    public VideoAdapter(List<Video> videoItems, FragmentManager fragmentManager){
         this.videoItems = videoItems;
+        this.fragmentManager = fragmentManager;
     }
 
     public void setVideoItems(List<Video> videoItems){
@@ -65,7 +68,7 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.VideoViewHol
         CircleImageView profileImage;
         TextView likedCount, commentCount, username, description;
         ProgressBar progressBar;
-        ImageView imHeart;
+        ImageView imHeart, comment, share;
 
 
 
@@ -79,6 +82,8 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.VideoViewHol
             description = itemView.findViewById(R.id.description);
             progressBar = itemView.findViewById(R.id.progressBar);
             imHeart = itemView.findViewById(R.id.heart);
+            comment = itemView.findViewById(R.id.comment);
+            share = itemView.findViewById(R.id.share);
         }
 
         void setVideoData(Video videoItem){
@@ -124,6 +129,12 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.VideoViewHol
                     clickHeart(videoItem);
                 }
             });
+            comment.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    clickComment(videoItem.getId());
+                }
+            });
         }
 
         public void clickHeart(Video video){
@@ -136,7 +147,12 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.VideoViewHol
             } catch (JSONException e) {
                 throw new RuntimeException(e);
             }
+        }
 
+        public void clickComment(int video_id){
+            Log.d("QUAN", "click comment" + video_id);
+            CommentDialogFragment dialog = new CommentDialogFragment(video_id);
+            dialog.show(fragmentManager, "comment_dialog");
         }
 
     }

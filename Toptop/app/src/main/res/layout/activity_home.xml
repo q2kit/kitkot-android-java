@@ -21,6 +21,6 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:id="@+id/nav_view"
-        android:background="@color/black"
+        android:background="@color/light_gray"
         app:menu="@menu/bottom_nav_menu"/>
 </RelativeLayout>

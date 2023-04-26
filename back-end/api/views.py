@@ -8,6 +8,7 @@ from api.models import (
     Video,
     Comment,
     Watched,
+    Message,
 )
 
 from api.decorator import auth_pass
@@ -400,6 +401,7 @@ def edit_profile(request):
         })
 
 
+@csrf_exempt
 @auth_pass(["GET"])
 def get_user_info(request, uid):
     try:
@@ -416,7 +418,7 @@ def get_user_info(request, uid):
             "username": user.username,
             "email": user.email,
             "phone": user.phone,
-            "avatar": user.avatar,
+            "avatar": user.avatar or DEFAULT_AVATAR,
             "is_premium": user.is_premium,
         }
     })
@@ -473,9 +475,11 @@ def get_videos(request):
     videos = Video.objects.exclude(pk__in=watched).order_by("-id").annotate(
         owner_name=F("owner__name"),
         owner_avatar=F("owner__avatar"),
+        owner_preminum=F("owner__is_premium"),
         is_followed=Exists(request.user.following.filter(pk=OuterRef("owner_id"))),
         is_liked=Exists(Watched.objects.filter(user=request.user, video=OuterRef("pk"), liked=True)),
         liked=Count('watched', filter=Q(watched__liked=True)),
+        watched_count=Count('watched'),
         comment=Count('comments'),
     ).values(
         "id",
@@ -484,11 +488,12 @@ def get_videos(request):
         "owner_id",
         "owner_name",
         "owner_avatar",
+        "owner_preminum",
         "is_followed",
         "is_liked",
         "is_premium",
         "liked",
-        "watched",
+        "watched_count",
         "comment"
     )
     if not request.user.is_premium:
@@ -513,13 +518,14 @@ def get_videos_by_owner(request, owner_id):
     videos = owner.videos.all().order_by("-id").annotate(
         is_liked=Exists(Watched.objects.filter(user=request.user, video=OuterRef("pk"), liked=True)),
         liked=Count('watched', filter=Q(watched__liked=True)),
+        watched_count=Count('watched'),
     ).values(
         "id",
         "description",
         "link",
         "is_liked",
         "liked",
-        "watched",
+        "watched_count",
         "is_premium",
     )
     if not request.user.is_premium:
@@ -623,6 +629,7 @@ def post_comment(request):
     })
 
 
+@csrf_exempt
 @auth_pass(["GET"])
 def get_comments(request, video_id):
     try:
@@ -655,3 +662,60 @@ def get_comments(request, video_id):
         "comments": list(comments)
     })
 
+
+@csrf_exempt
+@auth_pass(["POST"])
+def send_message(request):
+    try:
+        receiver = User.objects.get(pk=request.POST["receiver_id"])
+        content = request.POST["content"]
+    except Exception:
+        return JsonResponse({
+            "success": False,
+            "message": "Invalid receiver or content"
+        })
+    
+    Message.objects.create(
+        sender=request.user,
+        receiver=receiver,
+        content=content,
+    )
+
+    return JsonResponse({
+        "success": True,
+        "message": "Message sent",
+    })
+
+
+@csrf_exempt
+@auth_pass(["GET"])
+def get_messages(request, receiver_id):
+    try:
+        receiver = User.objects.get(pk=receiver_id)
+    except Exception:
+        return JsonResponse({
+            "success": False,
+            "message": "Invalid receiver"
+        })
+    
+    messages = Message.objects.filter(
+        Q(sender=request.user, receiver=receiver) | Q(sender=receiver, receiver=request.user)
+    ).order_by("id").values(
+        "content",
+        "sender_id",
+        "created_at",
+    )
+
+    messages = [
+        {
+            "content": message["content"],
+            "created_by_self": message["sender_id"] == request.user.id,
+            "created_at": message["created_at"].strftime("%d/%m/%Y %H:%M:%S"),
+        }
+        for message in messages
+    ]
+
+    return JsonResponse({
+        "success": True,
+        "messages": messages
+    })

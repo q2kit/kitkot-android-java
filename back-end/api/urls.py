@@ -27,6 +27,8 @@ from api.views import (
     get_videos_by_owner,
     post_comment,
     get_comments,
+    get_messages,
+    send_message,
 )
 
 urlpatterns = [
@@ -42,4 +44,7 @@ urlpatterns = [
     path('<int:owner_id>/videos/', get_videos_by_owner),
     path('post-comment/', post_comment),
     path('<int:video_id>/comments/', get_comments),
+
+    path('send-message/', send_message),
+    path('<int:receiver_id>/messages/', get_messages),
 ]

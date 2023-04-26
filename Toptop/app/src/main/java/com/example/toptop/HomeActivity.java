@@ -23,10 +23,13 @@ import com.example.toptop.chat.ChatDetailFragment;
 import com.example.toptop.chat.ChatHandle;
 import com.example.toptop.chat.ChatMessage;
 import com.example.toptop.chat.Message;
+import com.example.toptop.firebase.Firebase;
+import com.example.toptop.notification.Notification;
 import com.example.toptop.notification.NotificationFragment;
+import com.example.toptop.notification.NotificationHandle;
 import com.example.toptop.socket.SocketRoot;
 import com.example.toptop.ui.home.Video;
-import com.example.toptop.ui.home.VideoAdapter;
+import com.example.toptop.ui.home.VideoHandle;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import org.json.JSONArray;
@@ -45,20 +48,28 @@ public class HomeActivity extends AppCompatActivity {
     private ViewPager viewPager;
     private int _currentPage = 0;
     private ArrayList<Video> videos = new ArrayList<>();
+    private  ViewPageAdapter adapter;
 
     // for chat
     final int T_CHAT_ID = 1;
     final int T_CHAT_INIT = 2;
     final int T_CHAT_LIST= 6;
     final int T_CHAT_MORE= 7;
+    final int T_NOTI_LIST= 10;
+    final int T_VIDEO= 5;
+    final int T_VIDEO_LIKE= 3;
 
     private List<ChatMessage> chatMessages;
+    private List<Notification> notifications;
     private ChatAdapter chatAdapter;
     private FragmentManager fragmentManager;
     private ChatDetailFragment chatDetailFragment;
+    private NotificationFragment notificationFragment;
     private Socket socket;
     private FrameLayout frameLayout;
     private LinearLayout btNotification;
+    private Firebase firebase;
+
     private int userId;
     private Emitter.Listener onNewMessage = new Emitter.Listener() {
         @Override
@@ -71,6 +82,8 @@ public class HomeActivity extends AppCompatActivity {
                         try {
                             int type = Integer.parseInt(data.getString("type"));
                             ChatHandle handle = new ChatHandle();
+                            NotificationHandle notificationHandle = new NotificationHandle();
+                            VideoHandle videoHandle = new VideoHandle();
                             Log.e("Socket type", type+"");
 
                             switch(type){
@@ -96,6 +109,20 @@ public class HomeActivity extends AppCompatActivity {
 
                                         chatDetailFragment.addMessage(messages, true);
                                     }
+                                    break;
+                                case  T_NOTI_LIST:
+                                    if(notificationFragment != null){
+                                        notifications = notificationHandle.exactListNoti(data.getJSONArray("data"));
+                                        notificationFragment.setNotifications(notifications);
+                                    }
+                                    break;
+                                case T_VIDEO_LIKE:
+                                case  T_VIDEO:
+                                    Video v = videoHandle.exactVideoInfo(data.getJSONObject("data"));
+                                    adapter.updateVideo(v);
+                                    Log.e("video get", v.toString());
+                                    break;
+
                             }
 
                         } catch (JSONException e) {
@@ -135,11 +162,15 @@ public class HomeActivity extends AppCompatActivity {
         socket = SocketRoot.getInstance();
         socket.on("data",onNewMessage);
         socket.connect();
+
+        firebase = new Firebase();
+        firebase.getNumberNotification(bottomNavigationView.getMenu().findItem(R.id.mInbox), userId);
         //
 
-        ViewPageAdapter adapter = new ViewPageAdapter(getSupportFragmentManager(),
+        adapter = new ViewPageAdapter(getSupportFragmentManager(),
                 FragmentStatePagerAdapter.BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT);
         viewPager.setAdapter(adapter);
+
         viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
@@ -166,10 +197,13 @@ public class HomeActivity extends AppCompatActivity {
                             @Override
                             public void onClick(View view) {
                                 frameLayout.setVisibility(View.VISIBLE);
+                                notificationFragment =  new NotificationFragment();
                                 FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                                fragmentTransaction.add(R.id.chatDetailFrame, new NotificationFragment());
+                                fragmentTransaction.add(R.id.chatDetailFrame, notificationFragment);
                                 fragmentTransaction.addToBackStack("notification");
                                 fragmentTransaction.commit();
+                                Log.e("Socket emit", "list-notification");
+                                socket.emit("list-notification");
                             }
                         });
                         chatMessages = new ArrayList<>();

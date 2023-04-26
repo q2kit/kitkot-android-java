@@ -125,4 +125,21 @@ public class Video {
         this.is_liked = is_liked;
         this.is_followed = is_followed;
     }
+
+    public Video(int id, int liked, int comment, boolean is_liked) {
+        this.id = id;
+        this.liked = liked;
+        this.comment = comment;
+        this.is_liked = is_liked;
+    }
+
+    @Override
+    public String toString() {
+        return "Video{" +
+                "id=" + id +
+                ", liked=" + liked +
+                ", comment=" + comment +
+                ", is_liked=" + is_liked +
+                '}';
+    }
 }

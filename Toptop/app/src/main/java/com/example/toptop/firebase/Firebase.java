@@ -2,13 +2,14 @@ package com.example.toptop.firebase;
 
 import android.content.Context;
 import android.util.Log;
+import android.view.MenuItem;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.example.toptop.model.Notification;
+import com.example.toptop.notification.Notification;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.CollectionReference;
@@ -48,11 +49,11 @@ public class Firebase {
         });
     }
 
-    public int getNumberNotification(TextView tvNotification){
+    public int getNumberNotification(MenuItem tvNotification, int userId){
         AtomicInteger notiNum = new AtomicInteger();
         firestore = FirebaseFirestore.getInstance();
                 CollectionReference notificationQuery = firestore.collection("notifications")
-                .document("1")
+                .document(userId+"")
                 .collection("data");
         Query query = notificationQuery.orderBy("id", Query.Direction.DESCENDING).limit(10);
         query.addSnapshotListener(new EventListener<QuerySnapshot>() {
@@ -62,7 +63,7 @@ public class Firebase {
                     Log.e("Noti change", documentChange.getType()+"");
                     if(documentChange.getType().equals(DocumentChange.Type.ADDED)){
                         notiNum.addAndGet(1);
-                        tvNotification.setText(notiNum.get()+"");
+                        tvNotification.setTitle("Inbox "+notiNum.get());
                         Log.e("Notify change", notiNum.get()+"");
                     }
                 });

@@ -26,10 +26,19 @@
         android:layout_below="@+id/llInbox"
         android:id="@+id/btNotification"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        >
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/common_google_signin_btn_icon_dark"
+            />
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:textSize="20dp"
+            android:textStyle="bold"
             android:text="Notification"
             />
     </LinearLayout>

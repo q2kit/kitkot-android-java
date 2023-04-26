@@ -9,4 +9,7 @@
     <domain-config cleartextTrafficPermitted="true">
         <domain includeSubdomains="true">10.1.64.5</domain>
     </domain-config>
+    <domain-config cleartextTrafficPermitted="true">
+        <domain includeSubdomains="true">10.1.48.94</domain>
+    </domain-config>
 </network-security-config>

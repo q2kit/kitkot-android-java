@@ -1,6 +1,5 @@
 package com.example.toptop.chat;
 
-import android.content.SharedPreferences;
 import android.util.Log;
 
 import com.example.toptop.util.Util;

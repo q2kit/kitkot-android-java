@@ -1,7 +1,10 @@
-package com.example.toptop.model;
+package com.example.toptop.notification;
 
-public class Notification<T> {
+public class Notification {
     private String id;
+    private String username;
+    private String avatar;
+    private String sendTime;
     private int objectReceiveId;
     private int objectSendId;
     private int type;
@@ -15,6 +18,14 @@ public class Notification<T> {
         this.type = type;
         this.status = status;
         this.content = content;
+    }
+
+    public Notification(String id, String username, String avatar, String content, String sendTime) {
+        this.id = id;
+        this.username = username;
+        this.avatar = avatar;
+        this.content = content;
+        this.sendTime = sendTime;
     }
 
     public String getId() {
@@ -65,10 +76,37 @@ public class Notification<T> {
         this.status = status;
     }
 
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public String getSendTime() {
+        return sendTime;
+    }
+
+    public void setSendTime(String sendTime) {
+        this.sendTime = sendTime;
+    }
+
+    public String getAvatar() {
+        return avatar;
+    }
+
+    public void setAvatar(String avatar) {
+        this.avatar = avatar;
+    }
+
     @Override
     public String toString() {
         return "Notification{" +
                 "id='" + id + '\'' +
+                ", username='" + username + '\'' +
+                ", avatar='" + avatar + '\'' +
+                ", sendTime='" + sendTime + '\'' +
                 ", objectReceiveId=" + objectReceiveId +
                 ", objectSendId=" + objectSendId +
                 ", type=" + type +

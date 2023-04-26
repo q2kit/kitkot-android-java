@@ -17,6 +17,7 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.toptop.Funk;
 import com.example.toptop.R;
+import com.example.toptop.socket.SocketRoot;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -26,6 +27,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import io.socket.client.Socket;
 
 
 public class VideoListFragment extends Fragment {
@@ -44,7 +47,17 @@ public class VideoListFragment extends Fragment {
         return view;
     }
 
-
+    public void updateVideo(Video video){
+        for(Video v: videoItems){
+            if(v.getId() == video.getId()){
+                v.setLiked(video.getLiked());
+                v.setComment(video.getComment());
+                v.setIs_liked(video.isIs_liked());
+                break;
+            }
+        }
+        videoAdapter.setVideoItems(videoItems);
+    }
     private void getVideos() {
         String url = "https://soc.q2k.dev/api/videos/";
         JSONObject jsonBody = new JSONObject();
@@ -68,6 +81,10 @@ public class VideoListFragment extends Fragment {
                             int comment = video.getInt("comment");
                             boolean is_liked = video.getBoolean("is_liked");
                             boolean is_followed = video.getBoolean("is_followed");
+                            Socket socket = SocketRoot.getInstance();
+                            JSONObject data = new JSONObject();
+                            data.put("video_id", id);
+                            socket.emit("video",data);
                             videoItems.add(new Video(id, description, link, owner_id, owner_name, owner_avatar, is_premium, watched, liked, comment, is_liked, is_followed));
                         }
                         videoAdapter.setVideoItems(videoItems);

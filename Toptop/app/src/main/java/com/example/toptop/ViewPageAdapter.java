@@ -6,6 +6,7 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentStatePagerAdapter;
 
 import com.example.toptop.ui.discover.DiscoverFragment;
+import com.example.toptop.ui.home.Video;
 import com.example.toptop.ui.home.VideoListFragment;
 import com.example.toptop.ui.inbox.InboxFragment;
 import com.example.toptop.ui.me.MeFragment;
@@ -14,18 +15,22 @@ import com.example.toptop.ui.post.PostFragment;
 import java.util.ArrayList;
 
 public class ViewPageAdapter extends FragmentStatePagerAdapter {
-
+    VideoListFragment videoListFragment ;
     private ArrayList<Fragment> fragments;
     public ViewPageAdapter(@NonNull FragmentManager fm, int behavior) {
         super(fm, behavior);
+        videoListFragment = new VideoListFragment();
         fragments = new ArrayList<>();
-        fragments.add(new VideoListFragment());
+        fragments.add(videoListFragment);
         fragments.add(null);
         fragments.add(null);
         fragments.add(null);
         fragments.add(null);
     }
 
+    public void updateVideo(Video video){
+        videoListFragment.updateVideo(video);
+    }
     @NonNull
     @Override
     public Fragment getItem(int position) {

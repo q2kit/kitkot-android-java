@@ -5,6 +5,7 @@ import android.media.MediaPlayer;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.VideoView;
@@ -14,10 +15,15 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.example.toptop.R;
+import com.example.toptop.socket.SocketRoot;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.List;
 
 import de.hdodenhof.circleimageview.CircleImageView;
+import io.socket.client.Socket;
 
 public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.VideoViewHolder>{
 
@@ -57,6 +63,8 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.VideoViewHol
         CircleImageView profileImage;
         TextView likedCount, commentCount, username, description;
         ProgressBar progressBar;
+        ImageView imHeart;
+
 
 
         public VideoViewHolder(@NonNull View itemView) {
@@ -68,6 +76,7 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.VideoViewHol
             username = itemView.findViewById(R.id.username);
             description = itemView.findViewById(R.id.description);
             progressBar = itemView.findViewById(R.id.progressBar);
+            imHeart = itemView.findViewById(R.id.heart);
         }
 
         void setVideoData(Video videoItem){
@@ -94,6 +103,26 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.VideoViewHol
                 }
             });
 
+            imHeart.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    clickHeart(videoItem);
+                }
+            });
         }
+
+        public void clickHeart(Video video){
+            Socket socket = SocketRoot.getInstance();
+            JSONObject data = new JSONObject();
+            try {
+                data.put("video_id", video.getId());
+                data.put("owner_id", video.getOwner_id());
+                socket.emit("like", data);
+            } catch (JSONException e) {
+                throw new RuntimeException(e);
+            }
+
+        }
+
     }
 }

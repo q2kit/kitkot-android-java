@@ -41,13 +41,6 @@
                 android:value="" />
         </activity>
         <activity
-            android:name=".chat.ChatActivity"
-            android:exported="false">
-            <meta-data
-                android:name="android.app.lib_name"
-                android:value="" />
-        </activity>
-        <activity
             android:name=".comment.CommentActivity"
             android:exported="false">
             <meta-data

@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
+
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.INTERNET" />
@@ -10,13 +11,13 @@
         android:allowClearUserData="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
-        android:usesCleartextTraffic="true"
         android:icon="@drawable/ic_tiktok_logo"
         android:label="@string/app_name"
         android:networkSecurityConfig="@xml/config_network"
         android:roundIcon="@drawable/ic_tiktok_logo"
         android:supportsRtl="true"
         android:theme="@style/Theme.Toptop"
+        android:usesCleartextTraffic="true"
         tools:targetApi="31">
         <activity
             android:name=".SettingActivity"
@@ -40,6 +41,13 @@
                 android:value="" />
         </activity>
         <activity
+            android:name=".phantich.PhanTichActivity"
+            android:exported="false">
+            <meta-data
+                android:name="android.app.lib_name"
+                android:value="" />
+        </activity>
+        <activity
             android:name=".comment.CommentActivity"
             android:exported="false">
             <meta-data
@@ -53,13 +61,13 @@
                 android:name="android.app.lib_name"
                 android:value="" />
         </activity>
-        <activity
-            android:name=".zlpay.PayActivity"
-            android:exported="false">
-            <meta-data
-                android:name="android.app.lib_name"
-                android:value="" />
-        </activity>
+<!--        <activity-->
+<!--            android:name=".zlpay.PayActivity"-->
+<!--            android:exported="false">-->
+<!--            <meta-data-->
+<!--                android:name="android.app.lib_name"-->
+<!--                android:value="" />-->
+<!--        </activity>-->
         <activity
             android:name=".HomeActivity"
             android:exported="false">
@@ -71,17 +79,19 @@
         <activity
             android:name=".payment.PaymentActivity"
             android:exported="true"
-            android:launchMode="singleTask"
-        >
+            android:launchMode="singleTask">
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
+
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
-                <data android:scheme="demozpdk"
-                    android:host="app" />
+
+                <data
+                    android:host="app"
+                    android:scheme="demozpdk" />
             </intent-filter>
         </activity>
 

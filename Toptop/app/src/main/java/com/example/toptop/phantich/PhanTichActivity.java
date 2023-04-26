@@ -42,7 +42,7 @@ import java.util.Map;
 public class PhanTichActivity extends AppCompatActivity {
 
     ArrayList barArraylist;
-    BarChart barChart;
+    BarChart barChart, barChartLike;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -50,31 +50,11 @@ public class PhanTichActivity extends AppCompatActivity {
         setContentView(R.layout.phantich);
 
         barChart = findViewById(R.id.barchart);
+        barChartLike = findViewById(R.id.barchartLike);
         getData();
 
-//
-//        BarDataSet barDataSet = new BarDataSet(barArraylist,"Cambo Tutorial");
-//        BarData barData = new BarData(barDataSet);
-//        barChart.setData(barData);
-//        //color bar data set
-//        barDataSet.setColors(ColorTemplate.COLORFUL_COLORS);
-//        //text color
-//        barDataSet.setValueTextColor(Color.BLACK);
-//        //settting text size
-//        barDataSet.setValueTextSize(16f);
-//        barChart.getDescription().setEnabled(true);
     }
 
-    //    private void getDataAPI()
-//    {
-//        barArraylist = new ArrayList();
-//        barArraylist.add(new BarEntry("2f",10));
-//        barArraylist.add(new BarEntry(3f,20));
-//        barArraylist.add(new BarEntry(4f,30));
-//        barArraylist.add(new BarEntry(5f,40));
-//        barArraylist.add(new BarEntry(6f,50));
-//
-//    }
     private void getData() {
         try {
 
@@ -128,6 +108,7 @@ public class PhanTichActivity extends AppCompatActivity {
                                 barChart.setDescription(desc);
                                 BarData barData = new BarData(barDataSet);
                                 barChart.setData(barData);
+                                barChartLike.setData(barData);
                                 XAxis xAxis = barChart.getXAxis();
                                 xAxis.setValueFormatter(new IndexAxisValueFormatter(labelNames));
                                 xAxis.setPosition(XAxis.XAxisPosition.TOP);

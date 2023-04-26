@@ -37,6 +37,13 @@
         android:layout_margin="5dp"/>
 
     <ImageView
+        android:id="@+id/thongke"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:src="@drawable/premium"
+        android:layout_margin="5dp"/>
+
+    <ImageView
         android:id="@+id/share_profile"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

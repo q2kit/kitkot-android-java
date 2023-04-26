@@ -15,9 +15,15 @@ def auth_pass(methods):
                     request.user = user
                     return func(request, *args, **kwargs)
                 except:
-                    return JsonResponse({"error": "Unauthorized"}, status=401)
+                    return JsonResponse({
+                        "success": False,
+                        "message": "Invalid access token"
+                    }, status=401)
             else:
-                return JsonResponse({"error": "Method not allowed"}, status=405)
+                return JsonResponse({
+                    "success": False,
+                    "message": "Method not allowed"
+                }, status=405)
             
         return wrapper
 

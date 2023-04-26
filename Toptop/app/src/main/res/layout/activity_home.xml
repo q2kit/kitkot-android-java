@@ -13,13 +13,14 @@
         android:id="@+id/viewPager"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_above="@id/nav_view"/>
+        android:layout_above="@id/nav_view"
+        />
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:id="@+id/nav_view"
-        android:background="@color/light_gray"
+        android:background="@color/black"
         app:menu="@menu/bottom_nav_menu"/>
 </RelativeLayout>

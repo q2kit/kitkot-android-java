@@ -5,16 +5,12 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.splashscreen.SplashScreen;
 
-import android.content.Context;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.KeyEvent;
 import android.view.View;
-import android.view.inputmethod.EditorInfo;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -27,7 +23,6 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
-import com.example.toptop.chat.ChatActivity;
 import com.example.toptop.firebase.Firebase;
 import com.google.android.gms.auth.api.identity.BeginSignInRequest;
 import com.google.android.gms.auth.api.identity.BeginSignInResult;
@@ -43,7 +38,6 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.json.JSONException;
 import org.json.JSONObject;
 
 public class MainActivity extends AppCompatActivity {
@@ -52,7 +46,6 @@ public class MainActivity extends AppCompatActivity {
     BeginSignInRequest signUpRequest;
     Button btnGG;
     Button login;
-    Button bt_Chat;
     TextView resetPW;
     EditText edit_account, edit_password;
     private static final int REQ_ONE_TAP = 2;  // Can be any integer unique to the Activity.
@@ -64,20 +57,12 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         btnGG = findViewById(R.id.google_btn);
-        bt_Chat = findViewById(R.id.bt_Chat);
         login = findViewById(R.id.button);
         resetPW = findViewById(R.id.resetPW);
         edit_account = findViewById(R.id.edit_account);
         edit_password = findViewById(R.id.edit_password);
         Firebase firebase = new Firebase();
-        firebase.getNumberNotification(bt_Chat);
-        bt_Chat.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent switchActivityIntent = new Intent(MainActivity.this, ChatActivity.class);
-                startActivity(switchActivityIntent);
-            }
-        });
+
         //press signup
         final TextView txtLogin = findViewById(R.id.textView7);
         txtLogin.setOnClickListener(new View.OnClickListener() {
@@ -223,6 +208,7 @@ public class MainActivity extends AppCompatActivity {
                 // Lưu token vào SharedPreferences
                 SharedPreferences sharedPreferences = getSharedPreferences("dataUser", MODE_PRIVATE);
                 SharedPreferences.Editor editor = sharedPreferences.edit();
+                Log.e("Login", "Success");
                 editor.putString("token", token);
                 editor.putInt("uid", uid);
                 editor.putString("username", username);
@@ -232,7 +218,7 @@ public class MainActivity extends AppCompatActivity {
                 editor.putInt("followers", followers);
                 editor.putInt("following", following);
                 editor.putInt("liked", liked);
-
+                editor.apply();
                 Intent homeIntent = new Intent(MainActivity.this, HomeActivity.class);
                 startActivity(homeIntent);
             } else {

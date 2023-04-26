@@ -6,39 +6,74 @@
     tools:context=".chat.ChatDetailFragment"
     >
 
-    <LinearLayout
-        android:id="@+id/root_layout"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
+   <RelativeLayout
+       android:layout_width="match_parent"
+       android:layout_height="match_parent">
+       <LinearLayout
+           android:id="@+id/llInbox"
+           android:layout_width="match_parent"
+           android:layout_height="90dp"
+           android:gravity="center_vertical"
+           >
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/message_list"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"/>
+           <ImageView
+               android:id="@+id/imAvatar"
+               android:layout_width="60dp"
+               android:layout_height="60dp"
+               android:src="@drawable/avatar_placeholder"
+               android:layout_alignParentStart="true"
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:padding="16dp">
+               />
 
-            <EditText
-                android:id="@+id/message_input"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:hint="Type a message"/>
+           <!-- Username -->
+           <TextView
+               android:id="@+id/tvUsername"
+               android:layout_width="wrap_content"
+               android:layout_height="wrap_content"
+               android:textColor="@color/purple_500"
+               android:textSize="16dp"
+               android:textStyle="bold"
+               android:text="Ba Dao"
+               android:layout_toEndOf="@id/avatarImageView"
+               android:layout_alignBaseline="@id/avatarImageView"
+               android:layout_marginStart="8dp"/>
 
-            <Button
-                android:id="@+id/send_button"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Send"/>
-        </LinearLayout>
+       </LinearLayout>
+       <LinearLayout
+           android:layout_below="@+id/llInbox"
+           android:id="@+id/root_layout"
+           android:layout_width="match_parent"
+           android:layout_height="match_parent"
+           android:orientation="vertical">
 
-    </LinearLayout>
+           <androidx.recyclerview.widget.RecyclerView
+               android:id="@+id/message_list"
+               android:layout_width="match_parent"
+               android:layout_height="0dp"
+               android:layout_weight="1"/>
+
+           <LinearLayout
+               android:layout_width="match_parent"
+               android:layout_height="wrap_content"
+               android:orientation="horizontal"
+               android:padding="16dp">
+
+               <EditText
+                   android:id="@+id/message_input"
+                   android:layout_width="0dp"
+                   android:layout_height="wrap_content"
+                   android:layout_weight="1"
+                   android:hint="Type a message"/>
+
+               <Button
+                   android:id="@+id/send_button"
+                   android:layout_width="wrap_content"
+                   android:layout_height="wrap_content"
+                   android:text="Send"/>
+           </LinearLayout>
+
+       </LinearLayout>
+   </RelativeLayout>
 
 
 </FrameLayout>

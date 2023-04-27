@@ -6,7 +6,6 @@ import java.net.URISyntaxException;
 import java.util.TreeMap;
 
 import io.socket.client.IO;
-import io.socket.client.IO;
 import io.socket.client.Socket;
 
 public class SocketRoot {

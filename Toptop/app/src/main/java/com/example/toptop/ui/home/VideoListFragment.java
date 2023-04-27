@@ -71,6 +71,7 @@ public class VideoListFragment extends Fragment {
         videoAdapter.setVideoItems(videoItems);
     }
     private void getVideos() {
+        videoItems.clear();
         String url = "https://soc.q2k.dev/api/videos/";
         JSONObject jsonBody = new JSONObject();
         JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, url, null,

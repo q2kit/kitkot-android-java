@@ -106,6 +106,7 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.VideoViewHol
                     .into(profileImage);
             likedCount.setText(String.valueOf(videoItem.getLiked()));
             commentCount.setText(String.valueOf(videoItem.getComment()));
+//            Log.d("KITKOT", "commentCount: " + videoItem.getComment());
             username.setText(videoItem.getOwner_name());
             description.setText(videoItem.getDescription());
             Log.e("Play", "change");

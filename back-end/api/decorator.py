@@ -13,12 +13,20 @@ def auth_pass(methods):
                     uid = verify_access_token(token)
                     user = User.objects.get(id=uid)
                     request.user = user
-                    return func(request, *args, **kwargs)
                 except:
                     return JsonResponse({
                         "success": False,
                         "message": "Invalid access token"
                     }, status=401)
+                try:
+                    return func(request, *args, **kwargs)
+                except Exception as e:
+                    print("Exception in view function: ")
+                    print(e)
+                    return JsonResponse({
+                        "success": False,
+                        "message": str(e)
+                    }, status=500)
             else:
                 return JsonResponse({
                     "success": False,

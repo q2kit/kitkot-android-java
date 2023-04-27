@@ -411,6 +411,9 @@ def get_user_info(request, uid):
             "success": False,
             "message": "User not found"
         })
+    likes = sum([
+        video.likes_count for video in user.videos.all()
+    ])
     return JsonResponse({
         "success": True,
         "user": {
@@ -420,6 +423,10 @@ def get_user_info(request, uid):
             "phone": user.phone,
             "avatar": user.avatar or DEFAULT_AVATAR,
             "is_premium": user.is_premium,
+            "videos": user.videos.count(),
+            "followers": user.followers.count(),
+            "following": user.following.count(),
+            "likes": likes
         }
     })
 
@@ -429,13 +436,17 @@ def get_user_info(request, uid):
 def post_video(request):
     try:
         description = request.POST["description"]
-        is_premium = request.POST.get("is_premium", False)
+        is_premium = request.POST.get("is_premium") == "true"
         video = request.FILES["video"]
+
+        print("#"*100)
+        print("size", video.size)
+
     except KeyError:
         return JsonResponse({
             "success": False,
             "message": "Fill all fields"
-        })
+        }, status=400)
 
     content_type_allow_list = [
         "video/mp4",
@@ -445,11 +456,12 @@ def post_video(request):
         return JsonResponse({
             "success": False,
             "message": "File type not allowed, just " + ", ".join(content_type_allow_list)
-        })
+        }, status=400)
+
 
     try:
-        # link = upload_video_to_s3(video)
-        link = upload_file_to_cloud(video)
+        link = upload_video_to_s3(video)
+        # link = upload_file_to_cloud(video)
     except Exception:
         return JsonResponse({
             "success": False,
@@ -469,6 +481,7 @@ def post_video(request):
     })
 
 
+@csrf_exempt
 @auth_pass(["GET"])
 def get_videos(request):
     watched = Watched.objects.filter(user=request.user).values_list("video_id", flat=True)
@@ -505,6 +518,7 @@ def get_videos(request):
     })
 
 
+@csrf_exempt
 @auth_pass(["GET"])
 def get_videos_by_owner(request, owner_id):
     try:
@@ -640,19 +654,11 @@ def get_comments(request, video_id):
             "message": "Video not found"
         })
     
-    if not Watched.objects.filter(user=request.user, video=video).exists():
-        return JsonResponse({
-            "success": False,
-            "message": "You must watch the video before commenting"
-        })
-    
     comments = video.comments.all().order_by("-id").annotate(
         owner_name=F("owner__name"),
         owner_avatar=F("owner__avatar"),
     ).values(
-        "id",
         "content",
-        "owner_id",
         "owner_name",
         "owner_avatar",
     )

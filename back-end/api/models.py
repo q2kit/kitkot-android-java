@@ -26,6 +26,10 @@ class Video(models.Model):
     def __str__(self):
         return str(self.id) + " - " + self.owner.name
     
+    @property
+    def likes_count(self):
+        return self.watched_set.filter(liked=True).count()
+    
 
 class Comment(models.Model):
     owner = models.ForeignKey(User, on_delete=models.CASCADE)

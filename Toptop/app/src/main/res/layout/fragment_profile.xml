@@ -82,7 +82,7 @@
                             <ImageView
                                 android:id="@+id/premium_icon"
                                 android:layout_width="14dp"
-                                android:layout_height="14dp"                            android:layout_marginTop=""
+                                android:layout_height="14dp"
                                 android:layout_marginTop="4dp"
                                 android:layout_marginStart="4dp"
                                 app:layout_constraintBottom_toBottomOf="@+id/username"

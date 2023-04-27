@@ -1,7 +1,13 @@
 package com.example.toptop.phantich;
 
+import android.app.DatePickerDialog;
+import android.content.Context;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
+import android.widget.DatePicker;
+import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Toast;
@@ -34,6 +40,7 @@ import org.json.JSONObject;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -43,6 +50,8 @@ public class PhanTichActivity extends AppCompatActivity {
 
     ArrayList barArraylist;
     BarChart barChart, barChartLike;
+    private EditText eStartDate, eEndDate;
+    Button btnPhanTich;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -53,7 +62,70 @@ public class PhanTichActivity extends AppCompatActivity {
         barChartLike = findViewById(R.id.barchartLike);
         getData();
 
+        initDatePicker();
+
+        btnPhanTich = findViewById(R.id.btnPhantich);
+        btnPhanTich.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                getData();
+            }
+        });
+
     }
+    private void initDatePicker() {
+        eStartDate = findViewById(R.id.eStartDate);
+        Calendar c = Calendar.getInstance();
+        int hh = c.get(Calendar.HOUR_OF_DAY);
+        int mm = c.get(Calendar.MINUTE);
+        int year = c.get(Calendar.YEAR);
+        int mounth = c.get(Calendar.MONTH);
+        int day = c.get(Calendar.DAY_OF_MONTH);
+
+        Context me = this;
+        eStartDate.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                DatePickerDialog datePickerDialog = new DatePickerDialog(me, new DatePickerDialog.OnDateSetListener() {
+                    @Override
+                    public void onDateSet(DatePicker datePicker, int y, int m, int d) {
+                        String month =""+(m+1), day = ""+d;
+                        if(m<10) {
+                            month="0"+month;
+                        }
+                        if(d<10){
+                            day = "0" +d;
+                        }
+                        eStartDate.setText(y + "-" + month + "-" + day);
+                    }
+                }, year, mounth, day);
+                datePickerDialog.show();
+            }
+        });
+
+        eEndDate = findViewById(R.id.eEndDate);
+        eEndDate.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                DatePickerDialog datePickerDialog = new DatePickerDialog(me, new DatePickerDialog.OnDateSetListener() {
+                    @Override
+                    public void onDateSet(DatePicker datePicker, int y, int m, int d) {
+                        String month =""+(m+1), day = ""+d;
+                        if(m<10) {
+                            month="0"+month;
+                        }
+                        if(d<10){
+                            day = "0" +d;
+                        }
+                        eEndDate.setText(y + "-" + month + "-" + day);
+                    }
+                }, year, mounth, day);
+                datePickerDialog.show();
+            }
+        });
+
+    }
+
 
     private void getData() {
         try {
@@ -61,8 +133,8 @@ public class PhanTichActivity extends AppCompatActivity {
 
             JSONObject jsonParams = new JSONObject();
             jsonParams.put("userID", "3");
-            jsonParams.put("startDate", "2023-03-11");
-            jsonParams.put("endDate", "2023-04-11");
+            jsonParams.put("startDate", eStartDate.getText());
+            jsonParams.put("endDate", eEndDate.getText());
             jsonParams.put("typeDate", 1);
             // Building a request
             JsonObjectRequest request = new JsonObjectRequest(
@@ -101,7 +173,7 @@ public class PhanTichActivity extends AppCompatActivity {
                                     count++;
 
                                 }
-                                BarDataSet barDataSet = new BarDataSet(barEntryArrayList, "Thống kê");
+                                BarDataSet barDataSet = new BarDataSet(barEntryArrayList, "Thống kê lượt thích");
                                 barDataSet.setColors(ColorTemplate.COLORFUL_COLORS);
                                 Description desc = new Description();
                                 desc.setText("Months");

@@ -5,19 +5,41 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".phantich.PhanTichActivity">
-
+    <EditText
+        android:id="@+id/eStartDate"
+        android:layout_width="match_parent"
+        android:hint="Từ ngày"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        />
+    <EditText
+        android:id="@+id/eEndDate"
+        android:layout_width="match_parent"
+        android:hint="Đến ngày"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/eStartDate"
+        app:layout_constraintLeft_toLeftOf="parent"
+        />
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/eEndDate"
+        android:text="Phân tích"
+        android:id="@+id/btnPhantich"
+        />
     <com.github.mikephil.charting.charts.BarChart
         android:layout_width="match_parent"
         android:layout_height="300dp"
         android:id="@+id/barchart"
         tools:ignore="MissingClass"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/btnPhantich"
         app:layout_constraintLeft_toLeftOf="parent"
         />
 
     <com.github.mikephil.charting.charts.BarChart
         android:layout_width="match_parent"
-        android:layout_height="300dp"
+        android:layout_height="250dp"
         android:id="@+id/barchartLike"
         tools:ignore="MissingClass"
         app:layout_constraintTop_toBottomOf="@id/barchart"

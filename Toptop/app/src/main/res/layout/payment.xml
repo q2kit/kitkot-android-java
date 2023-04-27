@@ -5,7 +5,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:contentDescription="@string/lbl_sotien"
-    tools:context=".MainActivity">
+    tools:context=".MainActivity"
+    android:background="@drawable/premium_shadow">
 
 
     <TextView

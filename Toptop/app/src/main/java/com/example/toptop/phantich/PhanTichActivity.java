@@ -141,7 +141,7 @@ public class PhanTichActivity extends AppCompatActivity {
             // Building a request
             JsonObjectRequest request = new JsonObjectRequest(
                     Request.Method.POST,
-                    String.format("%s/SuperUser/ThongKeLuotThich/", getString(R.string.nptinh_server_domain)),
+                    String.format("%s/SuperUser/ThongKeLuotThichTheoThoiGian/", getString(R.string.nptinh_server_domain)),
                     jsonParams,
                     new Response.Listener<JSONObject>() {
                         @Override
@@ -176,14 +176,14 @@ public class PhanTichActivity extends AppCompatActivity {
                                     count++;
 
                                 }
-                                BarDataSet barDataSet = new BarDataSet(barEntryArrayList, "Thống kê lượt thích");
+                                BarDataSet barDataSet = new BarDataSet(barEntryArrayList, "Thống kê lượt thích theo thời gian");
                                 barDataSet.setColors(ColorTemplate.COLORFUL_COLORS);
                                 Description desc = new Description();
                                 desc.setText("Months");
                                 barChart.setDescription(desc);
                                 BarData barData = new BarData(barDataSet);
                                 barChart.setData(barData);
-                                barChartLike.setData(barData);
+
                                 XAxis xAxis = barChart.getXAxis();
                                 xAxis.setValueFormatter(new IndexAxisValueFormatter(labelNames));
                                 xAxis.setPosition(XAxis.XAxisPosition.TOP);
@@ -212,6 +212,80 @@ public class PhanTichActivity extends AppCompatActivity {
                     });
             Volley.newRequestQueue(getApplicationContext()).
                     add(request);
+            // Building a request
+            JsonObjectRequest request2 = new JsonObjectRequest(
+                    Request.Method.POST,
+                    String.format("%s/SuperUser/ThongKeLuotThichTheoVideo/", getString(R.string.nptinh_server_domain)),
+                    jsonParams,
+                    new Response.Listener<JSONObject>() {
+                        @Override
+                        public void onResponse(JSONObject response) {
+                            try {
+                                // Convert the "KetQua" value to a HashMap
+                                HashMap<String, Integer> ketQuaMap = new HashMap<>();
+                                JSONObject ketQuaJsonObject;
+                                try {
+                                    ketQuaJsonObject = response.getJSONObject("Data").getJSONObject("KetQua");
+                                } catch (JSONException e) {
+                                    return;
+                                }
+                                Iterator<?> keys = ketQuaJsonObject.keys();
+                                while (keys.hasNext()) {
+                                    String key = (String) keys.next();
+                                    try {
+                                        int value = ketQuaJsonObject.getInt(key);
+                                        ketQuaMap.put(key, value);
+                                    } catch (JSONException e) {
+                                        System.out.println(e);
+                                    }
+                                }
+
+                                ArrayList<BarEntry> barEntryArrayList = new ArrayList<>();
+                                ArrayList<String> labelNames = new ArrayList<>();
+                                int count = 0;
+                                for (String i : ketQuaMap.keySet()) {
+                                    System.out.println("key: " + i + " value: " + ketQuaMap.get(i));
+                                    barEntryArrayList.add(new BarEntry(count, ketQuaMap.get(i)));
+                                    labelNames.add(i);
+                                    count++;
+
+                                }
+                                BarDataSet barDataSet = new BarDataSet(barEntryArrayList, "Thống kê lượt thích theo video");
+                                barDataSet.setColors(ColorTemplate.COLORFUL_COLORS);
+                                Description desc = new Description();
+                                desc.setText("Tên video");
+                                barChartLike.setDescription(desc);
+                                BarData barData = new BarData(barDataSet);
+                                barChartLike.setData(barData);
+
+                                XAxis xAxis = barChartLike.getXAxis();
+                                xAxis.setValueFormatter(new IndexAxisValueFormatter(labelNames));
+                                xAxis.setPosition(XAxis.XAxisPosition.TOP);
+                                xAxis.setDrawGridLines(false);
+                                xAxis.setDrawAxisLine(false);
+                                xAxis.setGranularity(1f);
+                                xAxis.setLabelCount(labelNames.size());
+                                xAxis.setLabelRotationAngle(270);
+                                barChartLike.animateY(2000);
+                                barChartLike.invalidate();
+                            } catch (Exception e) {
+                                System.out.println(e);
+                            }
+                        }
+                    },
+
+                    new Response.ErrorListener() {
+                        @Override
+                        public void onErrorResponse(VolleyError error) {
+                            System.out.println(error);
+                            // Handle the error
+                            Toast.makeText(getApplicationContext(), "Có lỗi xảy ra!", Toast.LENGTH_LONG).show();//display the response on screen
+
+
+                        }
+                    });
+            Volley.newRequestQueue(getApplicationContext()).
+                    add(request2);
         } catch (Exception e) {
             System.out.println(e);
         }

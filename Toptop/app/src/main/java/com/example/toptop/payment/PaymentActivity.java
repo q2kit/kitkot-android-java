@@ -21,6 +21,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import com.example.toptop.Funk;
 import com.example.toptop.HomeActivity;
 import com.example.toptop.R;
 import com.example.toptop.payment.models.VipPackage;
@@ -43,7 +44,7 @@ public class PaymentActivity extends AppCompatActivity {
     TextView txtExpireDate,txtTitle;
     ArrayList<VipPackage> vipPackages;
     RadioGroup rdgVipPackage;
-    int userID =5;
+    int userID =2;
 
     private VipPackage selectedVipPackage;
 
@@ -63,7 +64,7 @@ public class PaymentActivity extends AppCompatActivity {
         StrictMode.ThreadPolicy policy = new
                 StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
-
+        userID = Funk.get_user(this).getUid();
         // ZaloPay SDK Init
         ZaloPaySDK.init(2553, Environment.SANDBOX);
         // bind components with ids

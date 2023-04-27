@@ -21,6 +21,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import com.example.toptop.Funk;
 import com.example.toptop.R;
 import com.example.toptop.payment.models.VipPackage;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -52,12 +53,13 @@ public class PhanTichActivity extends AppCompatActivity {
     BarChart barChart, barChartLike;
     private EditText eStartDate, eEndDate;
     Button btnPhanTich;
+    private int userId=2;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.phantich);
-
+        userId = Funk.get_user(this).getUid();
         barChart = findViewById(R.id.barchart);
         barChartLike = findViewById(R.id.barchartLike);
         getData();
@@ -132,7 +134,7 @@ public class PhanTichActivity extends AppCompatActivity {
 
 
             JSONObject jsonParams = new JSONObject();
-            jsonParams.put("userID", "2");
+            jsonParams.put("userID", userId);
             jsonParams.put("startDate", eStartDate.getText());
             jsonParams.put("endDate", eEndDate.getText());
             jsonParams.put("typeDate", 1);

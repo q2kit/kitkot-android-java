@@ -198,7 +198,8 @@ public class HomeActivity extends AppCompatActivity {
 
         adapter = new ViewPageAdapter(getSupportFragmentManager(),
                 FragmentStatePagerAdapter.BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT,
-                new ChatClick()
+                new ChatClick(),
+                viewPager
         );
         viewPager.setAdapter(adapter);
 

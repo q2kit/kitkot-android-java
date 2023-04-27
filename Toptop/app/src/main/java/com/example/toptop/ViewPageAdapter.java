@@ -20,10 +20,12 @@ import java.util.List;
 
 public class ViewPageAdapter extends FragmentStatePagerAdapter {
     VideoListFragment videoListFragment ;
+    ViewPager viewPager;
     private ArrayList<Fragment> fragments;
     static ProfileDialogFragment.IProfile iProfile;
-    public ViewPageAdapter(@NonNull FragmentManager fm, int behavior, ProfileDialogFragment.IProfile iProfile) {
+    public ViewPageAdapter(@NonNull FragmentManager fm, int behavior, ProfileDialogFragment.IProfile iProfile, ViewPager viewPager) {
         super(fm, behavior);
+        this.viewPager = viewPager;
         videoListFragment = new VideoListFragment(iProfile);
         fragments = new ArrayList<>();
         fragments.add(videoListFragment);

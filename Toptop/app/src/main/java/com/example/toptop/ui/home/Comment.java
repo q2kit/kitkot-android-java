@@ -32,4 +32,13 @@ public class Comment {
         this.name = name;
         this.content = content;
     }
+
+    @Override
+    public String toString() {
+        return "Comment{" +
+                "avatar='" + avatar + '\'' +
+                ", name='" + name + '\'' +
+                ", content='" + content + '\'' +
+                '}';
+    }
 }

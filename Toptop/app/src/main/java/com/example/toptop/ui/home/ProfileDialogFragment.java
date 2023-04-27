@@ -10,6 +10,9 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.fragment.app.DialogFragment;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -20,6 +23,8 @@ import com.android.volley.toolbox.Volley;
 import com.bumptech.glide.Glide;
 import com.example.toptop.Funk;
 import com.example.toptop.R;
+import com.example.toptop.chat.ChatDetailFragment;
+import com.example.toptop.chat.ChatMessage;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -33,10 +38,14 @@ public class ProfileDialogFragment extends DialogFragment {
     private int uid;
     ImageView avatar, premium_icon;
     TextView name, username, videos, followers, following, likes;
-    Button follow;
+    Button follow, btChat;
+    String urlAvatar;
 
-    public ProfileDialogFragment(int uid) {
+    FragmentManager fragmentManager;
+    private  IProfile iProfile;
+    public ProfileDialogFragment(int uid, IProfile iProfile) {
         this.uid = uid;
+        this.iProfile = iProfile;
     }
 
     @Override
@@ -53,6 +62,20 @@ public class ProfileDialogFragment extends DialogFragment {
         following = view.findViewById(R.id.profile_following);
         likes = view.findViewById(R.id.profile_likes);
         follow = view.findViewById(R.id.btn_follow);
+        btChat = view.findViewById(R.id.btChat);
+        getProfile(uid);
+        btChat.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(uid > 0){
+                    ChatMessage chatMessage = new ChatMessage(uid,"",
+                            username.getText().toString(),
+                            urlAvatar, "", false);
+                    iProfile.clickChat(chatMessage);
+                    dismiss();
+                }
+            }
+        });
         follow.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -78,7 +101,8 @@ public class ProfileDialogFragment extends DialogFragment {
                     public void onResponse(JSONObject response) {
                         try {
                             JSONObject user = response.getJSONObject("user");
-                            Glide.with(getActivity()).load(user.getString("avatar")).into(avatar);
+                            urlAvatar = user.getString("avatar");
+                            Glide.with(getActivity()).load(urlAvatar).into(avatar);
                             name.setText(user.getString("name"));
                             username.setText(user.getString("username"));
                             videos.setText(user.getString("videos"));
@@ -110,4 +134,8 @@ public class ProfileDialogFragment extends DialogFragment {
             RequestQueue queue = Volley.newRequestQueue(getActivity());
             queue.add(request);
         }
+
+    public interface IProfile{
+         void clickChat(ChatMessage chatMessage);
+    }
 }

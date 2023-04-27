@@ -30,12 +30,14 @@ import io.socket.client.Socket;
 public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.VideoViewHolder>{
 
     List<Video> videoItems;
+    static CommentDialogFragment dialog;
     static FragmentManager fragmentManager;
-
+    static ProfileDialogFragment.IProfile iProfile;
     // Add this constructor:
-    public VideoAdapter(List<Video> videoItems, FragmentManager fragmentManager){
+    public VideoAdapter(List<Video> videoItems, FragmentManager fragmentManager,ProfileDialogFragment.IProfile iProfile){
         this.videoItems = videoItems;
         this.fragmentManager = fragmentManager;
+        this.iProfile=  iProfile;
     }
 
     public void setVideoItems(List<Video> videoItems){
@@ -59,6 +61,18 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.VideoViewHol
     @Override
     public int getItemCount() {
         return videoItems.size();
+    }
+
+    public void setComments(List<Comment> comments) {
+        if(dialog != null){
+            dialog.changeComments(comments);
+        }
+    }
+
+    public void addComments(List<Comment> comments) {
+        if(dialog != null){
+            dialog.addComments(comments);
+        }
     }
 
     static class VideoViewHolder extends RecyclerView.ViewHolder {
@@ -102,9 +116,13 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.VideoViewHol
                 videoView.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
                     @Override
                     public void onPrepared(MediaPlayer mp) {
-                        progressBar.setVisibility(View.GONE);
-                        Log.e("PlayerCCC", "Ok");
-                        mp.start();
+                       try {
+                           progressBar.setVisibility(View.GONE);
+                           Log.e("PlayerCCC", "Ok");
+                           mp.start();
+                       }catch (Exception e){
+
+                       }
                     }
                 });
 
@@ -112,7 +130,11 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.VideoViewHol
                     @Override
                     public void onCompletion(MediaPlayer mediaPlayer) {
                         Log.e("PlayerCCC", "Done");
-                        mediaPlayer.start();
+                        try {
+                            mediaPlayer.start();
+                        }catch (Exception e){
+
+                        }
                     }
                 });
             }
@@ -132,7 +154,15 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.VideoViewHol
             comment.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    clickComment(videoItem.getId());
+                    clickComment(videoItem.getId(), videoItem.getOwner_id());
+                }
+            });
+
+            profileImage.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    ProfileDialogFragment profile = new ProfileDialogFragment(videoItem.getOwner_id(), iProfile);
+                    profile.show(fragmentManager,"profile "+ videoItem.getId());
                 }
             });
         }
@@ -149,10 +179,18 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.VideoViewHol
             }
         }
 
-        public void clickComment(int video_id){
+        public void clickComment(int video_id, int owner_id){
             Log.d("QUAN", "click comment" + video_id);
-            CommentDialogFragment dialog = new CommentDialogFragment(video_id);
+            dialog = new CommentDialogFragment(video_id,owner_id );
             dialog.show(fragmentManager, "comment_dialog");
+            Socket socket = SocketRoot.getInstance();
+            try {
+                JSONObject data = new JSONObject();
+                data.put("video_id", video_id);
+                socket.emit("list-comment",data);
+            } catch (JSONException e) {
+                throw new RuntimeException(e);
+            }
         }
 
     }

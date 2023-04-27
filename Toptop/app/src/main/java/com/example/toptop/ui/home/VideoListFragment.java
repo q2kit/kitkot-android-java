@@ -37,15 +37,26 @@ public class VideoListFragment extends Fragment {
     ViewPager2 viewPager2;
     List<Video> videoItems = new ArrayList<>();
     VideoAdapter videoAdapter;
+    static ProfileDialogFragment.IProfile iProfile;
+
+    public VideoListFragment(ProfileDialogFragment.IProfile iProfile) {
+        this.iProfile = iProfile;
+    }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_home, container, false);
         getVideos();
         viewPager2 = view.findViewById(R.id.videos_view_pager);
-        videoAdapter = new VideoAdapter(videoItems, getChildFragmentManager());
+        videoAdapter = new VideoAdapter(videoItems, getChildFragmentManager(), iProfile);
         viewPager2.setAdapter(videoAdapter);
         return view;
+    }
+
+    public void updateComments(List<Comment> comments){
+
+        videoAdapter.setComments(comments);
     }
 
     public void updateVideo(Video video){
@@ -110,5 +121,9 @@ public class VideoListFragment extends Fragment {
         };
         RequestQueue queue = Volley.newRequestQueue(getActivity());
         queue.add(request);
+    }
+
+    public void addComments(List<Comment> comments) {
+        videoAdapter.addComments(comments);
     }
 }

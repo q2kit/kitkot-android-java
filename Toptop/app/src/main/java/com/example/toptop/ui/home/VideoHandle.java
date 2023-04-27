@@ -13,14 +13,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class VideoHandle {
-    public Video exactVideoInfo(JSONObject item){
+    public Video exactVideoInfo(JSONObject item, int userId){
         Video video;
         try {
             int id = Integer.parseInt(item.getString("video_id"));
             int likeNumber = Integer.parseInt(item.getString("like_num"));
             int commentNumber = Integer.parseInt(item.getString("comment_num"));
+            int userLikeId = Integer.parseInt(item.getString("user_id"));
             boolean isLiked = Boolean.parseBoolean(item.getString("is_liked"));
-            video = new Video(id, likeNumber, commentNumber, isLiked);
+            video = new Video(id, likeNumber, commentNumber, (isLiked && userLikeId == userId));
         } catch (JSONException e) {
             throw new RuntimeException(e);
         }

@@ -23,4 +23,12 @@
         android:id="@+id/nav_view"
         android:background="@color/light_gray"
         app:menu="@menu/bottom_nav_menu"/>
+
+    <FrameLayout
+        android:visibility="invisible"
+        android:id="@+id/chatDetailFrame"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/purple_700"
+        />
 </RelativeLayout>

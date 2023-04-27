@@ -25,9 +25,14 @@ import android.widget.Toast;
 import com.example.toptop.Funk;
 import com.example.toptop.R;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -42,8 +47,10 @@ import okhttp3.Response;
 public class PostFragment extends Fragment {private static final int REQUEST_VIDEO = 1;
     private static final int MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE = 37;
 
-    String description, videoPath;
-    boolean isPremium;
+    String description;
+    Uri uri;
+    InputStream inputStream;
+    boolean isPremium, is_posting = false;
 
     EditText descriptionEditText;
     CheckBox agreeCheckBox;
@@ -56,9 +63,9 @@ public class PostFragment extends Fragment {private static final int REQUEST_VID
             ActivityCompat.requestPermissions(requireActivity(),
                     new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
                     MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE);
-            Toast.makeText(requireActivity(), "Permission Denied1", Toast.LENGTH_SHORT).show();
+            Toast.makeText(requireActivity(), "READ_EXTERNAL Permission Not Granted", Toast.LENGTH_SHORT).show();
         } else {
-            Toast.makeText(requireActivity(), "Permission Granted1", Toast.LENGTH_SHORT).show();
+            Toast.makeText(requireActivity(), "READ_EXTERNAL Already Granted", Toast.LENGTH_SHORT).show();
         }
     }
     @Override
@@ -66,9 +73,9 @@ public class PostFragment extends Fragment {private static final int REQUEST_VID
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                Toast.makeText(requireActivity(), "Permission Granted", Toast.LENGTH_SHORT).show();
+                Toast.makeText(requireActivity(), "READ_EXTERNAL allowed", Toast.LENGTH_SHORT).show();
             } else {
-                Toast.makeText(requireActivity(), "Permission Denied", Toast.LENGTH_SHORT).show();
+                Toast.makeText(requireActivity(), "READ_EXTERNAL Denied", Toast.LENGTH_SHORT).show();
             }
         }
     }
@@ -92,6 +99,10 @@ public class PostFragment extends Fragment {private static final int REQUEST_VID
         uploadButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if (is_posting) {
+                    return;
+                }
+                is_posting = true;
                 uploadVideo();
             }
         });
@@ -116,26 +127,28 @@ public class PostFragment extends Fragment {private static final int REQUEST_VID
             }
             isPremium = agreeCheckBox.isChecked();
 
-            if (videoPath == null) {
-                return;
+            File file = new File(requireActivity().getFilesDir(), "tmp.mp4");
+            Log.d("QUAN", "pathhhhhhh: " + file.getAbsolutePath());
+            if (!file.exists()) {
+                file.createNewFile();
             }
-            Log.d("QUAN", "videoPath" + videoPath);
-            Log.d("QUAN", "description" + description);
-            Log.d("QUAN", "isPremium" + isPremium);
-            videoPath = "/storage/07F4-340F/Download/7b7e8325-8e9d-4d5b-95d1-183d0c9f69f4.mp4";
-            File file = new File(videoPath);
-            Log.d("QUAN", "file" + file);
-            Log.d("QUAN", "size" + file.length());
-            FileInputStream fileInputStream = new FileInputStream(file);
-            Log.d("QUAN", "fileInputStream" + fileInputStream);
-            Log.d("QUAN", "size" + fileInputStream.available());
+            OutputStream os = new FileOutputStream(file);
+            byte[] buf = new byte[1024];
+            int len;
+            while ((len = inputStream.read(buf)) > 0) {
+                os.write(buf, 0, len);
+            }
+            os.close();
+            inputStream.close();
+
+
 
 
             OkHttpClient client = new OkHttpClient();
 
             RequestBody requestBody = new MultipartBody.Builder()
                     .setType(MultipartBody.FORM)
-                    .addFormDataPart("video", file.getName(), RequestBody.create(MediaType.parse("video/mp4"), file))
+                    .addFormDataPart("video", "name.mp4", RequestBody.create(MediaType.parse("video/mp4"), file))
                     .addFormDataPart("description", description)
                     .addFormDataPart("is_premium", String.valueOf(isPremium))
                     .build();
@@ -149,19 +162,18 @@ public class PostFragment extends Fragment {private static final int REQUEST_VID
             client.newCall(request).enqueue(new Callback() {
                 @Override
                 public void onFailure(Call call, IOException e) {
+                    is_posting = false;
                     e.printStackTrace();
                 }
 
                 @Override
                 public void onResponse(Call call, Response response) throws IOException {
-                    if (response.isSuccessful()) {
-                        // TODO: handle successful response
-                    } else {
-                        // TODO: handle unsuccessful response
-                    }
+                    is_posting = false;
+                    Log.d("QUAN", "onResponse: " + response.body().string());
                 }
             });
         } catch (Exception e) {
+            is_posting = false;
             Toast.makeText(requireActivity(), "Error: " + e.getMessage(), Toast.LENGTH_LONG).show();
         }
     }
@@ -172,9 +184,15 @@ public class PostFragment extends Fragment {private static final int REQUEST_VID
         super.onActivityResult(requestCode, resultCode, data);
 
         if (requestCode == REQUEST_VIDEO && resultCode == Activity.RESULT_OK) {
-            Uri uri = data.getData();
-            videoPath = uri.getPath();
-            Log.d("QUAN","videoPath" + videoPath);
+            uri = data.getData();
+            try {
+                inputStream = requireActivity().getContentResolver().openInputStream(uri);
+                Log.d("QUAN", "size:  " + inputStream.available());
+            } catch (FileNotFoundException e) {
+                Log.d("QUAN", "File not found" + e.getMessage());
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
         }
     }
 }

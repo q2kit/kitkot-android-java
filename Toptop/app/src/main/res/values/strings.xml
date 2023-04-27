@@ -76,14 +76,14 @@
     </string-array>
     <string name="action_settings">Settings</string>
 
-    <string name="nptinh_server_domain">http://172.20.10.2:8080</string>
+    <string name="nptinh_server_domain">http://f332-118-68-103-17.ngrok-free.app</string>
 
     <string name="dummy_button">Dummy Button</string>
     <string name="dummy_content">DUMMY\nCONTENT</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="lbl_sotien">Số Tiền</string>
-    <string name="lbl_donhang">Đăng ký thành viên VIP</string>
+    <string name="lbl_donhang">Đăng ký thành viên Premium</string>
     <string name="btn_create_order">Tạo Đơn Hàng</string>
     <string name="txt_amount_init">1000</string>
     <string name="txt_amount_hint">1000</string>

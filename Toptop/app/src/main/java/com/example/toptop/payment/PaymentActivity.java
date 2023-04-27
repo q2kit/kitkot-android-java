@@ -10,6 +10,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -28,6 +29,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 
 import vn.zalopay.sdk.Environment;
@@ -37,17 +40,20 @@ import vn.zalopay.sdk.listeners.PayOrderListener;
 
 public class PaymentActivity extends AppCompatActivity {
     Button  btnPay;
-    EditText txtAmount;
+    TextView txtExpireDate,txtTitle;
     ArrayList<VipPackage> vipPackages;
     RadioGroup rdgVipPackage;
-    int userID =12;
+    int userID =5;
 
     private VipPackage selectedVipPackage;
 
     private void BindView() {
 
         btnPay = findViewById(R.id.btnPay);
-        rdgVipPackage =  findViewById(R.id.rdgVipPackage); // create the RadioGroup
+        rdgVipPackage =  findViewById(R.id.rdgVipPackage);
+        txtExpireDate =  findViewById(R.id.txtExpireDate);
+        txtTitle =  findViewById(R.id.txtTitle);
+
 
     }
     @Override
@@ -62,6 +68,7 @@ public class PaymentActivity extends AppCompatActivity {
         ZaloPaySDK.init(2553, Environment.SANDBOX);
         // bind components with ids
         BindView();
+        customUIContent();
         getData();
         btnPay.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -106,28 +113,77 @@ public class PaymentActivity extends AppCompatActivity {
         });
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        customUIContent();
+    }
+
+    private void customUIContent() {
+        btnPay.setVisibility(View.INVISIBLE);
+        rdgVipPackage.setVisibility(View.INVISIBLE);
+        txtExpireDate.setVisibility(View.INVISIBLE);
+
+        JSONObject jsonParams = new JSONObject();
+
+        // Building a request
+        JsonObjectRequest request = new JsonObjectRequest(
+                Request.Method.GET,
+                String.format("%s/SuperUser/"+userID, getString(R.string.nptinh_server_domain)),
+                jsonParams,
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        try {
+                            System.out.println(response);
+                            String exp = response.getJSONObject("Data").getString("ExpPremiumDate");
+                            if(!exp.equals("null")){
+                                LocalDate date = LocalDate.parse(exp, DateTimeFormatter.ISO_LOCAL_DATE_TIME);
+                                LocalDate now = LocalDate.now();
+
+                                if (date.isBefore(now)) {
+                                    txtTitle.setText("Đăng ký thành viên Premium");
+                                    btnPay.setVisibility(View.VISIBLE);
+                                    rdgVipPackage.setVisibility(View.VISIBLE);
+                                } else if (date.isAfter(now)) {
+                                    txtExpireDate.setVisibility(View.VISIBLE);
+
+                                    txtExpireDate.setText("Ngày hết hạn: "+exp);
+                                    txtTitle.setText("THÔNG TIN PREMIUM");
+                                }
+                            }else{
+                                txtTitle.setText("Đăng ký thành viên Premium");
+                                btnPay.setVisibility(View.VISIBLE);
+                                rdgVipPackage.setVisibility(View.VISIBLE);
+                            }
+
+
+                        }catch (Exception e){
+                            System.out.println(e);
+                        }
+                    }
+                },
+
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        System.out.println(error);
+                        // Handle the error
+                        Toast.makeText(getApplicationContext(), "Có lỗi xảy ra!" , Toast.LENGTH_LONG).show();//display the response on screen
+                    }
+                });
+        Volley.newRequestQueue(getApplicationContext()).
+                add(request);
+
+    }
+
     private void pay(String token, VipPackage registedVipPackage) {
         ZaloPaySDK.getInstance().payOrder(PaymentActivity.this, token, "demozpdk://app", new PayOrderListener() {
             @Override
             public void onPaymentSucceeded(final String transactionId, final String transToken, final String appTransID) {
-//                runOnUiThread(new Runnable() {
-//                    @Override
-//                    public void run() {
-//                        new AlertDialog.Builder(PaymentActivity.this)
-//                                .setTitle("Payment Success")
-//                                .setMessage(String.format("TransactionId: %s - TransToken: %s", transactionId, transToken))
-//                                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-//                                    @Override
-//                                    public void onClick(DialogInterface dialog, int which) {
-//                                    }
-//                                })
-//                                .setNegativeButton("Cancel", null).show();
-//                    }
-//
-//                });
                 try {
                     JSONObject jsonParams = new JSONObject();
-                    jsonParams.put("UserID", userID);
+                    jsonParams.put("ID", userID);
                     jsonParams.put("VipPackageID", registedVipPackage.getVipPackageID());
                     // Building a request
                     JsonObjectRequest request = new JsonObjectRequest(
@@ -154,8 +210,6 @@ public class PaymentActivity extends AppCompatActivity {
                                     System.out.println(error);
                                     // Handle the error
                                     Toast.makeText(getApplicationContext(), "Có lỗi xảy ra!" , Toast.LENGTH_LONG).show();//display the response on screen
-
-
                                 }
                             });
                     Volley.newRequestQueue(getApplicationContext()).
@@ -216,7 +270,11 @@ public class PaymentActivity extends AppCompatActivity {
 
                 }
 
-                Toast.makeText(getApplicationContext(), "Response :" + response.toString(), Toast.LENGTH_LONG).show();//display the response on screen
+                if(vipPackages.size()>0){
+                    selectedVipPackage = vipPackages.get(0);
+                }
+
+                //Toast.makeText(getApplicationContext(), "Response :" + response.toString(), Toast.LENGTH_LONG).show();//display the response on screen
 
                 for (VipPackage option : vipPackages) {
                     RadioButton radioButton = new RadioButton(getApplicationContext());

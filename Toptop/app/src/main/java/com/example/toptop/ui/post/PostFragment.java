@@ -22,6 +22,7 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.example.toptop.Funk;
 import com.example.toptop.R;
 
 import java.io.File;
@@ -121,6 +122,7 @@ public class PostFragment extends Fragment {private static final int REQUEST_VID
             Log.d("QUAN", "videoPath" + videoPath);
             Log.d("QUAN", "description" + description);
             Log.d("QUAN", "isPremium" + isPremium);
+            videoPath = "/storage/07F4-340F/Download/7b7e8325-8e9d-4d5b-95d1-183d0c9f69f4.mp4";
             File file = new File(videoPath);
             Log.d("QUAN", "file" + file);
             Log.d("QUAN", "size" + file.length());
@@ -129,35 +131,36 @@ public class PostFragment extends Fragment {private static final int REQUEST_VID
             Log.d("QUAN", "size" + fileInputStream.available());
 
 
-//            OkHttpClient client = new OkHttpClient();
-//
-//            RequestBody requestBody = new MultipartBody.Builder()
-//                    .setType(MultipartBody.FORM)
-//                    .addFormDataPart("video", file.getName(), RequestBody.create(MediaType.parse("application/octet-stream"), file))
-//                    .addFormDataPart("description", description)
-//                    .addFormDataPart("is_premium", String.valueOf(isPremium))
-//                    .build();
-//
-//            Request request = new Request.Builder()
-//                    .url("https://soc.q2k.dev/api/post-video/")
-//                    .post(requestBody)
-//                    .build();
-//
-//            client.newCall(request).enqueue(new Callback() {
-//                @Override
-//                public void onFailure(Call call, IOException e) {
-//                    e.printStackTrace();
-//                }
-//
-//                @Override
-//                public void onResponse(Call call, Response response) throws IOException {
-//                    if (response.isSuccessful()) {
-//                        // TODO: handle successful response
-//                    } else {
-//                        // TODO: handle unsuccessful response
-//                    }
-//                }
-//            });
+            OkHttpClient client = new OkHttpClient();
+
+            RequestBody requestBody = new MultipartBody.Builder()
+                    .setType(MultipartBody.FORM)
+                    .addFormDataPart("video", file.getName(), RequestBody.create(MediaType.parse("video/mp4"), file))
+                    .addFormDataPart("description", description)
+                    .addFormDataPart("is_premium", String.valueOf(isPremium))
+                    .build();
+
+            Request request = new Request.Builder()
+                    .url("https://soc.q2k.dev/api/post-video/")
+                    .post(requestBody)
+                    .addHeader("Authorization", "Bearer "+ Funk.get_token())
+                    .build();
+
+            client.newCall(request).enqueue(new Callback() {
+                @Override
+                public void onFailure(Call call, IOException e) {
+                    e.printStackTrace();
+                }
+
+                @Override
+                public void onResponse(Call call, Response response) throws IOException {
+                    if (response.isSuccessful()) {
+                        // TODO: handle successful response
+                    } else {
+                        // TODO: handle unsuccessful response
+                    }
+                }
+            });
         } catch (Exception e) {
             Toast.makeText(requireActivity(), "Error: " + e.getMessage(), Toast.LENGTH_LONG).show();
         }

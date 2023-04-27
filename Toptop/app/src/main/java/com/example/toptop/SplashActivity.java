@@ -3,7 +3,6 @@ package com.example.toptop;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 
@@ -18,8 +17,7 @@ public class SplashActivity extends AppCompatActivity {
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
-                SharedPreferences sharedPreferences = getSharedPreferences("dataUser", MODE_PRIVATE);
-                String token = sharedPreferences.getString("token","");
+                String token = Funk.get_token(SplashActivity.this);
 
                 if(token.isEmpty()){
                     startActivity(new Intent(SplashActivity.this, MainActivity.class));

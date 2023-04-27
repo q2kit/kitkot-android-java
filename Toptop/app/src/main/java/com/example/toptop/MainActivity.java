@@ -3,11 +3,9 @@ package com.example.toptop;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.splashscreen.SplashScreen;
 
 import android.content.Intent;
 import android.content.IntentSender;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -24,6 +22,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.toptop.firebase.Firebase;
+import com.example.toptop.model.User;
 import com.google.android.gms.auth.api.identity.BeginSignInRequest;
 import com.google.android.gms.auth.api.identity.BeginSignInResult;
 import com.google.android.gms.auth.api.identity.Identity;
@@ -197,28 +196,17 @@ public class MainActivity extends AppCompatActivity {
                 String token = res.getString("token");
                 JSONObject user = res.getJSONObject("user");
                 int uid = user.getInt("uid");
+                String name = user.getString("name");
+                int videos = user.getInt("videos");
                 String username = user.getString("username");
-                String email = user.getString("email");
-                String phone = user.getString("phone");
+                boolean is_premium = user.getBoolean("is_premium");
                 String avatar = user.getString("avatar");
                 int followers = user.getInt("followers");
                 int following = user.getInt("following");
                 int liked = user.getInt("liked");
+                Funk.set_user(this, new User(uid, username, name, avatar, is_premium, videos, followers, following, liked));
+                Funk.set_token(this, token);
 
-                // Lưu token vào SharedPreferences
-                SharedPreferences sharedPreferences = getSharedPreferences("dataUser", MODE_PRIVATE);
-                SharedPreferences.Editor editor = sharedPreferences.edit();
-                Log.e("Login", "Success");
-                editor.putString("token", token);
-                editor.putInt("uid", uid);
-                editor.putString("username", username);
-                editor.putString("email", email);
-                editor.putString("phone", phone);
-                editor.putString("avatar", avatar);
-                editor.putInt("followers", followers);
-                editor.putInt("following", following);
-                editor.putInt("liked", liked);
-                editor.apply();
                 Intent homeIntent = new Intent(MainActivity.this, HomeActivity.class);
                 startActivity(homeIntent);
             } else {

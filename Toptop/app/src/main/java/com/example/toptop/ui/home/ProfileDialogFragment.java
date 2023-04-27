@@ -127,7 +127,7 @@ public class ProfileDialogFragment extends DialogFragment {
                 @Override
                 public Map<String, String> getHeaders() {
                     Map<String, String> params = new HashMap<>();
-                    params.put("Authorization", "Bearer " + Funk.get_token());
+                    params.put("Authorization", "Bearer " + Funk.get_token(getContext()));
                     return params;
                 }
             };

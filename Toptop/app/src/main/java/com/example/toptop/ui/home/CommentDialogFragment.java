@@ -119,7 +119,7 @@ public class CommentDialogFragment extends DialogFragment {
             @Override
             public Map<String, String> getHeaders() {
                 Map<String, String> params = new HashMap<>();
-                params.put("Authorization", "Bearer " + Funk.get_token());
+                params.put("Authorization", "Bearer " + Funk.get_token(getContext()));
                 return params;
             }
         };
@@ -145,8 +145,7 @@ public class CommentDialogFragment extends DialogFragment {
             @Override
             public Map<String, String> getHeaders() {
                 Map<String, String> params = new HashMap<>();
-                Log.d("QUAN", Funk.get_token());
-                params.put("Authorization", "Bearer " + Funk.get_token());
+                params.put("Authorization", "Bearer " + Funk.get_token(getContext()));
                 return params;
             }
         };

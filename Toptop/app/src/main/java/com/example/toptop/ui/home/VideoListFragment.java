@@ -115,7 +115,7 @@ public class VideoListFragment extends Fragment {
             public Map<String, String> getHeaders() throws AuthFailureError {
                 Map<String, String> headers = new HashMap<>();
                 headers.put("Content-Type", "application/json");
-                String token = Funk.get_token();
+                String token = Funk.get_token(getContext());
                 headers.put("Authorization", "Bearer " + token);
                 return headers;
             }

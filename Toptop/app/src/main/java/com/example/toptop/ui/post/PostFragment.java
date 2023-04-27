@@ -160,7 +160,7 @@ public class PostFragment extends Fragment {private static final int REQUEST_VID
             Request request = new Request.Builder()
                     .url("https://soc.q2k.dev/api/post-video/")
                     .post(requestBody)
-                    .addHeader("Authorization", "Bearer "+ Funk.get_token())
+                    .addHeader("Authorization", "Bearer "+ Funk.get_token(getContext()))
                     .build();
 
             client.newCall(request).enqueue(new Callback() {

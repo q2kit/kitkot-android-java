@@ -9,7 +9,6 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager.widget.ViewPager;
 
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
@@ -17,7 +16,6 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
-import android.widget.Toast;
 
 import com.example.toptop.chat.ChatAdapter;
 import com.example.toptop.chat.ChatDetailFragment;
@@ -184,10 +182,8 @@ public class HomeActivity extends AppCompatActivity {
         viewPager = findViewById(R.id.viewPager);
         fragmentManager = getSupportFragmentManager();
         // for chat
-        SharedPreferences sharedPreferences = getSharedPreferences("dataUser", MODE_PRIVATE);;
-        Log.e("TOKEN", sharedPreferences.getString("token",""));
-        userId = sharedPreferences.getInt("uid", 0);
-        SocketRoot.token = sharedPreferences.getString("token","");
+        userId = Funk.get_user(this).getUid();
+        SocketRoot.token = Funk.get_token(this);
         socket = SocketRoot.getInstance();
         socket.on("data",onNewMessage);
         socket.connect();

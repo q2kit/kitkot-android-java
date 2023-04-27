@@ -76,7 +76,7 @@
     </string-array>
     <string name="action_settings">Settings</string>
 
-    <string name="nptinh_server_domain">http://172.20.10.2:8080</string>
+    <string name="nptinh_server_domain">https://cdf6-118-68-103-17.ngrok-free.app</string>
 
     <string name="dummy_button">Dummy Button</string>
     <string name="dummy_content">DUMMY\nCONTENT</string>

@@ -10,6 +10,8 @@ import android.os.Bundle;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.viewpager.widget.ViewPager;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -54,6 +56,10 @@ public class PostFragment extends Fragment {private static final int REQUEST_VID
 
     EditText descriptionEditText;
     CheckBox agreeCheckBox;
+    ViewPager viewPager;
+    public PostFragment(ViewPager viewPager) {
+        this.viewPager = viewPager;
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -140,9 +146,7 @@ public class PostFragment extends Fragment {private static final int REQUEST_VID
             }
             os.close();
             inputStream.close();
-
-
-
+            inputStream = new FileInputStream(file);
 
             OkHttpClient client = new OkHttpClient();
 
@@ -169,7 +173,14 @@ public class PostFragment extends Fragment {private static final int REQUEST_VID
                 @Override
                 public void onResponse(Call call, Response response) throws IOException {
                     is_posting = false;
-                    Log.d("QUAN", "onResponse: " + response.body().string());
+                    requireActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            descriptionEditText.setText("");
+                            agreeCheckBox.setChecked(false);
+                            Toast.makeText(requireActivity(), "Upload success", Toast.LENGTH_LONG).show();
+                        }
+                    });
                 }
             });
         } catch (Exception e) {

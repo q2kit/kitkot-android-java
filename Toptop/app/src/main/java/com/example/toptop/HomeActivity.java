@@ -169,8 +169,11 @@ public class HomeActivity extends AppCompatActivity {
         firebase.getNumberNotification(bottomNavigationView.getMenu().findItem(R.id.mInbox), userId);
         //
 
-        adapter = new ViewPageAdapter(getSupportFragmentManager(),
-                FragmentStatePagerAdapter.BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT);
+        adapter = new ViewPageAdapter(
+                getSupportFragmentManager(),
+                FragmentStatePagerAdapter.BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT,
+                viewPager
+        );
         viewPager.setAdapter(adapter);
 
         viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {

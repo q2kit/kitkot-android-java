@@ -64,6 +64,7 @@
                         android:orientation="vertical">
 
                         <LinearLayout
+                            android:layout_marginTop="25dp"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:orientation="horizontal">
@@ -76,14 +77,14 @@
                                 android:maxLines="1"
                                 android:text="name"
                                 android:textColor="@color/black"
-                                android:textSize="15sp"
+                                android:textSize="20sp"
                                 android:textStyle="bold" />
 
                             <ImageView
                                 android:id="@+id/premium_icon"
                                 android:layout_width="14dp"
                                 android:layout_height="14dp"
-                                android:layout_marginTop="4dp"
+                                android:layout_marginTop="8dp"
                                 android:layout_marginStart="4dp"
                                 app:layout_constraintBottom_toBottomOf="@+id/username"
                                 app:layout_constraintStart_toEndOf="@+id/username"

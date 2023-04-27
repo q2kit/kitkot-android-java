@@ -132,14 +132,14 @@ public class PhanTichActivity extends AppCompatActivity {
 
 
             JSONObject jsonParams = new JSONObject();
-            jsonParams.put("userID", "3");
+            jsonParams.put("userID", "2");
             jsonParams.put("startDate", eStartDate.getText());
             jsonParams.put("endDate", eEndDate.getText());
             jsonParams.put("typeDate", 1);
             // Building a request
             JsonObjectRequest request = new JsonObjectRequest(
                     Request.Method.POST,
-                    String.format("%s/SuperUser/ThongKeFollow/", getString(R.string.nptinh_server_domain)),
+                    String.format("%s/SuperUser/ThongKeLuotThich/", getString(R.string.nptinh_server_domain)),
                     jsonParams,
                     new Response.Listener<JSONObject>() {
                         @Override
@@ -160,6 +160,7 @@ public class PhanTichActivity extends AppCompatActivity {
                                         int value = ketQuaJsonObject.getInt(key);
                                         ketQuaMap.put(key, value);
                                     } catch (JSONException e) {
+                                        System.out.println(e);
                                     }
                                 }
 

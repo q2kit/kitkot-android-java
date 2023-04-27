@@ -24,7 +24,7 @@ public class ChatHandle {
                 String lastMessage = item.getString("last_message");
                 String sendTime = Util.convertIntToTime(Long.parseLong(item.getString("send_time")));
                 int userIdSend = Integer.parseInt(item.getString("user_id_send"));
-                String name =item.getString("name");
+                String name =item.getString("username");
                 String avatar =item.getString("avatar");
 
                 ChatMessage  section = new ChatMessage(

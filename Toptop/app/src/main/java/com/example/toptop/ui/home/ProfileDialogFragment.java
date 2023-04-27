@@ -61,8 +61,13 @@ public class ProfileDialogFragment extends DialogFragment {
         followers = view.findViewById(R.id.profile_followers);
         following = view.findViewById(R.id.profile_following);
         likes = view.findViewById(R.id.profile_likes);
+        int userId = Funk.get_user(getContext()).getUid();
         follow = view.findViewById(R.id.btn_follow);
         btChat = view.findViewById(R.id.btChat);
+        if(userId != uid){
+            follow.setVisibility(View.INVISIBLE);
+            btChat.setVisibility(View.INVISIBLE);
+        }
         getProfile(uid);
         btChat.setOnClickListener(new View.OnClickListener() {
             @Override

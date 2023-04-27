@@ -6,7 +6,6 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.content.IntentSender;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -22,6 +21,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.example.toptop.model.User;
 import com.google.android.gms.auth.api.identity.BeginSignInRequest;
 import com.google.android.gms.auth.api.identity.BeginSignInResult;
 import com.google.android.gms.auth.api.identity.Identity;
@@ -200,25 +200,16 @@ public class SignupActivity extends AppCompatActivity {
                 JSONObject user = res.getJSONObject("user");
                 int uid = user.getInt("uid");
                 String username = user.getString("username");
-                String email = user.getString("email");
-                String phone = user.getString("phone");
+                String name = user.getString("name");
                 String avatar = user.getString("avatar");
                 int followers = user.getInt("followers");
                 int following = user.getInt("following");
+                boolean is_premium = user.getBoolean("is_premium");
+                int videos = user.getInt("videos");
                 int liked = user.getInt("liked");
 
-                // Lưu token vào SharedPreferences
-                SharedPreferences sharedPreferences = getSharedPreferences("dataUser", MODE_PRIVATE);
-                SharedPreferences.Editor editor = sharedPreferences.edit();
-                editor.putString("token", token);
-                editor.putInt("uid", uid);
-                editor.putString("username", username);
-                editor.putString("email", email);
-                editor.putString("phone", phone);
-                editor.putString("avatar", avatar);
-                editor.putInt("followers", followers);
-                editor.putInt("following", following);
-                editor.putInt("liked", liked);
+                Funk.set_user(this, new User(uid, username, name, avatar, is_premium, videos, followers, following, liked));
+                Funk.set_token(this, token);
 
                 Intent homeIntent = new Intent(SignupActivity.this, HomeActivity.class);
                 startActivity(homeIntent);

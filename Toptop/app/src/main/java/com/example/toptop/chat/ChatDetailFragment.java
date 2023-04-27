@@ -54,8 +54,11 @@ public class ChatDetailFragment extends Fragment {
     public void setMessages(List<Message> messages) {
         this.messages = messages;
         messageAdapter.setMessages(messages);
-        messageAdapter.notifyItemInserted(this.messages.size() - 1);
-        messageList.smoothScrollToPosition(this.messages.size() - 1);
+        if(this.messages.size() > 0){
+            messageAdapter.notifyItemInserted(this.messages.size() - 1);
+            messageList.smoothScrollToPosition(this.messages.size() - 1);
+        }
+
     }
 
 

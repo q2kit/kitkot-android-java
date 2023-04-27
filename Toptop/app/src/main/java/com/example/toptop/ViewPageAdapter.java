@@ -4,8 +4,11 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentStatePagerAdapter;
+import androidx.viewpager.widget.ViewPager;
 
 import com.example.toptop.ui.discover.DiscoverFragment;
+import com.example.toptop.ui.home.Comment;
+import com.example.toptop.ui.home.ProfileDialogFragment;
 import com.example.toptop.ui.home.Video;
 import com.example.toptop.ui.home.VideoListFragment;
 import com.example.toptop.ui.inbox.InboxFragment;
@@ -13,19 +16,27 @@ import com.example.toptop.ui.me.MeFragment;
 import com.example.toptop.ui.post.PostFragment;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class ViewPageAdapter extends FragmentStatePagerAdapter {
     VideoListFragment videoListFragment ;
+    ViewPager viewPager;
     private ArrayList<Fragment> fragments;
-    public ViewPageAdapter(@NonNull FragmentManager fm, int behavior) {
+    static ProfileDialogFragment.IProfile iProfile;
+    public ViewPageAdapter(@NonNull FragmentManager fm, int behavior, ProfileDialogFragment.IProfile iProfile, ViewPager viewPager) {
         super(fm, behavior);
-        videoListFragment = new VideoListFragment();
+        this.viewPager = viewPager;
+        videoListFragment = new VideoListFragment(iProfile);
         fragments = new ArrayList<>();
         fragments.add(videoListFragment);
         fragments.add(null);
         fragments.add(null);
         fragments.add(null);
         fragments.add(null);
+    }
+
+    public void updateComments(List<Comment> comments){
+        videoListFragment.updateComments(comments);
     }
 
     public void updateVideo(Video video){
@@ -43,10 +54,7 @@ public class ViewPageAdapter extends FragmentStatePagerAdapter {
                 }
                 return fragments.get(1);
             case 2:
-                if(fragments.get(2) == null){
-                    fragments.set(2, new PostFragment());
-                }
-                return fragments.get(2);
+                return new PostFragment(this.viewPager);
             case 3:
                 if(fragments.get(3) == null){
                     fragments.set(3, new InboxFragment());
@@ -64,5 +72,9 @@ public class ViewPageAdapter extends FragmentStatePagerAdapter {
     @Override
     public int getCount() {
         return 5;
+    }
+
+    public void addComments(List<Comment> comments) {
+        videoListFragment.addComments(comments);
     }
 }

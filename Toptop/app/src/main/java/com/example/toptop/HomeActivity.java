@@ -9,14 +9,13 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager.widget.ViewPager;
 
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
-import android.widget.Toast;
 
 import com.example.toptop.chat.ChatAdapter;
 import com.example.toptop.chat.ChatDetailFragment;
@@ -28,6 +27,9 @@ import com.example.toptop.notification.Notification;
 import com.example.toptop.notification.NotificationFragment;
 import com.example.toptop.notification.NotificationHandle;
 import com.example.toptop.socket.SocketRoot;
+import com.example.toptop.ui.home.Comment;
+import com.example.toptop.ui.home.CommentHandle;
+import com.example.toptop.ui.home.ProfileDialogFragment;
 import com.example.toptop.ui.home.Video;
 import com.example.toptop.ui.home.VideoHandle;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -56,11 +58,14 @@ public class HomeActivity extends AppCompatActivity {
     final int T_CHAT_LIST= 6;
     final int T_CHAT_MORE= 7;
     final int T_NOTI_LIST= 10;
+    final int T_COMMENT_LIST= 11;
     final int T_VIDEO= 5;
     final int T_VIDEO_LIKE= 3;
+    final int T_VIDEO_COMMENT= 8;
 
     private List<ChatMessage> chatMessages;
     private List<Notification> notifications;
+    private List<Comment> comments;
     private ChatAdapter chatAdapter;
     private FragmentManager fragmentManager;
     private ChatDetailFragment chatDetailFragment;
@@ -71,6 +76,9 @@ public class HomeActivity extends AppCompatActivity {
     private Firebase firebase;
 
     private int userId;
+
+    // for profile
+    private Button btChat;
     private Emitter.Listener onNewMessage = new Emitter.Listener() {
         @Override
         public void call(final Object... args) {
@@ -84,12 +92,15 @@ public class HomeActivity extends AppCompatActivity {
                             ChatHandle handle = new ChatHandle();
                             NotificationHandle notificationHandle = new NotificationHandle();
                             VideoHandle videoHandle = new VideoHandle();
+                            CommentHandle commentHandle = new CommentHandle();
                             Log.e("Socket type", type+"");
 
                             switch(type){
                                 case T_CHAT_LIST:
-                                    chatMessages = handle.exactListChatSection(data.getJSONArray("data"), userId);
-                                    chatAdapter.setMessages(chatMessages);
+                                    if(chatAdapter != null){
+                                        chatMessages = handle.exactListChatSection(data.getJSONArray("data"), userId);
+                                        chatAdapter.setMessages(chatMessages);
+                                    }
                                     break;
                                 case T_CHAT_INIT:
                                     JSONArray arr = data.getJSONArray("data");
@@ -118,11 +129,24 @@ public class HomeActivity extends AppCompatActivity {
                                     break;
                                 case T_VIDEO_LIKE:
                                 case  T_VIDEO:
-                                    Video v = videoHandle.exactVideoInfo(data.getJSONObject("data"));
-                                    adapter.updateVideo(v);
-                                    Log.e("video get", v.toString());
+                                    Video v = videoHandle.exactVideoInfo(data.getJSONObject("data"), userId);
+                                    if(adapter != null){
+                                        adapter.updateVideo(v);
+                                        Log.e("video get", v.toString());
+                                    }
                                     break;
-
+                                case T_COMMENT_LIST:
+                                    comments = commentHandle.exactListComment(data.getJSONArray("data"));
+                                    if(adapter != null){
+                                        adapter.updateComments(comments);
+                                    }
+                                    break;
+                                case T_VIDEO_COMMENT:
+                                    comments = commentHandle.exactListComment(data.getJSONArray("data"));
+                                    if(adapter != null){
+                                        adapter.addComments(comments);
+                                    }
+                                    break;
                             }
 
                         } catch (JSONException e) {
@@ -148,6 +172,7 @@ public class HomeActivity extends AppCompatActivity {
         if(fragmentManager.getBackStackEntryCount() > 0){
             fragmentManager.popBackStack();
         }
+        bottomNavigationView.setVisibility(View.VISIBLE);
     }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -155,12 +180,10 @@ public class HomeActivity extends AppCompatActivity {
         setContentView(R.layout.activity_home);
         bottomNavigationView = findViewById(R.id.nav_view);
         viewPager = findViewById(R.id.viewPager);
-
+        fragmentManager = getSupportFragmentManager();
         // for chat
-        SharedPreferences sharedPreferences = getSharedPreferences("dataUser", MODE_PRIVATE);;
-        Log.e("TOKEN", sharedPreferences.getString("token",""));
-        userId = sharedPreferences.getInt("uid", 0);
-        SocketRoot.token = sharedPreferences.getString("token","");
+        userId = Funk.get_user(this).getUid();
+        SocketRoot.token = Funk.get_token(this);
         socket = SocketRoot.getInstance();
         socket.on("data",onNewMessage);
         socket.connect();
@@ -170,7 +193,10 @@ public class HomeActivity extends AppCompatActivity {
         //
 
         adapter = new ViewPageAdapter(getSupportFragmentManager(),
-                FragmentStatePagerAdapter.BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT);
+                FragmentStatePagerAdapter.BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT,
+                new ChatClick(),
+                viewPager
+        );
         viewPager.setAdapter(adapter);
 
         viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
@@ -193,8 +219,8 @@ public class HomeActivity extends AppCompatActivity {
                         break;
                     case 3:
                         bottomNavigationView.getMenu().findItem(R.id.mInbox).setChecked(true);
-                        fragmentManager = getSupportFragmentManager();
                         btNotification = findViewById(R.id.btNotification);
+                        frameLayout = findViewById(R.id.chatDetailFrame);
                         btNotification.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View view) {
@@ -210,7 +236,6 @@ public class HomeActivity extends AppCompatActivity {
                         });
                         chatMessages = new ArrayList<>();
                         chatAdapter = new ChatAdapter(new ChatSelection());
-                        frameLayout = findViewById(R.id.chatDetailFrame);
                         RecyclerView chatRecyclerView = findViewById(R.id.chatRecyclerView);
                         chatRecyclerView.setLayoutManager(new LinearLayoutManager(HomeActivity.this));
                         chatRecyclerView.setAdapter(chatAdapter);
@@ -254,13 +279,35 @@ public class HomeActivity extends AppCompatActivity {
         });
 
     }
+
+    class ChatClick implements  ProfileDialogFragment.IProfile{
+
+        @Override
+        public void clickChat(ChatMessage chatMessage) {
+            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+            chatDetailFragment = new ChatDetailFragment(chatMessage);
+            frameLayout = findViewById(R.id.chatDetailFrame);
+            frameLayout.setVisibility(View.VISIBLE);
+            bottomNavigationView.setVisibility(View.INVISIBLE);
+            fragmentTransaction.add(R.id.chatDetailFrame, chatDetailFragment);
+            fragmentTransaction.addToBackStack(chatMessage.getUserId()+"");
+            fragmentTransaction.commit();
+
+            JSONObject data = new JSONObject();
+            try {
+                data.put("user_id", chatMessage.getUserId());
+                socket.emit("select-chat", data);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+    }
     class ChatSelection implements ChatAdapter.IChat{
 
         @Override
         public void onChatClicked(View v, int position) {
             ChatMessage chatMessage =  chatMessages.get(position);
             Log.e("Position ", position+"");
-            Toast.makeText(HomeActivity.this,"Click "+position,Toast.LENGTH_SHORT ).show();
             FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
             chatDetailFragment = new ChatDetailFragment(chatMessage);
             frameLayout.setVisibility(View.VISIBLE);

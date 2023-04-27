@@ -22,6 +22,7 @@ import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.toptop.Funk;
 import com.example.toptop.R;
+import com.example.toptop.socket.SocketRoot;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -32,21 +33,30 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import io.socket.client.Socket;
+
 public class CommentDialogFragment extends DialogFragment {
 
     private int video_id;
+    private int owner_id;
     private List<Comment> comments;
 
-    public CommentDialogFragment(int video_id) {
+    public CommentDialogFragment(int video_id, int owner_id) {
         this.video_id = video_id;
+        this.owner_id = owner_id;
+
     }
     CommentAdapter adapter;
-
+    public void changeComments(List<Comment> comments){
+        Log.e("Change comment", "OK");
+        this.comments = comments;
+        adapter.setCommentItems(comments);
+    }
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         LayoutInflater inflater = requireActivity().getLayoutInflater();
-        getComments();
+
         Log.d("QUAN", "HEREEEEEEEEEEEEEE");
         // Inflate the layout for this dialog
         View view = inflater.inflate(R.layout.fragment_comment, null);
@@ -65,7 +75,16 @@ public class CommentDialogFragment extends DialogFragment {
             @Override
             public void onClick(View v) {
                 String content = commentInput.getText().toString();
-                postComment(content, video_id);
+                Socket socket = SocketRoot.getInstance();
+                JSONObject data = new JSONObject();
+                try {
+                    data.put("video_id", video_id);
+                    data.put("content", content);
+                    data.put("owner_id", owner_id);
+                    socket.emit("comment", data);
+                } catch (JSONException e) {
+                    throw new RuntimeException(e);
+                }
             }
         });
 
@@ -100,7 +119,7 @@ public class CommentDialogFragment extends DialogFragment {
             @Override
             public Map<String, String> getHeaders() {
                 Map<String, String> params = new HashMap<>();
-                params.put("Authorization", "Bearer " + Funk.get_token());
+                params.put("Authorization", "Bearer " + Funk.get_token(getContext()));
                 return params;
             }
         };
@@ -126,12 +145,16 @@ public class CommentDialogFragment extends DialogFragment {
             @Override
             public Map<String, String> getHeaders() {
                 Map<String, String> params = new HashMap<>();
-                Log.d("QUAN", Funk.get_token());
-                params.put("Authorization", "Bearer " + Funk.get_token());
+                params.put("Authorization", "Bearer " + Funk.get_token(getContext()));
                 return params;
             }
         };
         RequestQueue queue = Volley.newRequestQueue(getActivity());
         queue.add(request);
+    }
+
+    public void addComments(List<Comment> comments) {
+        this.comments.add(comments.get(0));
+        adapter.setCommentItems(this.comments);
     }
 }

@@ -194,5 +194,9 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.VideoViewHol
             }
         }
 
+        public void clickProfile(int uid){
+            ProfileDialogFragment profile = new ProfileDialogFragment(uid, iProfile);
+            profile.show(fragmentManager,"profile "+ uid);
+        }
     }
 }

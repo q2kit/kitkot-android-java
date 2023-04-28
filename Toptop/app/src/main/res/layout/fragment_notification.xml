@@ -4,7 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.inbox.InboxFragment">
+    tools:context=".ui.inbox.InboxFragment"
+    android:background="@color/light_gray">
 
     <LinearLayout
         android:id="@+id/llInbox"
@@ -18,8 +19,14 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Notification"
-            android:textSize="17sp"
-            android:textStyle="bold" />
+            android:textSize="22dp"
+            android:textStyle="bold"
+            android:layout_marginVertical="5dp"/>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/gray"/>
 
     </LinearLayout>
     <androidx.recyclerview.widget.RecyclerView

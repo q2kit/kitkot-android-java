@@ -8,7 +8,6 @@
     tools:context=".MainActivity"
     android:background="@drawable/premium_shadow">
 
-
     <TextView
         android:id="@+id/txtTitle"
         android:layout_width="345dp"
@@ -33,6 +32,8 @@
         android:gravity="center"
         android:text="@string/lbl_donhang"
         android:textSize="24sp"
+        android:background="#6E4900"
+        android:textColor="#FFEB69"
         app:layout_constraintTop_toBottomOf="@id/txtTitle"
         app:layout_constraintLeft_toLeftOf="parent"
         />
@@ -45,19 +46,17 @@
         app:layout_constraintTop_toBottomOf="@id/txtTitle"/>
 
 
-
-
-    <Button
+    <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/btnPay"
         android:layout_width="340dp"
         android:layout_height="50dp"
         android:layout_marginStart="30dp"
         android:layout_marginTop="20dp"
         android:layout_marginEnd="30dp"
-        android:background="#2196F3"
         android:text="@string/btn_pay"
-        android:textColor="#FFFFFF"
         android:textSize="26sp"
+        android:textColor="@color/white"
+        android:background="@drawable/coverbtnchat"
         android:theme="@style/AppTheme"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
@@ -65,9 +64,18 @@
         app:layout_constraintTop_toBottomOf="@+id/rdgVipPackage" />
 
 
-
-
-
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/btn_cancel"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:background="@drawable/cover_button"
+        android:text="Hủy"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/btnPay"
+        app:layout_constraintVertical_bias="0.9" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

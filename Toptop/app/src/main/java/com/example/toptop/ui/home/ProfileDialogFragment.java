@@ -42,7 +42,7 @@ public class ProfileDialogFragment extends DialogFragment {
     String urlAvatar;
 
     FragmentManager fragmentManager;
-    private  IProfile iProfile;
+    IProfile iProfile;
     public ProfileDialogFragment(int uid, IProfile iProfile) {
         this.uid = uid;
         this.iProfile = iProfile;

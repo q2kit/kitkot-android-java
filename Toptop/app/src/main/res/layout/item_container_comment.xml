@@ -1,7 +1,8 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:padding="8dp">
+    android:padding="8dp"
+    android:background="@color/white">
 
     <ImageView
         android:id="@+id/avatar"
@@ -19,7 +20,8 @@
         android:layout_marginStart="8dp"
         android:textColor="@color/black"
         android:textSize="16sp"
-        android:text="username" />
+        android:text="username"
+        android:textStyle="bold"/>
 
     <TextView
         android:id="@+id/content"
@@ -28,7 +30,7 @@
         android:layout_below="@id/name"
         android:layout_toEndOf="@id/avatar"
         android:layout_marginStart="8dp"
-        android:textColor="@color/black"
+        android:textColor="@color/gray"
         android:textSize="14sp"
         android:text="comment content" />
 

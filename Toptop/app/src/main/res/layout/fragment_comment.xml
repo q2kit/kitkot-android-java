@@ -6,7 +6,8 @@
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/comment_list"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        android:background="@drawable/cover_white"/>
 
     <EditText
         android:id="@+id/comment_input"
@@ -23,6 +24,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Send"
+        android:textColor="@color/white"
+        android:background="@drawable/coverbtnchat"
         />
 
 </LinearLayout>

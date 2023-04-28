@@ -24,7 +24,9 @@ import com.android.volley.toolbox.Volley;
 import com.example.toptop.Funk;
 import com.example.toptop.HomeActivity;
 import com.example.toptop.R;
+import com.example.toptop.SettingActivity;
 import com.example.toptop.payment.models.VipPackage;
+import com.example.toptop.ui.me.MeFragment;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -40,7 +42,7 @@ import vn.zalopay.sdk.ZaloPaySDK;
 import vn.zalopay.sdk.listeners.PayOrderListener;
 
 public class PaymentActivity extends AppCompatActivity {
-    Button  btnPay;
+    Button  btnPay, btnCancel;
     TextView txtExpireDate,txtTitle;
     ArrayList<VipPackage> vipPackages;
     RadioGroup rdgVipPackage;
@@ -54,7 +56,7 @@ public class PaymentActivity extends AppCompatActivity {
         rdgVipPackage =  findViewById(R.id.rdgVipPackage);
         txtExpireDate =  findViewById(R.id.txtExpireDate);
         txtTitle =  findViewById(R.id.txtTitle);
-
+        btnCancel = findViewById(R.id.btn_cancel);
 
     }
     @Override
@@ -71,6 +73,14 @@ public class PaymentActivity extends AppCompatActivity {
         BindView();
         customUIContent();
         getData();
+
+        btnCancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(PaymentActivity.this, SettingActivity.class));
+            }
+        });
+
         btnPay.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

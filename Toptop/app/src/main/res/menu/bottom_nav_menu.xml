@@ -11,7 +11,7 @@
         android:id="@+id/mPost"
         android:title="Up Video" />
     <item android:title="Inbox"
-        android:icon="@drawable/inbox"
+        android:icon="@drawable/message_solid_icon"
         android:id="@+id/mInbox"/>
     <item android:title="Me"
         android:icon="@drawable/me"

@@ -48,11 +48,11 @@ import de.hdodenhof.circleimageview.CircleImageView;
 public class MeFragment extends Fragment {
 
     private ImageView settingImg;
-    private int uid;
     ImageView avatar, premium_icon;
     TextView name, username, videos, followers, following, likes;
     Button follow, btChat;
     String urlAvatar;
+    int userId;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -60,6 +60,13 @@ public class MeFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_me, container, false);
         super.onViewCreated(view, savedInstanceState);
+        settingImg = view.findViewById(R.id.settings);
+        settingImg.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(getActivity(), SettingActivity.class));
+            }
+        });
 
         avatar = view.findViewById(R.id.profile_image);
         name = view.findViewById(R.id.profile_name_);
@@ -69,54 +76,17 @@ public class MeFragment extends Fragment {
         followers = view.findViewById(R.id.profile_followers);
         following = view.findViewById(R.id.profile_following);
         likes = view.findViewById(R.id.profile_likes);
-        int userId = Funk.get_user(getContext()).getUid();
         follow = view.findViewById(R.id.btn_follow);
         btChat = view.findViewById(R.id.btChat);
+        userId = Funk.get_user(getContext()).getUid();
 
-        settingImg = view.findViewById(R.id.settings);
-        settingImg.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startActivity(new Intent(getActivity(), SettingActivity.class));
-            }
-        });
-
-
-        if(userId == uid){
-            follow.setVisibility(View.INVISIBLE);
-            btChat.setVisibility(View.INVISIBLE);
-        }
-
-        btChat.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if(uid > 0){
-                    ChatMessage chatMessage = new ChatMessage(uid,"",
-                            username.getText().toString(),
-                            urlAvatar, "", false);
-                }
-            }
-        });
-        follow.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (follow.getText().equals("Follow")) {
-                    follow.setText("Unfollow");
-                } else {
-                    follow.setText("Follow");
-                }
-                toggleFollow(uid);
-            }
-        });
+        getProfile();
         return view;
     }
 
+    private void getProfile() {
 
-    private void toggleFollow(int uid) {
-
-    }
-    private void getProfile(int uid) {
-        String url = "https://soc.q2k.dev/api/" + uid + "/info";
+        String url = "https://soc.q2k.dev/api/" + userId + "/info";
         JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, url, null,
                 new Response.Listener<JSONObject>() {
                     @Override
@@ -131,11 +101,6 @@ public class MeFragment extends Fragment {
                             followers.setText(user.getString("followers"));
                             following.setText(user.getString("following"));
                             likes.setText(user.getString("likes"));
-                            if (user.getBoolean("is_premium")) {
-                                premium_icon.setVisibility(View.VISIBLE);
-                            } else {
-                                premium_icon.setVisibility(View.GONE);
-                            }
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
@@ -156,5 +121,4 @@ public class MeFragment extends Fragment {
         RequestQueue queue = Volley.newRequestQueue(getActivity());
         queue.add(request);
     }
-
 }

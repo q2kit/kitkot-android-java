@@ -51,4 +51,11 @@ public class Funk {
         user.setLikes(sharedPreferences.getInt("likes", 0));
         return user;
     }
+
+    public static void logout(Context context) {
+        SharedPreferences sharedPreferences = context.getSharedPreferences(SHARED_PREF_NAME, MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.clear();
+        editor.apply();
+    }
 }

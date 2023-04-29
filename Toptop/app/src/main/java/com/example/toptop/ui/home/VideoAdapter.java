@@ -6,6 +6,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -82,7 +83,9 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.VideoViewHol
         CircleImageView profileImage;
         TextView likedCount, commentCount, username, description;
         ProgressBar progressBar;
+        ImageView play_icon;
         ImageView imHeart, comment, share;
+        View view3;
 
 
 
@@ -98,6 +101,8 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.VideoViewHol
             imHeart = itemView.findViewById(R.id.heart);
             comment = itemView.findViewById(R.id.comment);
             share = itemView.findViewById(R.id.share);
+            play_icon = itemView.findViewById(R.id.play_icon);
+            view3 = itemView.findViewById(R.id.view3);
         }
 
         void setVideoData(Video videoItem){
@@ -106,12 +111,9 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.VideoViewHol
                     .into(profileImage);
             likedCount.setText(String.valueOf(videoItem.getLiked()));
             commentCount.setText(String.valueOf(videoItem.getComment()));
-//            Log.d("KITKOT", "commentCount: " + videoItem.getComment());
             username.setText(videoItem.getOwner_name());
             description.setText(videoItem.getDescription());
-            Log.e("Play", "change");
             if(!videoItem.isIs_played()){
-                Log.e("Play", "here");
                 videoView.setVideoPath(videoItem.getLink());
                 videoItem.setIs_played(true);
                 videoView.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
@@ -119,7 +121,6 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.VideoViewHol
                     public void onPrepared(MediaPlayer mp) {
                        try {
                            progressBar.setVisibility(View.GONE);
-                           Log.e("PlayerCCC", "Ok");
                            mp.start();
                        }catch (Exception e){
 
@@ -130,11 +131,40 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.VideoViewHol
                 videoView.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
                     @Override
                     public void onCompletion(MediaPlayer mediaPlayer) {
-                        Log.e("PlayerCCC", "Done");
                         try {
                             mediaPlayer.start();
                         }catch (Exception e){
 
+                        }
+                    }
+                });
+                 videoView.setOnClickListener(new View.OnClickListener() {
+                     @Override
+                     public void onClick(View view) {
+                         try {
+                             if(videoView.isPlaying()){
+                                 play_icon.setVisibility(View.VISIBLE);
+                                 videoView.pause();
+                             }else{
+                                 play_icon.setVisibility(View.GONE);
+                                 videoView.start();
+                             }
+                         }catch (Exception e){
+                         }
+                     }
+                 });
+                view3.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        try {
+                            if(videoView.isPlaying()){
+                                play_icon.setVisibility(View.VISIBLE);
+                                videoView.pause();
+                            }else{
+                                play_icon.setVisibility(View.GONE);
+                                videoView.start();
+                            }
+                        }catch (Exception e){
                         }
                     }
                 });
@@ -192,11 +222,6 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.VideoViewHol
             } catch (JSONException e) {
                 throw new RuntimeException(e);
             }
-        }
-
-        public void clickProfile(int uid){
-            ProfileDialogFragment profile = new ProfileDialogFragment(uid, iProfile);
-            profile.show(fragmentManager,"profile "+ uid);
         }
     }
 }

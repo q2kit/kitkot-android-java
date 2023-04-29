@@ -207,8 +207,10 @@ public class MainActivity extends AppCompatActivity {
                 Funk.set_user(this, new User(uid, username, name, avatar, is_premium, videos, followers, following, liked));
                 Funk.set_token(this, token);
 
-                Intent homeIntent = new Intent(MainActivity.this, HomeActivity.class);
-                startActivity(homeIntent);
+                Intent intent = new Intent(this, HomeActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(intent);
+
             } else {
                 String message = res.getString("message");
                 Toast.makeText(MainActivity.this, message, Toast.LENGTH_SHORT).show();

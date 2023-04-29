@@ -66,6 +66,11 @@ public class SettingActivity extends AppCompatActivity {
     }
 
     void signOut(){
-        startActivity(new Intent(SettingActivity.this, MainActivity.class));
+        Funk.logout(SettingActivity.this);
+
+        Intent intent = new Intent(this, MainActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(intent);
+
     }
 }

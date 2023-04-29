@@ -19,11 +19,14 @@ public class SplashActivity extends AppCompatActivity {
             public void run() {
                 String token = Funk.get_token(SplashActivity.this);
 
+                Intent intent;
                 if(token.isEmpty()){
-                    startActivity(new Intent(SplashActivity.this, MainActivity.class));
+                    intent = new Intent(SplashActivity.this, MainActivity.class);
                 }else{
-                    startActivity(new Intent(SplashActivity.this, HomeActivity.class));
+                    intent = new Intent(SplashActivity.this, HomeActivity.class);
                 }
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(intent);
             }
         }, 3000);
 

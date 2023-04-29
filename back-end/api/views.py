@@ -100,6 +100,7 @@ def register(request):
             "followers": 0,
             "following": 0,
             "liked": 0,
+            "videos": 0,
             "is_premium": user.is_premium,
         }
 
@@ -150,6 +151,7 @@ def login(request):
             "following": user.following.count(),
             "liked": user.liked,
             "is_premium": user.is_premium,
+            "videos": user.videos.count(),
         }
 
         if user.password == hashlib.sha512((password + SECRET_KEY).encode("utf-8")).hexdigest():
@@ -201,6 +203,7 @@ def google_auth(request):
                     "following": user.following.count(),
                     "liked": user.liked,
                     "is_premium": user.is_premium,
+                    "videos": user.videos.count(),
                 }
                 return JsonResponse({
                     "success": True,
@@ -228,6 +231,12 @@ def google_auth(request):
                     "phone": user.phone,
                     "name": user.name,
                     "avatar": user.avatar or DEFAULT_AVATAR,
+                    "followers": 0,
+                    "following": 0,
+                    "liked": 0,
+                    "videos": 0,
+                    "is_premium": False,
+
                 }
                 return JsonResponse({
                     "success": True,
@@ -236,8 +245,6 @@ def google_auth(request):
                     "user": userJSON
                 })
         except Exception as e:
-            print("Error:")
-            print(e)
             return JsonResponse({
                 "success": False,
                 "message": "Wrong token"
@@ -296,7 +303,6 @@ def reset_password(request):
                     "success": False,
                     "message": "OTP already sent. If you don't receive it, try again in 5 minutes."
                 })
-            
             if user.email == email_or_phone:
                 t = threading.Thread(target=send_mail_otp, args=(user.email,))
                 t.start()
@@ -438,10 +444,6 @@ def post_video(request):
         description = request.POST["description"]
         is_premium = request.POST.get("is_premium") == "true"
         video = request.FILES["video"]
-
-        print("#"*100)
-        print("size", video.size)
-
     except KeyError:
         return JsonResponse({
             "success": False,
@@ -460,8 +462,8 @@ def post_video(request):
 
 
     try:
-        link = upload_video_to_s3(video)
-        # link = upload_file_to_cloud(video)
+        # link = upload_video_to_s3(video)
+        link = upload_file_to_cloud(video)
     except Exception:
         return JsonResponse({
             "success": False,

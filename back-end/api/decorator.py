@@ -21,8 +21,6 @@ def auth_pass(methods):
                 try:
                     return func(request, *args, **kwargs)
                 except Exception as e:
-                    print("Exception in view function: ")
-                    print(e)
                     return JsonResponse({
                         "success": False,
                         "message": str(e)

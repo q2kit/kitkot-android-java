@@ -24,7 +24,7 @@ class Video(models.Model):
     is_premium = models.BooleanField(default=False)
     
     def __str__(self):
-        return str(self.id) + " - " + self.owner.name
+        return str(self.id) + " - " + self.description + "(" + self.owner.name + ")"
     
     @property
     def likes_count(self):

@@ -86,7 +86,7 @@ public class MeFragment extends Fragment {
 
     private void getProfile() {
 
-        String url = "https://soc.q2k.dev/api/" + userId + "/info";
+        String url = "https://soc.q2k.dev/api/" + userId + "/info/";
         JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, url, null,
                 new Response.Listener<JSONObject>() {
                     @Override

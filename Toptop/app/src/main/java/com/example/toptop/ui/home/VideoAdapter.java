@@ -1,6 +1,7 @@
 package com.example.toptop.ui.home;
 
 
+import android.content.Intent;
 import android.media.MediaPlayer;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -153,6 +154,12 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.VideoViewHol
                          }
                      }
                  });
+                share.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        clickShare(videoItem);
+                    }
+                });
                 view3.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
@@ -196,6 +203,16 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.VideoViewHol
                     profile.show(fragmentManager,"profile "+ videoItem.getId());
                 }
             });
+        }
+
+        private void clickShare(Video videoItem) {
+            Intent myIntent = new Intent(Intent.ACTION_SEND);
+            myIntent.setType("text/plain");
+            String body = videoItem.getLink();
+            String sub = "Your Subject";
+            myIntent.putExtra(Intent.EXTRA_SUBJECT,sub);
+            myIntent.putExtra(Intent.EXTRA_TEXT,body);
+            itemView.getContext().startActivity(Intent.createChooser(myIntent, "Share Using"));
         }
 
         public void clickHeart(Video video){

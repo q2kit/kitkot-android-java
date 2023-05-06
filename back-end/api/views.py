@@ -88,6 +88,7 @@ def register(request):
             email=email,
             phone=phone,
             name=name,
+            avatar=DEFAULT_AVATAR
         )
         
         userJSON = {

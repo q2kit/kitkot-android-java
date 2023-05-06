@@ -147,9 +147,8 @@ def upload_video_to_s3(video):
 
 
 def upload_file_to_cloud(file):
-    url = "http://localhost:8080/api/up/"
+    url = "http://localhost:8080/"
     files = {
         "file": file,
     }
     return requests.post(url, files=files).text
-

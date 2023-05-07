@@ -5,7 +5,17 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".ui.post.PostFragment"
-    android:background="@drawable/premium_shadow">
+    android:background="#0EB2BE">
+
+    <pl.droidsonroids.gif.GifImageView
+        android:id="@+id/waiting_gif"
+        android:layout_width="match_parent"
+        android:layout_height="400dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:src="@drawable/waiting"/>
+
 
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/btn_select"
@@ -17,8 +27,7 @@
         android:textColor="@color/white"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        android:layout_marginTop="70dp"
+        app:layout_constraintTop_toBottomOf="@+id/waiting_gif"
         android:background="@drawable/coverbtnchat"/>
 
     <EditText
@@ -48,6 +57,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Is Premium"
+        android:textStyle="bold"
+        android:textSize="18dp"
         app:layout_constraintTop_toBottomOf="@id/description"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

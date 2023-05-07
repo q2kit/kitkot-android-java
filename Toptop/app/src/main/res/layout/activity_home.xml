@@ -21,14 +21,15 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:id="@+id/nav_view"
-        android:background="@color/light_gray"
-        app:menu="@menu/bottom_nav_menu"/>
+        android:background="#191919"
+        app:menu="@menu/bottom_nav_menu"
+        app:itemIconTint="@color/colorPrimary"
+        app:itemTextColor="@color/colorPrimary"/>
 
     <FrameLayout
         android:visibility="invisible"
         android:id="@+id/chatDetailFrame"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/light_gray"
         />
 </RelativeLayout>

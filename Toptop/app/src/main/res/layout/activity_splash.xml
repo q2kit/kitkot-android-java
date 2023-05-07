@@ -5,16 +5,26 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".SplashActivity"
-    android:background="@color/white">
+    android:background="@color/black">
 
-    <ImageView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+<!--    <ImageView-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:id="@+id/splash"-->
+<!--        android:src="@drawable/splash_icon"-->
+<!--        app:layout_constraintTop_toTopOf="parent"-->
+<!--        app:layout_constraintBottom_toBottomOf="parent"-->
+<!--        app:layout_constraintEnd_toEndOf="parent"-->
+<!--        app:layout_constraintStart_toStartOf="parent"/>-->
+
+    <pl.droidsonroids.gif.GifImageView
+        android:layout_width="1100dp"
+        android:layout_height="match_parent"
         android:id="@+id/splash"
-        android:src="@drawable/splash_icon"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"/>
+        app:layout_constraintStart_toStartOf="parent"
+        android:src="@drawable/giffile"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
